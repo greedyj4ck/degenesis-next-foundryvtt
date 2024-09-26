@@ -2,7 +2,7 @@ import AttributesSkillsFields from "./partials/attributes.skills.mjs";
 import ConditionFields from "./partials/condition.mjs";
 import DetailsFields from "./partials/details.mjs";
 import GeneralFields from "./partials/general.mjs";
-import { armorField } from "../fields.mjs";
+import { armorField } from "../field-templates.mjs";
 
 const {
   SchemaField,

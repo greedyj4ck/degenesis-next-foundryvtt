@@ -1,6 +1,8 @@
 {
   "DEGENESIS.SystemName": "DEGENESIS: Rebirth",
 
+  "KEYBINDINGS.DGNS.SkipRollDialog": "",
+
   "TYPES.Actor.character": "Character",
   "TYPES.Actor.npc": "Non-playable character",
   "TYPES.Actor.aberrant": "Psychonaut",

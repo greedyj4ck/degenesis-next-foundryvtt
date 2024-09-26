@@ -1,4 +1,4 @@
-import { DEGENESIS } from "./config.js";
+import { DEGENESIS } from "./config.mjs";
 import { DEG_Utility } from "./utility.js";
 
 export class DegenesisChat {

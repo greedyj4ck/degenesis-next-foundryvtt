@@ -1,6 +1,6 @@
 import ConditionFields from "./partials/condition.mjs";
 import GeneralFields from "./partials/general.mjs";
-import { armorField } from "../fields.mjs";
+import { armorField } from "../field-templates.mjs";
 
 const { SchemaField, StringField, HTMLField, NumberField } =
   foundry.data.fields;

@@ -11,7 +11,15 @@ AUTHORS: GREEDYJ4CK, MOOMAN, DARKHAN, CLEMEVILZZ, KRISTJANLAANE, PABRUVA
 
 // THIS FILE IS ENTRY POINT FOR ENTIRE SYSTEM
 // IMPORT MODULES
-import { DEGENESIS } from "./module/config.js";
+
+import {
+  registerSystemKeybindings,
+  registerSystemSettings,
+} from "./module/settings.mjs";
+
+import { preloadHandlebarsTemplates } from "./module/templates.mjs";
+
+import { DEGENESIS } from "./module/config.mjs";
 import { DEG_Utility } from "./module/utility.js";
 import { DegenesisItemSheet } from "./module/item/item-sheet.js";
 import { DegenesisItem } from "./module/item/item-degenesis.js";
@@ -33,7 +41,10 @@ import { DegenesisCombatTracker } from "./module/apps/combat-tracker.js";
 /*  FOUNDRY VTT INITIALIZATION                  */
 /* -------------------------------------------- */
 
-// HOOK IS FIRING ON LOADING SYSTEM
+// TODO: Add objects later.
+
+globalThis.degenesis = {};
+
 Hooks.once("init", async function () {
   console.log(
     `%cDEGENESIS` + `%c | Initializing`,
@@ -50,39 +61,21 @@ Hooks.once("init", async function () {
       );
   };
 
-  // REGISTERING SYSTEM SETTINGS
-  DegenesisSystemSettings();
+  // Register system settings and keybindings
+  registerSystemSettings();
+  registerSystemKeybindings();
 
-  /**
-   * SET AN INITIATIVE FORMULA FOR THE SYSTEM
-   * @type {String}
-   */
+  // Handling compendiums
+  _setCompendiumBanners();
+
+  // UI related
+  preloadHandlebarsTemplates(); // load all the necessary partials
+  _configureFonts(); // setup global fonts
+
   CONFIG.Combat.initiative = {
     formula: "0",
     decimals: 0,
   };
-
-  //CONFIG.sidebarIcon = "btn-compendium";
-  //CONFIG.Setting.sidebarIcon = "btn-settings";
-
-  // SET CUSTOM BANNERS FOR COMPENDIUMS
-
-  CONFIG.Actor.compendiumBanner =
-    "/systems/degenesis/ui/packs/actors-comp.webp";
-  CONFIG.Adventure.compendiumBanner =
-    "/systems/degenesis/ui/packs/adventures-comp.webp";
-  CONFIG.Cards.compendiumBanner = "/systems/degenesis/ui/packs/cards-comp.webp";
-  CONFIG.Item.compendiumBanner = "/systems/degenesis/ui/packs/items-comp.webp";
-  CONFIG.JournalEntry.compendiumBanner =
-    "/systems/degenesis/ui/packs/journals-comp.webp";
-  CONFIG.Macro.compendiumBanner =
-    "/systems/degenesis/ui/packs/macros-comp.webp";
-  CONFIG.Playlist.compendiumBanner =
-    "/systems/degenesis/ui/packs/playlists-comp.webp";
-  CONFIG.RollTable.compendiumBanner =
-    "/systems/degenesis/ui/packs/rolltables-comp.webp";
-  CONFIG.Scene.compendiumBanner =
-    "/systems/degenesis/ui/packs/scenes-comp.webp";
 
   // REGISTER SHEET APPLICATION CLASSES
   // MOVED TO ARROW FUNCTION FOR BETTER HANDLING
@@ -177,20 +170,6 @@ Hooks.once("init", async function () {
   };
 
   // SETTING FONTS FOR USAGE (COULD BE REPLACED WITH CSS?)
-  CONFIG.fontDefinitions = {
-    Calluna: {
-      editor: true,
-      fonts: [{ urls: ["systems/degenesis/fonts/Calluna-Regular.otf"] }],
-    },
-    "Crimson Pro": {
-      editor: true,
-      fonts: [],
-    },
-    Avenir: {
-      editor: true,
-      fonts: [],
-    },
-  };
 
   CONFIG.canvasTextStyle = new PIXI.TextStyle({
     fontFamily: "Calluna",
@@ -223,3 +202,40 @@ Hooks.on("setup", () => {
 
 // REGISTER ALL OTHER HOOKS
 hooks();
+
+function _setCompendiumBanners() {
+  CONFIG.Actor.compendiumBanner =
+    "/systems/degenesis/ui/packs/actors-comp.webp";
+  CONFIG.Adventure.compendiumBanner =
+    "/systems/degenesis/ui/packs/adventures-comp.webp";
+  CONFIG.Cards.compendiumBanner = "/systems/degenesis/ui/packs/cards-comp.webp";
+  CONFIG.Item.compendiumBanner = "/systems/degenesis/ui/packs/items-comp.webp";
+  CONFIG.JournalEntry.compendiumBanner =
+    "/systems/degenesis/ui/packs/journals-comp.webp";
+  CONFIG.Macro.compendiumBanner =
+    "/systems/degenesis/ui/packs/macros-comp.webp";
+  CONFIG.Playlist.compendiumBanner =
+    "/systems/degenesis/ui/packs/playlists-comp.webp";
+  CONFIG.RollTable.compendiumBanner =
+    "/systems/degenesis/ui/packs/rolltables-comp.webp";
+  CONFIG.Scene.compendiumBanner =
+    "/systems/degenesis/ui/packs/scenes-comp.webp";
+}
+
+// TODO: Recheck fonts initialization
+function _configureFonts() {
+  CONFIG.fontDefinitions = {
+    "Crimson Pro": {
+      editor: true,
+      fonts: [],
+    },
+    Avenir: {
+      editor: true,
+      fonts: [],
+    },
+    Calluna: {
+      editor: true,
+      fonts: [{ urls: ["systems/degenesis/fonts/Calluna-Regular.otf"] }],
+    },
+  };
+}

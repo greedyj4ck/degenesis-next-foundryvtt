@@ -1,4 +1,4 @@
-import { DEGENESIS } from "./config.js";
+import { DEGENESIS } from "./config.mjs";
 
 export class DEG_Utility {
   static addDiamonds(data, diamondMax = 0, valueAttribute = "value") {

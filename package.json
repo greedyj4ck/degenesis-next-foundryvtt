@@ -1,0 +1,14 @@
+{
+  "name": "degenesis-foundryvtt",
+  "version": "0.8.0",
+  "description": "Degenesis system implementation for Foundry",
+  "directories": {
+    "doc": "docs",
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

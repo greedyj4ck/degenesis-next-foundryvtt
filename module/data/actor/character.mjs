@@ -3,6 +3,7 @@ import AttributesSkillsFields from "./partials/attributes.skills.mjs";
 import ConditionFields from "./partials/condition.mjs";
 import GeneralFields from "./partials/general.mjs";
 import DetailsFields from "./partials/details.mjs";
+import IdentityFields from "./partials/identity.mjs";
 
 const {
   SchemaField,
@@ -28,6 +29,7 @@ export default class CharacterData extends foundry.abstract.TypeDataModel {
       ...DetailsFields.details,
       ...DetailsFields.backrounds,
       ...DetailsFields.biography,
+      ...IdentityFields.identity, // Culture, concept, class items UUID reference
     };
   }
 

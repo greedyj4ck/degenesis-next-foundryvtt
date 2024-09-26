@@ -1,4 +1,4 @@
-import { DEGENESIS } from "./config.js";
+import { DEGENESIS } from "./config.mjs";
 
 export class ModifierManager {
   constructor(actor) {

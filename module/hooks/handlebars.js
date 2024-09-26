@@ -1,5 +1,5 @@
-import { DEGENESIS } from "../config.js";
-import { MODULE } from "../config.js";
+import { DEGENESIS } from "../config.mjs";
+import { MODULE } from "../config.mjs";
 import { ShowInventoryHeaders } from "../settings.js";
 
 export default function () {

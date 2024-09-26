@@ -1,7 +1,7 @@
 // Overridden ChatMessage class from Foundry
 // Not much going on here, for now, but could be useful for later hacks ;)
 
-import { DEGENESIS } from "./config.js";
+import { DEGENESIS } from "./config.mjs";
 import { DEG_Utility } from "./utility.js";
 
 /**

@@ -7,7 +7,7 @@ const {
   IntegerSortField,
 } = foundry.data.fields;
 
-import { attributeField, skillField } from "../../fields.mjs";
+import { attributeField, skillField } from "../../field-templates.mjs";
 
 export default class AttributesSkillsFields {
   static get attributes() {

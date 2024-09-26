@@ -13,6 +13,8 @@ Degenesis® is ™ SIXMOREVODKA Studio GmbH. All rights reserved. This module co
 
 ## Credits
 
+- Lot's of code was adapted from dnd5e main repository.
+
 - Code and UI authors:
   - Moo Man (Moo Man#7518)
   - Darkhan (Darkhan#1534)

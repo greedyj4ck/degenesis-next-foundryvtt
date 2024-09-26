@@ -1,5 +1,5 @@
 import { DegenesisChat } from "./chat.js";
-import { DEGENESIS } from "./config.js";
+import { DEGENESIS } from "./config.mjs";
 
 export class DegenesisCombat extends Combat {
   constructor(...args) {

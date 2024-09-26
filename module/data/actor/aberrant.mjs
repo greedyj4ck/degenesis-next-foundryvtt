@@ -1,4 +1,4 @@
-import { armorField } from "../fields.mjs";
+import { armorField } from "../field-templates.mjs";
 import AttributesSkillsFields from "./partials/attributes.skills.mjs";
 import ConditionFields from "./partials/condition.mjs";
 import DetailsFields from "./partials/details.mjs";
@@ -31,5 +31,5 @@ export default class AberrantData extends foundry.abstract.TypeDataModel {
     };
   }
 
-  prepareBaseData() {}
+  // ? prepareBaseData() {}
 }
