@@ -4,9 +4,11 @@
   "KEYBINDINGS.DGNS.SkipRollDialog": "",
 
   "TYPES.Actor.character": "Character",
-  "TYPES.Actor.npc": "Non-playable character",
+  "TYPES.Actor.npc": "NPC",
   "TYPES.Actor.aberrant": "Psychonaut",
   "TYPES.Actor.fromhell": "From Hell",
+  "TYPES.Actor.sleeper": "Sleeper",
+  "TYPES.Actor.marauder": "Marauder",
 
   "TYPES.Actor.TypeCharacterSheet": "Default Character Sheet",
   "TYPES.Actor.TypeNpcSheet": "Default NPC Sheet",

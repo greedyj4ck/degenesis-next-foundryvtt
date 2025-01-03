@@ -1,0 +1,141 @@
+#sidebar {
+  padding: 0px 0px;
+  margin: 0px 0px 0px 0px;
+  height: 100%;
+  border-radius: 0;
+  outline: 1px solid var(--c-gold-5);
+
+  .sidebar-tab.active {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #sidebar-tabs {
+    display: flex;
+
+    box-shadow: none;
+    padding: 5px 5px;
+
+    .item > .sidebar-icon > svg {
+      transition: all 300ms cubic-bezier(0.075, 0.82, 0.165, 1);
+    }
+    .item,
+    .item.active {
+      --sidebar-tab-height: 10px;
+      border: 0;
+      box-shadow: none;
+      padding: 2px;
+      border-radius: 4px;
+    }
+  }
+
+  &.collapsed {
+    min-width: 36px;
+    #sidebar-tabs {
+      .item,
+      .item.active {
+        border: 0;
+        box-shadow: none;
+      }
+    }
+    .sidebar-tab.active {
+      display: none;
+    }
+  }
+}
+
+.theme-light {
+  #sidebar {
+    background-image: url(../ui/backgrounds/light_01.jpg);
+    background-color: #fff;
+    background-position: top center;
+    background-size: cover;
+    color: var(--c-grey-8);
+  }
+
+  #sidebar-tabs {
+    border-bottom: 1px solid var(--c-grey-1);
+
+    .collapse {
+      color: black;
+      &:hover {
+        color: var(--c-pred);
+      }
+    }
+
+    a.item {
+      .sidebar-icon {
+        svg {
+          fill: black;
+        }
+      }
+
+      &.active {
+        .sidebar-icon {
+          svg {
+            fill: var(--c-pred);
+          }
+        }
+      }
+
+      &:hover {
+        color: var(--c-pred);
+        .sidebar-icon {
+          svg {
+            fill: var(--c-pred);
+          }
+        }
+      }
+    }
+  }
+}
+
+.theme-dark {
+  #sidebar {
+    background-image: url(../ui/backgrounds/black_01.jpg);
+    background-color: #111;
+    background-position: top center;
+    background-size: cover;
+  }
+  #sidebar-tabs {
+    border-bottom: 1px solid var(--c-gold-7);
+
+    .collapse {
+      color: var(--c-gold-7);
+      &:hover {
+        color: var(--c-pred-5);
+      }
+    }
+
+    a.item {
+      .sidebar-icon {
+        svg {
+          fill: var(--c-gold-7);
+        }
+      }
+
+      &.active {
+        border: 1px solid var(--c-gold-5) !important;
+        .sidebar-icon {
+          svg {
+            fill: var(--c-gold-5);
+          }
+        }
+      }
+
+      &:hover {
+        .sidebar-icon {
+          svg {
+            fill: var(--c-pred-5);
+          }
+        }
+      }
+    }
+  }
+}
+
+.settings-sidebar h2 {
+  background: none;
+  border: none;
+  color: var(--c-pred);
+}

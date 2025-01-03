@@ -1,0 +1,20 @@
+// @import "elements/sidebar";
+// @import "elements/controls";
+// @import "elements/applicationV1"; // AppV1 windows styling
+// @import "elements/applicationV2"; // AppV2 windows styling
+
+@import "apps/settings";
+
+.theme-light {
+  #logo {
+    height: 35px;
+    content: url(../ui/degenesis-logo-white.svg);
+  }
+}
+
+.theme-dark {
+  #logo {
+    height: 35px;
+    content: url(../ui/degenesis-logo-dark.svg);
+  }
+}

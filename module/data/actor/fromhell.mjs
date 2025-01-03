@@ -1,6 +1,6 @@
 import ConditionFields from "./partials/condition.mjs";
 import GeneralFields from "./partials/general.mjs";
-import { armorField } from "../field-templates.mjs";
+import ArmorField from "../fields/armor-field.mjs";
 
 const { SchemaField, StringField, HTMLField, NumberField } =
   foundry.data.fields;
@@ -15,7 +15,7 @@ export default class FromHellData extends foundry.abstract.TypeDataModel {
       ...GeneralFields.state,
       ...GeneralFields.fighting,
       ...ConditionFields.condition,
-      armor: new SchemaField(armorField()),
+      armor: new ArmorField(),
       tactics: new HTMLField({}),
       about: new HTMLField({}),
     };

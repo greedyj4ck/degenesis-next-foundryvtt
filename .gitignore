@@ -1,4 +1,5 @@
 # IDE
+.old
 .idea/
 .vs/
 .vscode/launch.json

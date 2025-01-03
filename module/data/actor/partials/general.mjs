@@ -41,6 +41,13 @@ export default class GeneralFields {
         motion: new BooleanField({ initial: false }),
         active: new BooleanField({ initial: false }),
         cover: new NumberField({ initial: 0, min: 0, integer: true }),
+        vision: new SchemaField({
+          mallus: new NumberField({}),
+        }),
+        discomfort: new SchemaField({
+          mallus: new NumberField({}),
+          negateUsed: new BooleanField({}),
+        }),
         initiative: new SchemaField({
           value: new NumberField({ initial: 0, min: 0, integer: true }),
           actions: new NumberField({ initial: 1, min: 1, integer: true }),

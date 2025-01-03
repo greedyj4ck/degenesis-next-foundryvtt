@@ -15,20 +15,36 @@ LIGHT/DARK THEMES INCLUDED
 
 // NORMALIZE TEST
 @import "normalize/normalize";
+@import "normalize/foundryReset";
 
-/* // IMPORTS - VARIABLES
+// IMPORTS - VARIABLES
+@import "base/fonts";
+@import "base/typography";
+@import "base/foundryVariables"; // Re-Setting basic Foundry variables
+@import "base/colors";
+@import "base/scrollbar";
+
+// FOUNDRY UI OVERRIDES
+@import "foundry/ui";
+
+// SHEET DESIGN
+
+@import "partials/sheetHeader";
+
+/* 
+
+
 @import "base/colors";
 @import "base/scss-variables"; /// to be removed
 @import "base/css-variables"; /// to be removed
 
 // BASE ELEMENTS
-@import "base/fonts";
+
 @import "base/typography";
 // @import "base/ui-elements"; /// to be removed - moved to controls...
 // @import "base/experimental"; /// to be removed
 
-// FOUNDRY UI OVERRIDES
-@import "foundry/ui";
+
 @import "foundry/sidebar";
 
 // 3RD PARTY

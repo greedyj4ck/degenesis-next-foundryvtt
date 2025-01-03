@@ -20,7 +20,14 @@ import {
 import { preloadHandlebarsTemplates } from "./module/templates.mjs";
 
 import { DEGENESIS } from "./module/config.mjs";
-import { DEG_Utility } from "./module/utility.js";
+
+import hooks from "./module/hooks/_module.mjs";
+
+import * as applications from "./module/applications/_module.mjs";
+import * as documents from "./module/documents/_module.mjs";
+import * as dataModels from "./module/data/_module.mjs";
+
+/* import { DEG_Utility } from "./module/utility.js";
 import { DegenesisItemSheet } from "./module/item/item-sheet.js";
 import { DegenesisItem } from "./module/item/item-degenesis.js";
 import { DegenesisCharacterSheet } from "./module/actor/character-sheet.js";
@@ -35,7 +42,7 @@ import { DegenesisSystemSettings } from "./module/settings.js";
 import { DegenesisChatMessage } from "./module/chat-message.js"; // FOR FUTURE CHATMESSAGE FUNCTIONALITY
 import ActorConfigure from "./module/apps/actor-configure.js";
 import hooks from "./module/hooks/hooks.js";
-import { DegenesisCombatTracker } from "./module/apps/combat-tracker.js";
+import { DegenesisCombatTracker } from "./module/apps/combat-tracker.js"; */
 
 /* -------------------------------------------- */
 /*  FOUNDRY VTT INITIALIZATION                  */
@@ -43,9 +50,26 @@ import { DegenesisCombatTracker } from "./module/apps/combat-tracker.js";
 
 // TODO: Add objects later.
 
-globalThis.degenesis = {};
+globalThis.degenesis = {
+  applications,
+};
+
+//CONFIG.debug.hooks = true;
+
+// Configuring document class
+CONFIG.Actor.documentClass = documents.DegenesisActor;
+CONFIG.Item.documentClass = documents.DegenesisItem;
+
+// Configuring data models
+CONFIG.Actor.dataModels = dataModels.actor.config;
+CONFIG.Item.dataModels = dataModels.item.config;
 
 Hooks.once("init", async function () {
+  globalThis.degenesis = game.degenesis = Object.assign(
+    game.system,
+    globalThis.degenesis
+  );
+
   console.log(
     `%cDEGENESIS` + `%c | Initializing`,
     "color: #ed1d27",
@@ -69,7 +93,9 @@ Hooks.once("init", async function () {
   _setCompendiumBanners();
 
   // UI related
+
   preloadHandlebarsTemplates(); // load all the necessary partials
+
   _configureFonts(); // setup global fonts
 
   CONFIG.Combat.initiative = {
@@ -77,36 +103,21 @@ Hooks.once("init", async function () {
     decimals: 0,
   };
 
-  // REGISTER SHEET APPLICATION CLASSES
-  // MOVED TO ARROW FUNCTION FOR BETTER HANDLING
+  _unregisterCoreSheets();
 
-  Actors.unregisterSheet("core", ActorSheet);
-  Actors.registerSheet("degenesis", DegenesisCharacterSheet, {
-    types: ["character"],
-    makeDefault: true,
-    label: "TYPES.Actor.TypeCharacterSheet",
-  });
-  Actors.registerSheet("degenesis", DegenesisNPCSheet, {
-    types: ["npc"],
-    makeDefault: true,
-    label: "TYPES.Actor.TypeNpcSheet",
-  });
-  Actors.registerSheet("degenesis", DegenesisFromHellSheet, {
-    types: ["fromhell"],
-    makeDefault: true,
-    label: "TYPES.Actor.TypeFromHellSheet",
-  });
-  Actors.registerSheet("degenesis", DegenesisAberrantSheet, {
-    types: ["aberrant"],
-    makeDefault: true,
-    label: "TYPES.Actor.TypeAberrantSheet",
-  });
+  Actors.registerSheet(
+    "degenesis",
+    applications.actor.DegenesisCharacterSheet,
+    {
+      types: ["character"],
+      makeDefault: true,
+      label: "TYPES.Actor.TypeCharacterSheet",
+    }
+  );
 
-  Items.unregisterSheet("core", ItemSheet);
-  Items.registerSheet("degenesis", DegenesisItemSheet, { makeDefault: true });
+  hooks();
 
-  // PRE-LOAD TEMPLATES
-  loadTemplates([
+  /*   loadTemplates([
     // ACTOR CHARACTER SHEET
     "systems/degenesis/templates/actor/character/character-attributes-skills-diamonds.html",
     "systems/degenesis/templates/actor/character/character-inventory.html",
@@ -136,20 +147,20 @@ Hooks.once("init", async function () {
     "systems/degenesis/templates/chat/roll-card.html",
     "systems/degenesis/templates/apps/combat-tracker.html",
   ]);
+ */
 
-  // ASSIGN THE ACTOR CLASS TO THE CONFIG
-  CONFIG.Actor.documentClass = DegenesisActor;
+  /*
   CONFIG.Item.documentClass = DegenesisItem;
-  CONFIG.Combat.documentClass = DegenesisCombat;
+  CONFIG.Combat.documentClass = DegenesisCombat; */
 
   // ASSIGN CHATMESSAGE CLASS TO THE CONFIG - FOR NOW DEGENESISCHATMESSAGE CLASS WILL BE USED
   // INSTEAD OF DEFAULT FOUNDRY ONE
-  CONFIG.ChatMessage.documentClass = DegenesisChatMessage;
-  CONFIG.ui.combat = DegenesisCombatTracker;
+  /* CONFIG.ChatMessage.documentClass = DegenesisChatMessage;
+  CONFIG.ui.combat = DegenesisCombatTracker; */
 
   // REGISTERING APPS
 
-  game.degenesis = {
+  /*   game.degenesis = {
     apps: {
       DegenesisCharacterSheet,
       DegenesisFromHellSheet,
@@ -167,7 +178,7 @@ Hooks.once("init", async function () {
     config: DEGENESIS,
     dice: DegenesisDice,
     chat: DegenesisChat,
-  };
+  }; */
 
   // SETTING FONTS FOR USAGE (COULD BE REPLACED WITH CSS?)
 
@@ -201,7 +212,37 @@ Hooks.on("setup", () => {
 });
 
 // REGISTER ALL OTHER HOOKS
-hooks();
+// hooks();
+
+function _unregisterCoreSheets() {
+  Actors.unregisterSheet("core", ActorSheet);
+  Items.unregisterSheet("core", ItemSheet);
+}
+
+function _registerDegenesisSheets() {
+  /*   Actors.registerSheet("degenesis", DegenesisCharacterSheet, {
+    types: ["character"],
+    makeDefault: true,
+    label: "TYPES.Actor.TypeCharacterSheet",
+  });
+  Actors.registerSheet("degenesis", DegenesisNPCSheet, {
+    types: ["npc"],
+    makeDefault: true,
+    label: "TYPES.Actor.TypeNpcSheet",
+  });
+  Actors.registerSheet("degenesis", DegenesisFromHellSheet, {
+    types: ["fromhell"],
+    makeDefault: true,
+    label: "TYPES.Actor.TypeFromHellSheet",
+  });
+  Actors.registerSheet("degenesis", DegenesisAberrantSheet, {
+    types: ["aberrant"],
+    makeDefault: true,
+    label: "TYPES.Actor.TypeAberrantSheet",
+  });
+
+  Items.registerSheet("degenesis", DegenesisItemSheet, { makeDefault: true }); */
+}
 
 function _setCompendiumBanners() {
   CONFIG.Actor.compendiumBanner =
@@ -227,7 +268,7 @@ function _configureFonts() {
   CONFIG.fontDefinitions = {
     "Crimson Pro": {
       editor: true,
-      fonts: [],
+      fonts: [{ urls: ["systems/degenesis/fonts/Montserrat-Variable.ttf"] }],
     },
     Avenir: {
       editor: true,
@@ -236,6 +277,13 @@ function _configureFonts() {
     Calluna: {
       editor: true,
       fonts: [{ urls: ["systems/degenesis/fonts/Calluna-Regular.otf"] }],
+    },
+    Montserrat: {
+      editor: true,
+      fonts: [
+        { urls: ["systems/degenesis/fonts/Montserrat-Variable.ttf"] },
+        { urls: ["systems/degenesis/fonts/Montserrat-Italic-Variable.ttf"] },
+      ],
     },
   };
 }

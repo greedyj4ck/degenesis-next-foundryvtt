@@ -2,7 +2,7 @@ import AttributesSkillsFields from "./partials/attributes.skills.mjs";
 import ConditionFields from "./partials/condition.mjs";
 import DetailsFields from "./partials/details.mjs";
 import GeneralFields from "./partials/general.mjs";
-import { armorField } from "../field-templates.mjs";
+import ArmorField from "../fields/armor-field.mjs";
 
 const {
   SchemaField,
@@ -29,7 +29,7 @@ export default class SleeperData extends foundry.abstract.TypeDataModel {
       ...DetailsFields.details,
       ...DetailsFields.backrounds,
       ...DetailsFields.biography,
-      armor: new SchemaField(armorField()),
+      armor: new ArmorField(),
       tactics: new HTMLField({}),
     };
   }

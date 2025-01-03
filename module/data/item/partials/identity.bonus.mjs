@@ -1,4 +1,4 @@
-import DEGENESIS from "../../../config.mjs";
+import { DEGENESIS } from "../../../config.mjs";
 
 const {
   SchemaField,

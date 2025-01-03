@@ -634,6 +634,9 @@ DEGENESIS.rollResults = {
   botch: "DGNS.Botch",
 };
 
+/**
+ * Calibers are used for validating weapons compatibilities with specific ammo item.
+ */
 DEGENESIS.calibers = {
   "50gl": "TYPES.Ammo.50gl",
   357: "TYPES.Ammo.357",
@@ -666,6 +669,7 @@ DEGENESIS.calibers = {
   coal: "TYPES.Ammo.coal",
   boltcoal: "TYPES.Ammo.boltcoal",
   special: "TYPES.Ammo.special",
+  custom: "TYPES.Ammo.custom",
 };
 
 DEGENESIS.systemItems = {
@@ -708,4 +712,4 @@ DEGENESIS.transportationEncumbranceModes = {
   eachReduction: "DGNS.EachReduction",
 };
 
-export default DEGENESIS;
+export { DEGENESIS };

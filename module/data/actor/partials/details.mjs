@@ -86,7 +86,8 @@ export default class DetailsFields {
   static get biography() {
     return {
       biography: new HTMLField({ label: "DGNS.Biography" }),
-      gmnotes: new HTMLField({ label: "DGNS.Gmnotes" }),
+      ownerNotes: new HTMLField({ label: "DGNS.OwnerNotes" }),
+      gmNotes: new HTMLField({ label: "DGNS.GMNotes" }),
     };
   }
 }

@@ -1,8 +1,8 @@
-import { armorField } from "../field-templates.mjs";
 import AttributesSkillsFields from "./partials/attributes.skills.mjs";
 import ConditionFields from "./partials/condition.mjs";
 import DetailsFields from "./partials/details.mjs";
 import GeneralFields from "./partials/general.mjs";
+import ArmorField from "../fields/armor-field.mjs";
 
 const { SchemaField, StringField, HTMLField, NumberField } =
   foundry.data.fields;
@@ -22,7 +22,7 @@ export default class AberrantData extends foundry.abstract.TypeDataModel {
       ...DetailsFields.details,
       ...DetailsFields.backrounds,
       ...DetailsFields.biography,
-      armor: new SchemaField(armorField()),
+      armor: new ArmorField(),
       variant: new StringField({}),
       tactics: new HTMLField({}),
       rapture: new StringField({}),

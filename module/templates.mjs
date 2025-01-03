@@ -3,7 +3,7 @@
 export async function preloadHandlebarsTemplates() {
   const partials = [
     // Shared partials
-    "system/degenesis/templates/partials/sheet-header.hbs",
+    "systems/degenesis/templates/partials/sheet-header.hbs",
 
     // Actor Sheet Partials
 
@@ -12,9 +12,11 @@ export async function preloadHandlebarsTemplates() {
 
   const paths = {};
   for (const path of partials) {
-    paths[path.replace(".hbs", ".html")] = path;
     paths[`degenesis.${path.split("/").pop().replace(".hbs", "")}`] = path;
   }
+
+  console.log(`Registering following partial templates:`);
+  console.log(paths);
 
   return loadTemplates(paths);
 }

@@ -208,5 +208,33 @@
       "extensions": ["css", "html", "hbs", "json"],
       "paths": ["languages/", "styles/", "templates/"]
     }
+  },
+
+  "documentTypes": {
+    "Actor": {
+      "character": {},
+      "npc": {},
+      "fromhell": {},
+      "aberrant": {},
+      "sleeper": {},
+      "marauder": {}
+    },
+    "Item": {
+      "culture": {},
+      "cult": {},
+      "concept": {},
+      "legacy": {},
+      "ammunition": {},
+      "armor": {},
+      "burn": {},
+      "complication": {},
+      "equipment": {},
+      "mod": {},
+      "phenomenon": {},
+      "potential": {},
+      "shield": {},
+      "transportation": {},
+      "weapon": {}
+    }
   }
 }
