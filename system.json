@@ -1,11 +1,11 @@
 {
-  "id": "degenesis",
-  "title": "DEGENESIS: Rebirth",
-  "description": "DEGENESIS",
-  "version": "0.8.0",
+  "id": "dgnsrebirth",
+  "title": "DEGENESIS: Rebirth Edition",
+  "description": "DEGENESIS is a critically acclaimed and Free to Play Tabletop RPG, with an international community and cult following. It merges visionary design, intuitive gameplay, and dense worldbuilding, thrusting new Players into an inhospitable future at the close of the 26th century.",
+  "version": "0.0.1",
   "compatibility": {
-    "minimum": "12.318",
-    "verified": "12.328"
+    "minimum": "13",
+    "verified": "13.334"
   },
   "authors": [
     {
@@ -200,8 +200,8 @@
   ],
 
   "background": "systems/degenesis/ui/artifacts.jpg",
-  "manifest": "https://github.com/greedyj4ck/DEGENESIS-FoundryVTT/releases/latest/download/system.json",
-  "download": "https://github.com/greedyj4ck/DEGENESIS-FoundryVTT/releases/latest/download/system.zip",
+  "manifest": "https://github.com/greedyj4ck/degenesisrebirth-foundryvtt/releases/latest/download/system.json",
+  "download": "https://github.com/greedyj4ck/degenesisrebirth-foundryvtt/releases/latest/download/system.zip",
   "license": "LICENSE.txt",
   "flags": {
     "hotReload": {
