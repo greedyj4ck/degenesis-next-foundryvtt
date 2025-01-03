@@ -10,7 +10,7 @@ export default class DegenesisCharacterSheet extends ActorSheetMixin(
 ) {
   static PARTS = {
     form: {
-      template: "systems/degenesis/templates/actors/character-sheet.hbs",
+      template: "systems/degenesisnext/templates/actors/character-sheet.hbs",
     },
   };
 

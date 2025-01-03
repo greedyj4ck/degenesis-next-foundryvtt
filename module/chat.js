@@ -4,12 +4,12 @@ import { DEG_Utility } from "./utility.js";
 export class DegenesisChat {
   static renderRollCard(rollResult, cardData) {
     rollResult.rolls.forEach((r) => {
-      r.img = `systems/degenesis/icons/dice-faces/d${r.result}.svg`;
+      r.img = `systems/degenesisnext/icons/dice-faces/d${r.result}.svg`;
     });
 
     if (rollResult.secondaryRolls) {
       rollResult.secondaryRolls.forEach((r) => {
-        r.img = `systems/degenesis/icons/dice-faces/d${r.result}.svg`;
+        r.img = `systems/degenesisnext/icons/dice-faces/d${r.result}.svg`;
       });
     }
 

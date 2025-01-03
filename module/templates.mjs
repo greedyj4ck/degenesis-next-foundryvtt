@@ -3,7 +3,7 @@
 export async function preloadHandlebarsTemplates() {
   const partials = [
     // Shared partials
-    "systems/degenesis/templates/partials/sheet-header.hbs",
+    "systems/degenesisnext/templates/partials/sheet-header.hbs",
 
     // Actor Sheet Partials
 

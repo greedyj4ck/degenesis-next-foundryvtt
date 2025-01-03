@@ -2,7 +2,7 @@
 
 game.importData = function () {
   let weapons = [];
-  fetch("systems/degenesis/tb_weapons_melee.json").then((r) =>
+  fetch("systems/degenesisnext/tb_weapons_melee.json").then((r) =>
     r.json().then((json) => {
       for (let item of json.items) {
         //game.system is deprecated.... -> game.model

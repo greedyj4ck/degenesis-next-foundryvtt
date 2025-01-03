@@ -119,33 +119,33 @@ Hooks.once("init", async function () {
 
   /*   loadTemplates([
     // ACTOR CHARACTER SHEET
-    "systems/degenesis/templates/actor/character/character-attributes-skills-diamonds.html",
-    "systems/degenesis/templates/actor/character/character-inventory.html",
-    "systems/degenesis/templates/actor/character/character-advantages.html",
-    "systems/degenesis/templates/actor/character/character-condition.html",
-    "systems/degenesis/templates/actor/character/character-combat.html",
-    "systems/degenesis/templates/actor/character/character-history.html",
+    "systems/degenesisnext/templates/actor/character/character-attributes-skills-diamonds.html",
+    "systems/degenesisnext/templates/actor/character/character-inventory.html",
+    "systems/degenesisnext/templates/actor/character/character-advantages.html",
+    "systems/degenesisnext/templates/actor/character/character-condition.html",
+    "systems/degenesisnext/templates/actor/character/character-combat.html",
+    "systems/degenesisnext/templates/actor/character/character-history.html",
     // NPC CHARACTER SHEET
-    "systems/degenesis/templates/actor/npc/npc-attributes-skills.html",
-    "systems/degenesis/templates/actor/npc/npc-inventory.html",
-    "systems/degenesis/templates/actor/npc/npc-advantages.html",
-    "systems/degenesis/templates/actor/npc/npc-combat.html",
-    "systems/degenesis/templates/actor/npc/npc-history.html",
+    "systems/degenesisnext/templates/actor/npc/npc-attributes-skills.html",
+    "systems/degenesisnext/templates/actor/npc/npc-inventory.html",
+    "systems/degenesisnext/templates/actor/npc/npc-advantages.html",
+    "systems/degenesisnext/templates/actor/npc/npc-combat.html",
+    "systems/degenesisnext/templates/actor/npc/npc-history.html",
     // ABERRANT CHARACTER SHEET
-    "systems/degenesis/templates/actor/aberrant/aberrant-attributes-skills.html",
-    "systems/degenesis/templates/actor/aberrant/aberrant-combat.html",
-    "systems/degenesis/templates/actor/aberrant/aberrant-phenomena.html",
-    "systems/degenesis/templates/actor/aberrant/aberrant-inventory.html",
-    "systems/degenesis/templates/actor/aberrant/aberrant-history.html",
+    "systems/degenesisnext/templates/actor/aberrant/aberrant-attributes-skills.html",
+    "systems/degenesisnext/templates/actor/aberrant/aberrant-combat.html",
+    "systems/degenesisnext/templates/actor/aberrant/aberrant-phenomena.html",
+    "systems/degenesisnext/templates/actor/aberrant/aberrant-inventory.html",
+    "systems/degenesisnext/templates/actor/aberrant/aberrant-history.html",
     // ITEMS AND OTHER
-    "systems/degenesis/templates/item/item-header.html",
-    "systems/degenesis/templates/item/item-header-physical.html",
-    "systems/degenesis/templates/item/item-header-physical-no-qty.html",
-    "systems/degenesis/templates/item/item-header-attack.html",
-    "systems/degenesis/templates/item/item-header-defense.html",
-    "systems/degenesis/templates/item/item-header-phenomenon.html",
-    "systems/degenesis/templates/chat/roll-card.html",
-    "systems/degenesis/templates/apps/combat-tracker.html",
+    "systems/degenesisnext/templates/item/item-header.html",
+    "systems/degenesisnext/templates/item/item-header-physical.html",
+    "systems/degenesisnext/templates/item/item-header-physical-no-qty.html",
+    "systems/degenesisnext/templates/item/item-header-attack.html",
+    "systems/degenesisnext/templates/item/item-header-defense.html",
+    "systems/degenesisnext/templates/item/item-header-phenomenon.html",
+    "systems/degenesisnext/templates/chat/roll-card.html",
+    "systems/degenesisnext/templates/apps/combat-tracker.html",
   ]);
  */
 
@@ -246,21 +246,23 @@ function _registerDegenesisSheets() {
 
 function _setCompendiumBanners() {
   CONFIG.Actor.compendiumBanner =
-    "/systems/degenesis/ui/packs/actors-comp.webp";
+    "/systems/degenesisnext/ui/packs/actors-comp.webp";
   CONFIG.Adventure.compendiumBanner =
-    "/systems/degenesis/ui/packs/adventures-comp.webp";
-  CONFIG.Cards.compendiumBanner = "/systems/degenesis/ui/packs/cards-comp.webp";
-  CONFIG.Item.compendiumBanner = "/systems/degenesis/ui/packs/items-comp.webp";
+    "/systems/degenesisnext/ui/packs/adventures-comp.webp";
+  CONFIG.Cards.compendiumBanner =
+    "/systems/degenesisnext/ui/packs/cards-comp.webp";
+  CONFIG.Item.compendiumBanner =
+    "/systems/degenesisnext/ui/packs/items-comp.webp";
   CONFIG.JournalEntry.compendiumBanner =
-    "/systems/degenesis/ui/packs/journals-comp.webp";
+    "/systems/degenesisnext/ui/packs/journals-comp.webp";
   CONFIG.Macro.compendiumBanner =
-    "/systems/degenesis/ui/packs/macros-comp.webp";
+    "/systems/degenesisnext/ui/packs/macros-comp.webp";
   CONFIG.Playlist.compendiumBanner =
-    "/systems/degenesis/ui/packs/playlists-comp.webp";
+    "/systems/degenesisnext/ui/packs/playlists-comp.webp";
   CONFIG.RollTable.compendiumBanner =
-    "/systems/degenesis/ui/packs/rolltables-comp.webp";
+    "/systems/degenesisnext/ui/packs/rolltables-comp.webp";
   CONFIG.Scene.compendiumBanner =
-    "/systems/degenesis/ui/packs/scenes-comp.webp";
+    "/systems/degenesisnext/ui/packs/scenes-comp.webp";
 }
 
 // TODO: Recheck fonts initialization
@@ -268,21 +270,24 @@ function _configureFonts() {
   CONFIG.fontDefinitions = {
     "Crimson Pro": {
       editor: true,
-      fonts: [{ urls: ["systems/degenesis/fonts/Montserrat-Variable.ttf"] }],
-    },
-    Avenir: {
-      editor: true,
-      fonts: [],
-    },
-    Calluna: {
-      editor: true,
-      fonts: [{ urls: ["systems/degenesis/fonts/Calluna-Regular.otf"] }],
+      fonts: [
+        {
+          urls: [
+            "systems/degenesisnext/fonts/CrimsonPro-Variable.ttf",
+            "systems/degenesisnext/fonts/-Italic-Variable.ttf",
+          ],
+        },
+      ],
     },
     Montserrat: {
       editor: true,
       fonts: [
-        { urls: ["systems/degenesis/fonts/Montserrat-Variable.ttf"] },
-        { urls: ["systems/degenesis/fonts/Montserrat-Italic-Variable.ttf"] },
+        {
+          urls: [
+            "systems/degenesisnext/fonts/Montserrat-Variable.ttf",
+            "systems/degenesisnext/fonts/Montserrat-Italic-Variable.ttf",
+          ],
+        },
       ],
     },
   };

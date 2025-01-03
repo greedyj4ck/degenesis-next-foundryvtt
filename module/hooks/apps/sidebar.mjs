@@ -13,7 +13,7 @@ export default function () {
       if (name) {
         let icon = document.createElement("div");
         icon.classList.add("sidebar-icon");
-        let svg = fetch(`systems/degenesis/ui/icons/sidebar/${name}.svg`)
+        let svg = fetch(`systems/degenesisnext/ui/icons/sidebar/${name}.svg`)
           .then((r) => r.text())
           .then((text) => (icon.innerHTML = text));
 
@@ -30,12 +30,12 @@ export default function () {
     const badge = document.createElement("div");
     badge.classList.add("dgns", "system-badge");
 
-    let svg = fetch("systems/degenesis/ui/degenesis-logo.svg")
+    let svg = fetch("systems/degenesisnext/ui/degenesis-logo.svg")
       .then((r) => r.text())
       .then((text) => (badge.innerHTML = text));
 
     /*     badge.innerHTML = `
-    <img src="systems/degenesis/ui/degenesis-logo-dark.svg" data-tooltip="${game.system.title}" alt="${game.system.title}"> 
+    <img src="systems/degenesisnext/ui/degenesis-logo-dark.svg" data-tooltip="${game.system.title}" alt="${game.system.title}"> 
     
     
 

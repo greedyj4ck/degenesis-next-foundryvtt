@@ -123,7 +123,7 @@ export class DegenesisDice {
 
   static async showRollDialog({ dialogData, rollData, cardData }) {
     let html = await renderTemplate(
-      "systems/degenesis/templates/apps/roll-dialog.html",
+      "systems/degenesisnext/templates/apps/roll-dialog.html",
       dialogData
     );
     return new Promise((resolve, reject) => {
@@ -163,7 +163,7 @@ export class DegenesisDice {
 
   static async showDiceRollDialog({ dialogData, rollData, cardData }) {
     let html = await renderTemplate(
-      "systems/degenesis/templates/apps/roll-dice-dialog.html",
+      "systems/degenesisnext/templates/apps/roll-dice-dialog.html",
       dialogData
     );
     return new Promise((resolve, reject) => {
@@ -203,7 +203,7 @@ export class DegenesisDice {
 
   static async showPhenomenonRollDialog({ dialogData, rollData, cardData }) {
     let html = await renderTemplate(
-      "systems/degenesis/templates/apps/roll-phenomenon-dialog.html",
+      "systems/degenesisnext/templates/apps/roll-phenomenon-dialog.html",
       dialogData
     );
     return new Promise((resolve, reject) => {

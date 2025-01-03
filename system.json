@@ -1,6 +1,6 @@
 {
-  "id": "dgnsrebirth",
-  "title": "DEGENESIS: Rebirth Edition",
+  "id": "degenesisnext",
+  "title": "DEGENESIS: Rebirth Edition (NEXT)",
   "description": "DEGENESIS is a critically acclaimed and Free to Play Tabletop RPG, with an international community and cult following. It merges visionary design, intuitive gameplay, and dense worldbuilding, thrusting new Players into an inhospitable future at the close of the 26th century.",
   "version": "0.0.1",
   "compatibility": {
@@ -48,7 +48,7 @@
       "label": "Legacies",
       "type": "Item",
       "name": "legacies",
-      "banner": "/systems/degenesis/ui/packs/legacies-pack.webp",
+      "banner": "/systems/degenesisnext/ui/packs/legacies-pack.webp",
       "path": "packs/legacies",
       "system": "degenesis",
       "flags": {},
@@ -60,7 +60,7 @@
     {
       "label": "Weapons",
       "type": "Item",
-      "banner": "/systems/degenesis/ui/packs/weapons-pack.webp",
+      "banner": "/systems/degenesisnext/ui/packs/weapons-pack.webp",
       "name": "weapons",
       "path": "packs/weapons",
       "system": "degenesis",
@@ -74,7 +74,7 @@
       "label": "Armor & Shields",
       "type": "Item",
       "name": "armor-and-shields",
-      "banner": "/systems/degenesis/ui/packs/armor-shields-pack.webp",
+      "banner": "/systems/degenesisnext/ui/packs/armor-shields-pack.webp",
       "path": "packs/armor-and-shields",
       "system": "degenesis",
       "flags": {},
@@ -87,7 +87,7 @@
       "label": "Ammunitions",
       "type": "Item",
       "name": "ammunitions",
-      "banner": "/systems/degenesis/ui/packs/ammo-pack.webp",
+      "banner": "/systems/degenesisnext/ui/packs/ammo-pack.webp",
       "path": "packs/ammunitions",
       "system": "degenesis",
       "flags": {},
@@ -100,7 +100,7 @@
       "label": "Equipment",
       "type": "Item",
       "name": "equipment",
-      "banner": "/systems/degenesis/ui/packs/equipment-pack.webp",
+      "banner": "/systems/degenesisnext/ui/packs/equipment-pack.webp",
       "path": "packs/equipment",
       "system": "degenesis",
       "flags": {},
@@ -113,7 +113,7 @@
       "label": "Potentials",
       "type": "Item",
       "name": "potentials",
-      "banner": "/systems/degenesis/ui/packs/potentials-pack.webp",
+      "banner": "/systems/degenesisnext/ui/packs/potentials-pack.webp",
       "path": "packs/potentials",
       "system": "degenesis",
       "flags": {},
@@ -126,7 +126,7 @@
       "label": "Phenomena",
       "type": "Item",
       "name": "phenomena",
-      "banner": "/systems/degenesis/ui/packs/phenomena-pack.webp",
+      "banner": "/systems/degenesisnext/ui/packs/phenomena-pack.webp",
       "path": "packs/phenomena",
       "system": "degenesis",
       "flags": {},
@@ -139,7 +139,7 @@
       "label": "Maps",
       "type": "Scene",
       "name": "maps",
-      "banner": "/systems/degenesis/ui/packs/maps-pack.webp",
+      "banner": "/systems/degenesisnext/ui/packs/maps-pack.webp",
       "path": "packs/maps",
       "system": "degenesis",
       "flags": {},
@@ -194,14 +194,14 @@
     },
     {
       "type": "setup",
-      "url": "systems/degenesis/ui/system-banner.webp",
-      "thumbnail": "systems/degenesis/ui/system-banner-thumbnail.webp"
+      "url": "systems/degenesisnext/ui/system-banner.webp",
+      "thumbnail": "systems/degenesisnext/ui/system-banner-thumbnail.webp"
     }
   ],
 
-  "background": "systems/degenesis/ui/artifacts.jpg",
-  "manifest": "https://github.com/greedyj4ck/degenesisrebirth-foundryvtt/releases/latest/download/system.json",
-  "download": "https://github.com/greedyj4ck/degenesisrebirth-foundryvtt/releases/latest/download/system.zip",
+  "background": "systems/degenesisnext/ui/artifacts.jpg",
+  "manifest": "",
+  "download": "",
   "license": "LICENSE.txt",
   "flags": {
     "hotReload": {

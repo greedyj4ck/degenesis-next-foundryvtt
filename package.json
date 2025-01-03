@@ -1,6 +1,6 @@
 {
-  "name": "degenesis-foundryvtt",
-  "version": "0.8.0",
+  "name": "degenesis-next-foundryvtt",
+  "version": "0.0.1",
   "description": "Degenesis system implementation for Foundry",
   "directories": {
     "doc": "docs",

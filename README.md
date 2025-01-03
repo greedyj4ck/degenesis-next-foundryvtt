@@ -1,13 +1,54 @@
-# DEGENESIS: Rebirth for Foundry VTT
+![image](./docs/img/system-banner.webp)
 
-![CurrentIssues](https://img.shields.io/github/issues/greedyj4ck/DEGENESIS-FoundryVTT?style=for-the-badge)
-![GitHub release (latest by date)](https://img.shields.io/github/downloads/greedyj4ck/DEGENESIS-FoundryVTT/latest/total?style=for-the-badge)
+![CurrentIssues](https://img.shields.io/github/issues/greedyj4ck/degenesis-next-foundryvtt?style=for-the-badge)
+![GitHub release (latest by date)](https://img.shields.io/github/downloads/greedyj4ck/degenesis-next-foundryvtt/latest/total?style=for-the-badge)
 
 [![CourtOfThePiast](https://discordapp.com/api/guilds/862308554765500447/widget.png?style=banner2)](https://discord.com/invite/MC6gEVvnzm)
 
 An unoffical, community-supported system for playing [Degenesis](https://degenesis.com/) on [Foundry VTT](http://foundryvtt.com/).
 
 Degenesis® is ™ SIXMOREVODKA Studio GmbH. All rights reserved. This module contains information and graphics from Katharsys that have been used with permission from the publisher. All used content from the handbook belong to the respective authors.
+
+## About NEXT
+
+Although the system is based on the original foundry implementation, a lot of things related to the data structures of actors or objects have changed, so the systems are not compatible. Writing migration scripts with such large changes, requires a lot of work (including testing all critical cases) and spare time.
+
+The original repository will remain active, but its installation will be limited to Foundry up to version V12 only, and it will not get updated for V13.
+
+## Work in progress disclaimer
+
+The system module represented is not in its final version. Functionality and content will be subject to change.
+
+## System.json manifest
+
+    https://github.com/greedyj4ck/DEGENESIS-FoundryVTT/releases/latest/download/system.json
+
+## Developer Installation
+
+- Git clone the repo. Use `--recurse-submodules` flag to get the packs.
+- Rename the directory to "degenesis" under your Foundry _Data/systems_ directory.
+
+### Live SASS Compiler settings
+
+The new version of the system uses SCSS to compile the resulting CSS file. We recommend using VSCode with the Live SASS Compiler extension installed and the following settings.
+
+    Insert settings inside .vscode/settings.json
+
+```json
+{
+  "liveSassCompile.settings.formats": [
+    {
+      "format": "expanded",
+      "extensionName": ".css",
+      "savePath": "/styles"
+    }
+  ],
+  "liveSassCompile.settings.excludeList": ["**/node_modules/**", ".vscode/**"],
+  "liveSassCompile.settings.generateMap": false,
+  //autoprefix, will auto add perfix like -webkit- -moz-..
+  "liveSassCompile.settings.autoprefix": ["> 1%", "last 2 versions"]
+}
+```
 
 ## Credits
 
@@ -50,38 +91,3 @@ Skull from THE JACKAL'S PROPHECY https://www.youtube.com/watch?v=6y1kQFN5zB0
 - **Bassham map** from https://degenesis.com/downloads/maps
 - **2^16** from https://degenesis.com/world/stories/chroniclers/2-16
 - **Unreleased dice picture** from official Degenesis Twitter account
-
-## Work in progress disclaimer
-
-The system module represented is not in its final version. Functionality and content will be subject to change.
-
-## System.json manifest
-
-    https://github.com/greedyj4ck/DEGENESIS-FoundryVTT/releases/latest/download/system.json
-
-## Developer Installation
-
-- Git clone the repo. Use `--recurse-submodules` flag to get the packs.
-- Rename the directory to "degenesis" under your Foundry _Data/systems_ directory.
-
-### Live SASS Compiler settings
-
-The new version of the system uses SCSS to compile the resulting CSS file. We recommend using VSCode with the Live SASS Compiler extension installed and the following settings.
-
-    Insert settings inside .vscode/settings.json
-
-```json
-{
-  "liveSassCompile.settings.formats": [
-    {
-      "format": "expanded",
-      "extensionName": ".css",
-      "savePath": "/styles"
-    }
-  ],
-  "liveSassCompile.settings.excludeList": ["**/node_modules/**", ".vscode/**"],
-  "liveSassCompile.settings.generateMap": false,
-  //autoprefix, will auto add perfix like -webkit- -moz-..
-  "liveSassCompile.settings.autoprefix": ["> 1%", "last 2 versions"]
-}
-```

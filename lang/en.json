@@ -64,7 +64,9 @@
   "UI.SheetLockedNotification": "Sheet is currently locked",
 
   "TYPES.Item.Type": "Character",
-
+  "TYPES.Item.cult": "Cult",
+  "TYPES.Item.culture": "Culture",
+  "TYPES.Item.concept": "Concept",
   "TYPES.Item.weapon": "Weapon",
   "TYPES.Item.armor": "Armor",
   "TYPES.Item.equipment": "Equipment",
