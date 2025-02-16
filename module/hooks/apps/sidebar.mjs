@@ -22,7 +22,8 @@ export default function () {
     }); */
   });
 
-  Hooks.on("renderSettings", (app, [html]) => {
+  /*    Hooks.on("renderSettings", (app, [html]) => {
+  
     const details = html.querySelector("#game-details");
     const pip = details.querySelector(".system-info .update");
     details.querySelector(".system").remove();
@@ -34,20 +35,17 @@ export default function () {
       .then((r) => r.text())
       .then((text) => (badge.innerHTML = text));
 
-    /*     badge.innerHTML = `
+       badge.innerHTML = `
     <img src="systems/degenesisnext/ui/degenesis-logo-dark.svg" data-tooltip="${game.system.title}" alt="${game.system.title}"> 
-    
-    
-
-
-
     <span class="system-info">${game.system.version}</span>
   
-  `; */
+  `; 
     if (pip)
       badge
         .querySelector(".system-info")
         .insertAdjacentElement("beforeend", pip);
     details.insertAdjacentElement("beforebegin", badge);
-  });
+
+  
+  });  */
 }

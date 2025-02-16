@@ -6,8 +6,6 @@
 88   8 88    88  ee 88    88  8 88        88 88     88 
 88   8 88    88   8 88    88  8 88    e   88 88 e   88 
 88eee8 88eee 88eee8 88eee 88  8 88eee 8eee88 88 8eee88
-FOUNDRY VTT SYSTEM STYLESHEET V.2.0 
-ADAPTED TO APPV2 FRAMEWORK
 
 LIGHT/DARK THEMES INCLUDED
 
@@ -737,6 +735,10 @@ body.game .window-app {
 .theme-dark #logo {
   height: 35px;
   content: url(../ui/degenesis-logo-dark.svg);
+}
+
+.middle-name {
+  font-size: 48px !important;
 }
 
 /* 

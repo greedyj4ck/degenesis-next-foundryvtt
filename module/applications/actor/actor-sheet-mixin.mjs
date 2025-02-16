@@ -18,7 +18,7 @@ export default function ActorSheetMixin(Base) {
     constructor(object, options = {}) {
       const key = `${object.type}${object.limited ? ":limited" : ""}`;
       const { width, height } =
-        game.user.getFlag("degenesis", `actorSheetPrefs.${key}`) ?? {};
+        game.user.getFlag("degenesisnext", `actorSheetPrefs.${key}`) ?? {};
       if (width && !("width" in options)) options.width = width;
       if (height && !("height" in options)) options.height = height;
 

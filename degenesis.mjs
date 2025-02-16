@@ -86,8 +86,8 @@ Hooks.once("init", async function () {
   };
 
   // Register system settings and keybindings
-  registerSystemSettings();
-  registerSystemKeybindings();
+  //registerSystemSettings();
+  //registerSystemKeybindings();
 
   // Handling compendiums
   _setCompendiumBanners();
