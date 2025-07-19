@@ -1,0 +1,47 @@
+prose-mirror {
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  border: 1px solid;
+
+  /* &:hover {
+    button.toggle {
+      opacity: 0;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  } */
+
+  &.active {
+    min-height: fit-content;
+    gap: 0;
+    .editor-content {
+      flex-grow: 1;
+      margin-top: 0px;
+    }
+  }
+
+  .editor-container,
+  .code-mirror {
+    min-height: 300px;
+  }
+
+  .editor-content {
+    padding: 5px 10px;
+    order: -1;
+  }
+
+  button.toggle {
+    position: absolute;
+    display: block;
+    right: 0px;
+    top: -35px;
+
+    &:disabled {
+      display: none;
+    }
+  }
+}

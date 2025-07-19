@@ -54,12 +54,6 @@ export default class GeneralFields {
     };
   } */
 
-  static get equipped() {
-    return {
-      equipped: new BooleanField({ default: false }),
-    };
-  }
-
   static get prerequisite() {
     return {
       prerequisite: new StringField({ label: "DGNS.Prerequisite" }),

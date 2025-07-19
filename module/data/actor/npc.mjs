@@ -19,9 +19,10 @@ export default class NPCData extends foundry.abstract.TypeDataModel {
   static _systemType = "npc";
 
   static defineSchema() {
+    console.log(`Defining schema for NPC...`);
     return {
       ...AttributesSkillsFields.attributes,
-      ...AttributesSkillsFields.skills,
+      //...AttributesSkillsFields.skills,
       ...GeneralFields.general,
       ...GeneralFields.state,
       ...GeneralFields.fighting,

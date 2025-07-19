@@ -52,27 +52,35 @@ The new version of the system uses SCSS to compile the resulting CSS file. We re
 
 ## Credits
 
-- Lot's of code was adapted from dnd5e main repository.
+**Degenesis-Next** is based on original work of following authors:
 
-- Code and UI authors:
-  - Moo Man (Moo Man#7518)
-  - Darkhan (Darkhan#1534)
-  - ClemEvilzz (societe simulator#2110)
-  - KristjanLaane
-  - Greedyj4ck (greedyjack)
-- Item packs icons:
-  - Renart de Maupertuis (Renart de Maupertuis#1302)
-  - Pablo Ruiz Valls (Pabruva#1968)
-  - Greedyj4ck (GЯΣΣDYJΛCK#2690)
-  - Calion (calion16)
-- Translations:
-  - Meldinov
-  - Herugrim (Herugrim#3880)
-  - Pablo Ruiz Valls (Pabruva#1968)
-  - Hozon - Nico (Hozon#7832)
-  - Calion (calion16)
-  - Dentatum (.dentatum)
-  - diskordanz (diskordanz)
+- MooMan
+- Darkhan
+- ClemEvilzz
+- KristjanLaane
+- Greedyj4ck
+
+**Code and UI authors:**
+
+- Greedyj4ck
+- Calion
+
+**Item packs icons:**
+
+- Renart de Maupertuis (Renart de Maupertuis#1302)
+- Pablo Ruiz Valls (Pabruva#1968)
+- Greedyj4ck (GЯΣΣDYJΛCK#2690)
+- Calion (calion16)
+
+**Translations:**
+
+- Meldinov
+- Herugrim (Herugrim#3880)
+- Pablo Ruiz Valls (Pabruva#1968)
+- Hozon - Nico (Hozon#7832)
+- Calion (calion16)
+- Dentatum (.dentatum)
+- diskordanz (diskordanz)
 
 > If you have worked on or contributed to the translation of the system and you are not on the list - please write a message.
 

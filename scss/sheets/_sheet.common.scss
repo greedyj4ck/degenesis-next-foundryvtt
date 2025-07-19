@@ -1,0 +1,28 @@
+@use "partials";
+@use "../colors";
+
+@layer dgns.sheets {
+  // global elements styling
+  // dropdown classes
+
+  .section-dropdown {
+    .section-header {
+      display: flex;
+      gap: 0.3rem;
+      justify-content: start;
+      align-items: center;
+      margin-bottom: 0.3rem;
+
+      font-size: var(--font-size-14);
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.1rem;
+    }
+
+    .section-body {
+      &.collapsed {
+        display: none;
+      }
+    }
+  }
+}

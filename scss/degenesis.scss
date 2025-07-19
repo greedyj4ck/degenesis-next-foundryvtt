@@ -1,83 +1,19 @@
 /* 
+    DEGENESIS@NEXT
+    -------------
+    Version  0.1
 
-8""""8 8"""" 8""""8 8"""" 8"""8 8"""" 8""""8 8  8""""8 
-8    8 8     8    " 8     8   8 8     8      8  8      
-8e   8 8eeee 8e     8eeee 8e  8 8eeee 8eeeee 8e 8eeeee 
-88   8 88    88  ee 88    88  8 88        88 88     88 
-88   8 88    88   8 88    88  8 88    e   88 88 e   88 
-88eee8 88eee 88eee8 88eee 88  8 88eee 8eee88 88 8eee88
+    */
+@forward "colors";
 
-LIGHT/DARK THEMES INCLUDED
+@use "fonts"; // fonts classes
+@use "ui/foundry"; // foundry ui styling
+@use "ui/components"; // foundry ui specific compnents styling
+@use "ui/prosemirror"; // foundry ui prosemirror styling
 
-*/
+@use "abstracts/scrollbar"; // global scrollbar styling
 
-// NORMALIZE TEST
-@import "normalize/normalize";
-@import "normalize/foundryReset";
+@use "sheets/sheet.common" as sheetCommon; // common set of css classes for functionality like dropdowns
+@use "sheets/sheet.character" as sheetCharacter; // specific actorsheet classes
 
-// IMPORTS - VARIABLES
-@import "base/fonts";
-@import "base/typography";
-@import "base/foundryVariables"; // Re-Setting basic Foundry variables
-@import "base/colors";
-@import "base/scrollbar";
-
-// FOUNDRY UI OVERRIDES
-@import "foundry/ui";
-
-// SHEET DESIGN
-
-@import "partials/sheetHeader";
-
-/* 
-
-
-@import "base/colors";
-@import "base/scss-variables"; /// to be removed
-@import "base/css-variables"; /// to be removed
-
-// BASE ELEMENTS
-
-@import "base/typography";
-// @import "base/ui-elements"; /// to be removed - moved to controls...
-// @import "base/experimental"; /// to be removed
-
-
-@import "foundry/sidebar";
-
-// 3RD PARTY
-@import "3rdparty/carousel";
-@import "3rdparty/ownership";
-@import "3rdparty/diceTray";
-@import "3rdparty/gmScreen";
-
-// MAIN COMPONENTS
-@import "components/table";
-@import "components/controls"; /// Main styling for buttons, selects, checboxes, inputs, etc...
-@import "components/scrollbar";
-@import "components/squares";
-@import "components/chatMessage"; // MOVED _CHAT.SCSS  into _CHATMESSAGE.SCSS
-@import "components/journals";
-@import "components/rollTable";
-@import "components/editor"; // PROSEMIRROR EDITOR
-
-// APPS
-@import "apps/sheet-configure";
-@import "apps/actor-configure";
-@import "apps/items-qualities";
-@import "apps/rolldialog";
-@import "apps/rollPhenomenonDialog";
-@import "apps/proseMirror";
-
-// SHEET DESIGNS
-
-// ACTOR SHEETS
-@import "sheets/sheets"; // COMMON ELEMENTS / STYLES FOR ALL SHEETS
-@import "sheets/character";
-@import "sheets/fromHell";
-@import "sheets/npc";
-@import "sheets/aberrant";
-
-// ITEM SHEETS
-@import "sheets/item";
- */
+@layer foundry, dgns;

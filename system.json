@@ -205,7 +205,8 @@
   "license": "LICENSE.txt",
   "flags": {
     "hotReload": {
-      "extensions": ["css", "html", "hbs", "json"]
+      "extensions": ["css", "html", "hbs", "json"],
+      "paths": ["styles", "lang", "templates"]
     }
   },
 

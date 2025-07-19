@@ -19,9 +19,10 @@ export default class CharacterData extends foundry.abstract.TypeDataModel {
   static _systemType = "character";
 
   static defineSchema() {
+    console.log(`Defining schema for Character...`);
     return {
       ...AttributesSkillsFields.attributes,
-      ...AttributesSkillsFields.skills,
+      //...AttributesSkillsFields.skills,
       ...GeneralFields.general,
       ...GeneralFields.state,
       ...GeneralFields.fighting,

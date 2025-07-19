@@ -1,0 +1,217 @@
+/* Foundry default variables / styles override */
+@layer foundry {
+  body {
+    --font-sans: "Montserrat";
+    --font-serif: "Crimson Pro";
+    --font-h1: "Montserrat";
+
+    --font-h1-size: var(--font-size-20);
+    --font-h2-size: var(--font-size-20);
+    --font-h3-size: var(--font-size-18);
+    --font-h4-size: var(--font-size-16);
+  }
+
+  .theme-dark * {
+    --dgns-ui-primary: var(--c-gold-4);
+    --dgns-ui-secondary: var(--c-gold);
+    --dgns-ui-accent: var(--c-resin-4);
+    --dgns-ui-contrast: var(--c-pred);
+
+    --dgns-ui-background: rgba(15, 15, 15, 0.98);
+
+    --dgns-ui-control-content: var(--c-gold-4);
+    --dgns-ui-hover-control-content: var(--c-gold-3);
+    --dgns-ui-active-content: var(--c-resin-4);
+
+    --dgns-ui-control-border: var(--c-gold-4);
+    --dgns-ui-hover-control-border: var(--c-gold-3);
+    --dgns-ui-active-control-border: var(--c-resin-4);
+
+    --dgns-ui-control-bg: var(--c-gold-9);
+    --dgns-ui-hover-control-bg: var(--c-gold-8);
+    --dgns-ui-active-control-bg: var(--c-resin-8);
+
+    --dgns-ui-primary-text: var(--c-gold-4);
+    --dgns-ui-secondary-text: var(--c-gold-4);
+
+    --color-text-primary: var(--dgns-ui-primary);
+    --menu-background: var(--dgns-ui-background);
+    --input-background-color: var(--dgns-ui-background);
+  }
+
+  .theme-light {
+    --dgns-ui-primary: var(--c-grey-8);
+    --dgns-ui-secondary: var(--c-resin-5);
+
+    --dgns-ui-background: rgba(245, 245, 245, 0.98);
+    --dgns-ui-accent: var(--c-pred-5);
+
+    --dgns-ui-primary-text: var(--c-grey-8);
+    --dgns-ui-secondary-text: var(--c-pred-6);
+
+    --dgns-ui-control-content: var(--c-grey-8);
+    --dgns-ui-hover-control-content: var(--c-grey-5);
+    --dgns-ui-active-control-content: var(--c-pred);
+
+    --dgns-ui-control-border: var(--c-grey-8);
+    --dgns-ui-hover-control-border: var(--c-grey-6);
+    --dgns-ui-active-control-border: var(--c-pred);
+
+    --dgns-ui-control-bg: var(--c-white-2);
+    --dgns-ui-hover-control-bg: var(--c-white-0);
+    --dgns-ui-active-control-bg: var(--c-white-0);
+
+    --dgns-ui-primary-text: var(--c-grey-8);
+    --dgns-ui-secondary-text: var(--c-gold-4);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
+    font-family: "Montserrat";
+    color: var(--dgns-ui-primary);
+  }
+
+  .application {
+    background: none;
+    background-color: var(--dgns-ui-background);
+
+    border: 1px solid var(--dgns-ui-primary);
+
+    .window-content {
+      padding: 0.5rem;
+    }
+
+    .window-header {
+      background: transparent;
+      border: none;
+      text-transform: uppercase;
+      font-weight: bold;
+      color: var(--dgns-ui-primary);
+
+      .window-title {
+        color: var(--dgns-ui-primary);
+      }
+    }
+  }
+
+  .ui-control {
+    --control-bg-color: var(--dgns-ui-control-bg);
+    --control-border-color: var(--dgns-ui-control-border);
+    --control-icon-color: var(--dgns-ui-control-content);
+
+    &[aria-pressed="true"] {
+      --control-bg-color: var(--dgns-ui-active-control-bg);
+      --control-icon-color: var(--dgns-ui-active-control-content);
+      --control-border-color: var(--dgns-ui-active-control-border);
+    }
+
+    /*   
+    --control-active-border-color: var(--dgns-ui-active-control-border);
+    --color-active-icon: var(--dgns-ui-control-content);
+    color: var(--dgns-ui-control-content); */
+  }
+
+  .faded-ui {
+    --opacity-inactive: 0.7;
+  }
+
+  #tooltip {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      color: var(--dgns-ui-accent);
+    }
+
+    p {
+      color: var(--dgns-ui-control-content);
+      span {
+        &.faint {
+          color: var(--dgns-ui-secondary);
+        }
+        &.reference {
+          background: var(--dgns-ui-active-control-bg);
+          border-color: var(--dgns-ui-active-control-border);
+          color: var(--dgns-ui-active-content);
+        }
+      }
+    }
+
+    background: var(--dgns-ui-control-bg);
+    border: 1px solid var(--dgns-ui-control-border);
+    color: var(--dgns-ui-control-content);
+
+    font-family: var(--font-sans);
+    font-size: var(--font-size-12);
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  #sidebar-content {
+    color: var(--dgns-ui-primary);
+
+    .sidebar-tab:not(.sidebar-popout) {
+      border-radius: 0;
+
+      &:not(.chat-sidebar) {
+        background: var(--dgns-ui-background);
+        border-left: 1px solid var(--dgns-ui-control-border);
+      }
+    }
+
+    .settings-sidebar .info .title {
+      font-size: var(--font-size-20);
+      color: var(--dgns-ui-primary-text);
+      text-transform: uppercase;
+    }
+
+    button {
+      white-space: nowrap;
+      border-radius: 0;
+      font-size: var(--font-size-12);
+    }
+  }
+
+  button {
+    --button-background-color: var(--dgns-ui-control-bg);
+    --button-border-color: var(--dgns-ui-control-border);
+    --button-text-color: var(--dgns-ui-control-content);
+
+    --button-hover-background-color: var(--dgns-ui-hover-control-bg);
+    --button-hover-border-color: var(--dgns-ui-hover-control-border);
+    --button-hover-text-color: var(--dgns-ui-hover-control-content);
+
+    font-weight: 800;
+    font-size: var(--font-size-14);
+    text-transform: uppercase;
+
+    &:focus {
+      box-shadow: none;
+      outline-color: var(--dgns-ui-active-control-border);
+    }
+  }
+
+  #pause {
+    z-index: 20 !important; // fix z-index overlaying sidebars
+    figcaption {
+      font-weight: 500;
+    }
+
+    svg {
+      width: 100px;
+      height: 100px;
+      fill: var(--dgns-ui-primary);
+    }
+  }
+
+  #menu {
+    background-color: var(--dgns-ui-background);
+  }
+}

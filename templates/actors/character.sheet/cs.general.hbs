@@ -1,0 +1,78 @@
+<section class="tab general {{tab.cssClass}}" data-group="primary" data-tab="general">
+
+  {{> "dgns.group.header" header="DGNS.Archetype" }}
+
+  <div class="ccc-container">
+    <div class="culture">
+      {{!-- <label class="header">{{localize "DGNS.Culture"}}</label> --}}
+      <div class="drop"></div>
+      <label class="value">{{localize "DGNS.Culture"}}</label>
+    </div>
+    <div class="concept">
+      {{!-- <label class="header">{{localize "DGNS.Concept"}}</label> --}}
+      <div class="drop"></div>
+      <label class="value">{{localize "DGNS.Concept"}}</label>
+    </div>
+    <div class="cult">
+      {{!-- <label class="header">{{localize "DGNS.Cult"}}</label> --}}
+      <div class="drop"></div>
+      <label class="value">{{localize "DGNS.Cult"}}</label>
+
+    </div>
+  </div>
+
+
+
+<!-- LEGACIES / POTENTIALS -->
+
+  <div class="lp-container">
+
+    <div class="legacies-container">
+      <div class="legacies-toolbar">
+      <label>{{localize "DGNS.Legacies"}}</label>
+      <button>+</button>  
+      </div>
+
+      <div class="legacies"></div>
+
+    </div>
+
+    <div class="potentials-container">
+      <div class="potentials-toolbar">
+      <label>{{localize "DGNS.Potentials"}}</label>
+      <button>+</button>  
+      </div>
+
+      <div class="potentials"></div>
+    </div>
+  
+  </div>
+
+
+<!-- BACKGROUNDS -->
+
+  
+
+  <div class="backgrounds-container">
+    <div class="header">
+    {{> "dgns.group.header" header="DGNS.Backgrounds" }}
+    </div>
+
+    <div class="backgrounds">
+      
+    {{#each system.backgrounds}}
+    <div class="field-under">
+      <input class="field-input" type="number" name="system.backgrounds.{{@key}}" value="{{@this}}" />
+      <label>{{localize @key}}</label>
+    </div>
+    {{/each}}
+    </div>
+
+  </div>
+
+
+
+
+
+
+</section>

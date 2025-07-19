@@ -15,7 +15,7 @@ const {
  */
 
 export default class AttributeField extends SchemaField {
-  constructor(label, schemaOptions = {}) {
+  constructor(label, schemaOptions = {}, skills) {
     const fields = {
       value: new NumberField({
         nullable: false,
@@ -31,8 +31,9 @@ export default class AttributeField extends SchemaField {
         min: 0,
       }),
       preffered: new BooleanField({ initial: false }),
+      skills: skills || new SchemaField({}),
     };
 
-    super(fields, schemaOptions);
+    super(fields, schemaOptions, skills);
   }
 }

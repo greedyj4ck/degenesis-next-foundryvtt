@@ -1,7 +1,13 @@
 {
-  "DEGENESIS.SystemName": "DEGENESIS: Rebirth",
+  "DEGENESIS.SystemName": "DEGENESIS: Rebirth (Next)",
 
   "KEYBINDINGS.DGNS.SkipRollDialog": "",
+
+  "SETTINGS.UI.FIELDS.colorScheme.light": "Light",
+  "SETTINGS.UI.FIELDS.colorScheme.dark": "Dark",
+  "SETTINGS.UI.FIELDS.colorScheme.artifacts": "Artifacts",
+  "SETTINGS.UI.FIELDS.colorScheme.darkBlood": "Dark Blood",
+  "SETTINGS.UI.FIELDS.colorScheme.lightBlood": "Light Blood",
 
   "TYPES.Actor.character": "Character",
   "TYPES.Actor.npc": "NPC",
@@ -602,5 +608,8 @@
   "DGNS.Activate": "Activate",
   "DGNS.Overload": "Overload",
   "DGNS.SpendSpore": "Spend spore",
-  "DGNS.SpentSpore": "Spent spore"
+  "DGNS.SpentSpore": "Spent spore",
+
+  "DGNS.Vision": "Vision",
+  "DGNS.Discomfort": "Discomfort"
 }

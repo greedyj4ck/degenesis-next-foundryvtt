@@ -1,11 +1,11 @@
 const { api, sheets } = foundry.applications;
 
+import TabsDgns from "../tabs.mjs";
+
 export default function ActorSheetMixin(Base) {
   return class DegenesisActorSheet extends api.HandlebarsApplicationMixin(
     Base
   ) {
-    /** Constructor  */
-
     static TABS = [];
 
     static MODES = {
@@ -14,6 +14,9 @@ export default function ActorSheetMixin(Base) {
     };
 
     _mode = this.constructor.MODES.PLAY;
+    _dropdownState = {};
+
+    /** Constructor  */
 
     constructor(object, options = {}) {
       const key = `${object.type}${object.limited ? ":limited" : ""}`;
@@ -25,17 +28,51 @@ export default function ActorSheetMixin(Base) {
       super(object, options);
     }
 
-    /** Rendering  */
+    /** @inheritdoc */
+    async _render(force, { mode, ...options } = {}) {
+      return super._render(force, ({ mode, ...options } = {}));
+    }
 
-    async _renderOuter() {
-      const html = await super._renderOuter();
+    /** @inheritdoc */
+    async _renderHTML(context, options) {
+      return super._renderHTML(context, options);
+    }
+
+    async _renderFrame(options) {
+      const html = await super._renderFrame(options);
+
+      const header = html.children[0];
+
+      if (this.isEditable) {
+        const toggle = document.createElement("dgns-slidetoggle");
+        toggle.checked = this._mode === this.constructor.MODES.EDIT;
+        toggle.classList.add("mode-slider");
+        toggle.dataset.tooltip = "DGNS.SheetModeEdit";
+        toggle.setAttribute(
+          "aria-label",
+          game.i18n.localize("DGNS.SheetModeEdit")
+        );
+        toggle.addEventListener("change", this._onChangeSheetMode.bind(this));
+        toggle.addEventListener("dblclick", (event) => event.stopPropagation());
+        header.insertAdjacentElement("afterbegin", toggle);
+      }
+
       return html;
     }
 
     /** Data preparation */
+    /** DEPRECATED  */
+    async getData(options) {}
 
-    async getData(options) {
-      const context = await super.getData(options);
+    async _prepareContext(options) {
+      console.log(`Actorsheet-mixin prepare context`);
+
+      const context = await super._prepareContext(options);
+
+      if (!this._dropdownState) {
+        this._dropdownState = {};
+      }
+
       context.editable =
         this.isEditable && this._mode === this.constructor.MODES.EDIT;
       context.cssClass = context.editable
@@ -49,7 +86,35 @@ export default function ActorSheetMixin(Base) {
     /** Event listeners and handlers */
 
     activateListeners(html) {
-      super.activateListeners(html);
+      console.log(`Activate listeners.`);
+
+      // section dropdown containers
+
+      console.log(this._dropdownState);
+
+      html.querySelectorAll(".section-dropdown").forEach((sectionEl) => {
+        const sectionId = sectionEl.dataset.section;
+        const body = sectionEl.querySelector(".section-body");
+        const toggleBtn = sectionEl.querySelector(".dropdown-toggle");
+
+        // Domyślny stan z HTML jeśli nie był zapisany wcześniej
+        if (!(sectionId in this._dropdownState)) {
+          this._dropdownState[sectionId] =
+            sectionEl.dataset.collapsed === "true" ? true : false;
+        }
+
+        // Ustaw klasę w zależności od stanu
+        if (this._dropdownState[sectionId]) {
+          body.classList.add("collapsed");
+        }
+
+        // Obsługa przycisku
+        toggleBtn?.addEventListener("click", (event) => {
+          const isCollapsed = body.classList.contains("collapsed");
+          body.classList.toggle("collapsed");
+          this._dropdownState[sectionId] = !isCollapsed;
+        });
+      });
     }
 
     async _onChangeSheetMode(event) {
@@ -64,12 +129,18 @@ export default function ActorSheetMixin(Base) {
       toggle.setAttribute("aria-label", label);
       this._mode = toggle.checked ? MODES.EDIT : MODES.PLAY;
       await this.submit();
+
+      console.log(`Current mode`, this._mode);
+
       this.render();
     }
 
     _onChangeTab(event, tabs, active) {
       super._onChangeTab(event, tabs, active);
       // Need to figure this out.
+
+      console.log(`Tab Change fired`);
+
       this.form.className = this.form.className.replace(/tab-\w+/g, "");
       this.form.classList.add(`tab-${active}`);
     }
@@ -80,14 +151,34 @@ export default function ActorSheetMixin(Base) {
 
     /** Events handling */
 
+    _onRender(context, options) {
+      super._onRender(context, options);
+      this.activateListeners(this.element);
+    }
+
     _onResize(event) {
       super._onResize(event);
+      console.log(`on resize fired`);
+
       const { width, height } = this.position;
       const key = `${this.actor.type}${this.actor.limited ? ":limited" : ""}`;
       game.user.setFlag("degenesis", `actorSheetPrefs.${key}`, {
         width,
         height,
       });
+    }
+
+    /** Dropdown sections handling  */
+
+    _onDropdownToggle(event) {
+      try {
+        let target = event.currentTarget;
+        let dropdown = target.dataset.dropdown;
+
+        console.log(target.attributes);
+      } catch (err) {
+        console.log(err);
+      }
     }
   };
 }

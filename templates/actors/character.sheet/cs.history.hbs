@@ -1,0 +1,53 @@
+<section
+  class="tab history {{tab.cssClass}} section-scrollable"
+  data-group="primary"
+  data-tab="history"
+>
+
+{{> "dgns.group.header" header="DGNS.History" }}
+
+<div class="container-scrollable">
+
+<div class="biography-containe section-dropdown" data-section="biography"  data-collapsed="false" >
+  <div class="section-header biography-header ">
+    <button type="button" class="dropdown-toggle" aria-label="Toggle dropdown">
+      DROPDOWN
+    </button>
+    <div>{{localize "DGNS.Biography"}}</div>
+    </div>
+
+<div class="section-body">
+  <prose-mirror class="biography-editor" name="system.biography" data-document-u-u-i-d="{{document.uuid}}" value="{{system.biography}}" collaborate="true" toggled="true">
+    {{{ enriched.biography }}}
+  </prose-mirror>
+</div>
+
+  
+
+</div>
+
+
+{{#if document.isOwner}}
+<div class="ownerNotes-container" >
+  <div class="biography-header"><h1>{{localize "DGNS.PlayerNotes"}}</h1></div>
+  <prose-mirror class="biography-editor" name="system.ownerNotes" data-document-u-u-i-d="{{document.uuid}}" value="{{system.ownerNotes}}" collaborate="true" toggled="true">
+    {{{ enriched.ownerNotes }}}
+  </prose-mirror>
+</div>
+
+
+{{/if}}
+
+{{#if (isGM)}}
+<div class="gmNotes-container">
+  <div class="biography-header"><h1>{{localize "DGNS.GMNotes"}}</h1></div>
+  <prose-mirror class="biography-editor" name="system.gmNotes" data-document-u-u-i-d="{{document.uuid}}" value="{{system.gmNotes}}" collaborate="true" toggled="true">
+    {{{ enriched.gmNotes }}}
+  </prose-mirror>
+</div>
+
+
+{{/if}}
+
+</div>
+</section>

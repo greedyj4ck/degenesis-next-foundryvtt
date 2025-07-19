@@ -1,12 +1,7 @@
 /*
-██████╗ ███████╗ ██████╗ ███████╗███╗   ██╗███████╗███████╗██╗███████╗
-██╔══██╗██╔════╝██╔════╝ ██╔════╝████╗  ██║██╔════╝██╔════╝██║██╔════╝
-██║  ██║█████╗  ██║  ███╗█████╗  ██╔██╗ ██║█████╗  ███████╗██║███████╗
-██║  ██║██╔══╝  ██║   ██║██╔══╝  ██║╚██╗██║██╔══╝  ╚════██║██║╚════██║
-██████╔╝███████╗╚██████╔╝███████╗██║ ╚████║███████╗███████║██║███████║
-╚═════╝ ╚══════╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝╚══════╝╚══════╝╚═╝╚══════╝
 FOUNDRY VTT SYSTEM IMPLEMENTATION
-AUTHORS: GREEDYJ4CK, MOOMAN, DARKHAN, CLEMEVILZZ, KRISTJANLAANE, PABRUVA
+AUTHOR: GREEDYJ4CK
+OG CREW: MOOMAN, DARKHAN, CLEMEVILZZ, KRISTJANLAANE, PABRUVA
 */
 
 // THIS FILE IS ENTRY POINT FOR ENTIRE SYSTEM
@@ -17,15 +12,23 @@ import {
   registerSystemSettings,
 } from "./module/settings.mjs";
 
-import { preloadHandlebarsTemplates } from "./module/templates.mjs";
+import {
+  preloadHandlebarsTemplates,
+  registerHandlebarsHelpers,
+} from "./module/templates.mjs";
 
 import { DEGENESIS } from "./module/config.mjs";
 
 import hooks from "./module/hooks/_module.mjs";
 
+// Module Imports
 import * as applications from "./module/applications/_module.mjs";
 import * as documents from "./module/documents/_module.mjs";
 import * as dataModels from "./module/data/_module.mjs";
+
+// V13 Compatibility layer
+const { Actors, Items } = foundry.documents.collections;
+const { ActorSheet, ItemSheet } = foundry.appv1.sheets;
 
 /* import { DEG_Utility } from "./module/utility.js";
 import { DegenesisItemSheet } from "./module/item/item-sheet.js";
@@ -64,6 +67,9 @@ CONFIG.Item.documentClass = documents.DegenesisItem;
 CONFIG.Actor.dataModels = dataModels.actor.config;
 CONFIG.Item.dataModels = dataModels.item.config;
 
+// Overriding foundry applications with custom ones
+CONFIG.ui.pause = applications.ui.DegenesisGamePause;
+
 Hooks.once("init", async function () {
   globalThis.degenesis = game.degenesis = Object.assign(
     game.system,
@@ -95,7 +101,7 @@ Hooks.once("init", async function () {
   // UI related
 
   preloadHandlebarsTemplates(); // load all the necessary partials
-
+  registerHandlebarsHelpers(); // load handlebar helpers
   _configureFonts(); // setup global fonts
 
   CONFIG.Combat.initiative = {
@@ -112,6 +118,13 @@ Hooks.once("init", async function () {
       types: ["character"],
       makeDefault: true,
       label: "TYPES.Actor.TypeCharacterSheet",
+      themes: {
+        dark: "SETTINGS.UI.FIELDS.colorScheme.dark",
+        light: "SETTINGS.UI.FIELDS.colorScheme.light",
+        artifacts: "SETTINGS.UI.FIELDS.colorScheme.artifacts",
+        darkBlood: "SETTINGS.UI.FIELDS.colorScheme.darkBlood",
+        lightBlood: "SETTINGS.UI.FIELDS.colorScheme.lightBlood",
+      },
     }
   );
 

@@ -14,7 +14,7 @@ export default class AberrantData extends foundry.abstract.TypeDataModel {
   static defineSchema() {
     return {
       ...AttributesSkillsFields.attributes,
-      ...AttributesSkillsFields.skills,
+      //...AttributesSkillsFields.skills,
       ...GeneralFields.general,
       ...GeneralFields.state,
       ...GeneralFields.fighting,

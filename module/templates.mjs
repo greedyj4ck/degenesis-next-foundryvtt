@@ -3,20 +3,25 @@
 export async function preloadHandlebarsTemplates() {
   const partials = [
     // Shared partials
-    "systems/degenesisnext/templates/partials/sheet-header.hbs",
-
-    // Actor Sheet Partials
-
-    // Item Sheet Partials
+    "systems/degenesisnext/templates/partials/group.header.hbs",
   ];
 
   const paths = {};
   for (const path of partials) {
-    paths[`degenesis.${path.split("/").pop().replace(".hbs", "")}`] = path;
+    paths[`dgns.${path.split("/").pop().replace(".hbs", "")}`] = path;
   }
 
-  console.log(`Registering following partial templates:`);
-  console.log(paths);
+  console.log(`preloading:`, paths);
 
-  return loadTemplates(paths);
+  return await foundry.applications.handlebars.loadTemplates(paths);
+}
+
+export async function registerHandlebarsHelpers() {
+  Handlebars.registerHelper("sheetEditMode", function (mode) {
+    return mode === 2 ? true : false;
+  });
+
+  Handlebars.registerHelper("isGM", function (options) {
+    return game.user.isGM;
+  });
 }

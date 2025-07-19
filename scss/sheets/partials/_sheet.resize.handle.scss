@@ -1,0 +1,10 @@
+.window-resize-handle {
+  background: none;
+  filter: none;
+
+  svg {
+    path {
+      fill: var(--dgns-ui-primary);
+    }
+  }
+}

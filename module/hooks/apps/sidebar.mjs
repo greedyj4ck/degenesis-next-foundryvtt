@@ -1,8 +1,16 @@
 export default function () {
   Hooks.on("renderSidebar", async (app, html) => {
-    // HOOK MISSING IN APPV3 / V13 //
-    /*     console.log("hooks.js renderSidebar", { app, html });
+    console.log("hooks.js renderSidebar", { app, html });
 
+    /** Disable forced theming for V12 compatibility layer */
+
+    const content = html.querySelector("#sidebar-content");
+
+    for (let section of content.childNodes) {
+      section.classList.remove("themed", "theme-light", "theme-dark");
+    }
+
+    /*
     const tabsArray = [...html.firstElementChild.children];
 
     console.log(tabsArray);
@@ -19,33 +27,51 @@ export default function () {
 
         tab.children[0].replaceWith(icon);
       }
-    }); */
+    });  */
   });
 
-  /*    Hooks.on("renderSettings", (app, [html]) => {
-  
-    const details = html.querySelector("#game-details");
-    const pip = details.querySelector(".system-info .update");
-    details.querySelector(".system").remove();
+  Hooks.on("renderSettings", async (app, html) => {
+    console.log("hooks.js renderSettings", { app, html });
 
-    const badge = document.createElement("div");
-    badge.classList.add("dgns", "system-badge");
+    const theme = html.ownerDocument.body.classList.contains("theme-dark")
+      ? "dark"
+      : "light";
+    const info = html.querySelector(".info");
 
-    let svg = fetch("systems/degenesisnext/ui/degenesis-logo.svg")
-      .then((r) => r.text())
-      .then((text) => (badge.innerHTML = text));
+    const badge = document.createElement("section");
+    badge.classList.add("dgns", "flexcol");
 
-       badge.innerHTML = `
-    <img src="systems/degenesisnext/ui/degenesis-logo-dark.svg" data-tooltip="${game.system.title}" alt="${game.system.title}"> 
-    <span class="system-info">${game.system.version}</span>
-  
-  `; 
-    if (pip)
-      badge
-        .querySelector(".system-info")
-        .insertAdjacentElement("beforeend", pip);
-    details.insertAdjacentElement("beforebegin", badge);
+    badge.innerHTML = `<img src="systems/degenesisnext/ui/degenesis-logo-${theme}.svg" data-tooltip="${game.system.title}" alt="${game.system.title}"> `;
 
-  
-  });  */
+    if (info) {
+      info.insertAdjacentElement("beforeBegin", badge);
+    }
+  });
+
+  Hooks.on("renderChatLog", async (app, html) => {
+    console.log("hooks.js renderChat", { app, html });
+  });
 }
+
+/* const details = html.querySelector("#game-details");
+const pip = details.querySelector(".system-info .update");
+details.querySelector(".system").remove();
+
+const badge = document.createElement("div");
+badge.classList.add("dgns", "system-badge");
+
+let svg = fetch("systems/degenesisnext/ui/degenesis-logo.svg")
+  .then((r) => r.text())
+  .then((text) => (badge.innerHTML = text));
+
+badge.innerHTML = `
+
+
+`;
+if (pip)
+  badge
+    .querySelector(".system-info")
+    .insertAdjacentElement("beforeend", pip);
+details.insertAdjacentElement("beforebegin", badge);
+}); 
+ */

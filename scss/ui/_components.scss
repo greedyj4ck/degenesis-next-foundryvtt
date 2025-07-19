@@ -1,0 +1,114 @@
+dgns-checkbox {
+  min-width: 24px;
+  min-height: 24px;
+  border: 2px solid var(--dgns-ui-primary);
+}
+
+dgns-slidetoggle {
+  --slide-toggle-height: 24px;
+  --slide-toggle-width: 48px;
+  --slide-toggle-padding: 5px;
+  --slide-toggle-track-color-checked: none;
+  --slide-toggle-track-color-unchecked: var(--dgns-ui-background);
+
+  --slide-toggle-thumb-color: var(--dgns-ui-primary);
+  --slide-toggle-thumb-width: 10px;
+  --slide-toggle-thumb-height: var(--slide-toggle-thumb-width);
+  --slide-toggle-transition-time: 250ms;
+
+  border: 2px solid var(--dgns-ui-primary);
+  display: inline-block;
+  width: var(--slide-toggle-width);
+  height: var(--slide-toggle-height);
+  cursor: pointer;
+
+  .slide-toggle-track {
+    width: 100%;
+    height: 100%;
+
+    box-shadow: 0 0 8px rgb(0 0 0 / 45%);
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    padding: var(--slide-toggle-padding);
+  }
+
+  .slide-toggle-thumb {
+    width: var(--slide-toggle-thumb-width);
+    height: var(--slide-toggle-thumb-height);
+
+    border: 2px solid var(--dgns-ui-primary);
+
+    text-align: center;
+    transition: margin-left var(--slide-toggle-transition-time) ease;
+  }
+
+  /* Checked state */
+  &[checked] .slide-toggle-track {
+    background: var(--slide-toggle-track-color-checked);
+  }
+  &[checked] .slide-toggle-thumb {
+    margin-left: calc(100% - var(--slide-toggle-thumb-width));
+    background: var(--slide-toggle-thumb-color);
+  }
+}
+
+dgns-vision {
+  button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border: 2px solid var(--dgns-ui-primary);
+
+    width: 48px;
+    height: 32px;
+
+    padding: 0;
+
+    svg {
+      width: 64px;
+      height: 64px;
+    }
+  }
+
+  .vision-dropdown {
+    display: none;
+    position: fixed;
+    z-index: 10;
+  }
+
+  .vision-dropdown-item {
+    background: aliceblue;
+  }
+}
+
+dgns-discomfort {
+  button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border: 2px solid var(--dgns-ui-primary);
+
+    width: 48px;
+    height: 32px;
+
+    padding: 0;
+
+    svg {
+      width: 64px;
+      height: 64px;
+    }
+  }
+
+  .discomfort-dropdown {
+    display: none;
+    position: fixed;
+    z-index: 10;
+  }
+
+  .discomfort-dropdown-item {
+    background: aliceblue;
+  }
+}

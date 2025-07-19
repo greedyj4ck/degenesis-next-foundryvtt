@@ -42,10 +42,10 @@ export default class GeneralFields {
         active: new BooleanField({ initial: false }),
         cover: new NumberField({ initial: 0, min: 0, integer: true }),
         vision: new SchemaField({
-          mallus: new NumberField({}),
+          mallus: new NumberField({ initial: 0 }),
         }),
         discomfort: new SchemaField({
-          mallus: new NumberField({}),
+          mallus: new NumberField({ initial: 0 }),
           negateUsed: new BooleanField({}),
         }),
         initiative: new SchemaField({
