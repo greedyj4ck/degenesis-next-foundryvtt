@@ -1,0 +1,61 @@
+<div class="lore-container section-scrollable">
+
+
+    {{> "dgns.group.header" header="DGNS.Lore" }}
+
+
+    <div class="container-scrollable">
+
+
+        <div class="description-container" style="font-size:16px">
+            {{#if (sheetEditMode mode) }}
+                <prose-mirror class="biography-editor" name="system.description"
+                    data-document-u-u-i-d="{{document.uuid}}" value="{{system.description}}" collaborate="true">
+
+                </prose-mirror>
+            {{else}}
+                {{{ enriched.description }}}
+            {{/if}}
+
+        </div>
+
+
+
+
+        {{!--   <div class="section-header biography-header ">
+                <button type="button" class="dropdown-toggle" aria-label="Toggle dropdown">
+                    DROPDOWN
+                </button>
+                <div>{{localize "DGNS.Biography"}}</div>
+            </div> --}}
+
+        <div class="section-body">
+
+        </div>
+
+
+
+    </div>
+
+
+
+
+
+
+    <div class="description-container">
+
+
+
+    </div>
+
+
+
+    <div class="text-sections-container">
+
+
+
+
+    </div>
+
+
+</div>

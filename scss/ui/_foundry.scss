@@ -6,9 +6,10 @@
     --font-h1: "Montserrat";
 
     --font-h1-size: var(--font-size-20);
-    --font-h2-size: var(--font-size-20);
-    --font-h3-size: var(--font-size-18);
-    --font-h4-size: var(--font-size-16);
+    --font-h2-size: var(--font-size-18);
+    --font-h3-size: var(--font-size-16);
+    --font-h4-size: var(--font-size-12);
+    --font-h5-size: var(--font-size-10);
   }
 
   .theme-dark * {
@@ -214,4 +215,25 @@
   #menu {
     background-color: var(--dgns-ui-background);
   }
+
+  #context-menu {
+    border: none;
+    background-color: var(--dgns-ui-background);
+
+    .context-item {
+      border: none;
+      color: var(--dgns-ui-primary);
+
+      &:hover {
+        color: var(--dgns-ui-hover-control-content);
+        background-color: var(--dgns-ui-hover-control-bg);
+      }
+    }
+  }
+}
+
+.app-v2--closing,
+.app-v2--opening {
+  animation: none !important;
+  transition: none !important;
 }

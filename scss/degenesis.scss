@@ -13,7 +13,13 @@
 
 @use "abstracts/scrollbar"; // global scrollbar styling
 
-@use "sheets/sheet.common" as sheetCommon; // common set of css classes for functionality like dropdowns
+// sheets
+
+@use "sheets/index";
+/* @use "sheets/sheet.common" as sheetCommon; // common set of css classes for functionality like dropdowns
 @use "sheets/sheet.character" as sheetCharacter; // specific actorsheet classes
+@use "sheets/sheet.culture" as sheetCulture; // specific style for item / culture sheet */
+// apps
+@use "apps/rollDialog" as appRollDialog;
 
 @layer foundry, dgns;

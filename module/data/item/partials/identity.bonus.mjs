@@ -9,6 +9,8 @@ const {
   IntegerSortField,
 } = foundry.data.fields;
 
+//
+
 export default class IdentityBonusFields {
   static get attributeBonus() {
     return {
@@ -41,6 +43,19 @@ export default class IdentityBonusFields {
             integer: true,
             positive: true,
           }),
+        })
+      ),
+    };
+  }
+
+  // Consider changing this later to links to items - this will complicates multilangual compendiums,
+  // but maybe worth the effort
+
+  static get commonCults() {
+    return {
+      commonCults: new ArrayField(
+        new StringField({
+          label: "DGNS.Cult",
         })
       ),
     };

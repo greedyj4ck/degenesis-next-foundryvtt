@@ -104,6 +104,15 @@
   font-family: "DG";
   src: url("../fonts/DG-Medium.otf");
 }
+/* Font utitlites */
+.uppercase {
+  text-transform: uppercase;
+}
+
+.capitalize {
+  text-transform: capitalize;
+}
+
 /* Avenir should be removed due to licensing issues */
 /* 
 @font-face {
@@ -146,9 +155,10 @@
     --font-serif: "Crimson Pro";
     --font-h1: "Montserrat";
     --font-h1-size: var(--font-size-20);
-    --font-h2-size: var(--font-size-20);
-    --font-h3-size: var(--font-size-18);
-    --font-h4-size: var(--font-size-16);
+    --font-h2-size: var(--font-size-18);
+    --font-h3-size: var(--font-size-16);
+    --font-h4-size: var(--font-size-12);
+    --font-h5-size: var(--font-size-10);
   }
   .theme-dark * {
     --dgns-ui-primary: var(--c-gold-4);
@@ -313,7 +323,27 @@
   #menu {
     background-color: var(--dgns-ui-background);
   }
+  #context-menu {
+    border: none;
+    background-color: var(--dgns-ui-background);
+  }
+  #context-menu .context-item {
+    border: none;
+    color: var(--dgns-ui-primary);
+  }
+  #context-menu .context-item:hover {
+    color: var(--dgns-ui-hover-control-content);
+    background-color: var(--dgns-ui-hover-control-bg);
+  }
 }
+.app-v2--closing,
+.app-v2--opening {
+  -webkit-animation: none !important;
+          animation: none !important;
+  -webkit-transition: none !important;
+  transition: none !important;
+}
+
 dgns-checkbox {
   min-width: 24px;
   min-height: 24px;
@@ -740,6 +770,79 @@ prose-mirror button.toggle:disabled {
 
     */
 @layer dgns.sheets {
+  .theme-dark,
+  .theme-dark * {
+    --dgns-ui-primary: var(--c-gold);
+    --dgns-ui-background: rgba(15, 15, 15, 0.97);
+  }
+  .theme-light, .theme-light * {
+    --dgns-ui-primary: var(--c-gold-6);
+    --dgns-ui-secondary: var(--c-gold-6);
+    --dgns-ui-background: rgba(245, 245, 245, 0.98);
+    --dgns-ui-control-content: var(--c-gold-6);
+    --dgns-ui-control-bg: rgba(240, 240, 240, 0.98);
+    --dgns-ui-hover-control-content: rgba(240, 240, 240, 0.98);
+    --dgns-ui-hover-control-bg: var(--c-pred);
+  }
+  .application.sheet .mode-slider {
+    margin-right: 5px;
+  }
+  .application.sheet.minimized .window-header .mode-slider {
+    display: none !important;
+  }
+  .application.sheet.minimized .window-header .window-title {
+    visibility: visible;
+  }
+  .section-scrollable {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    overflow-y: hidden;
+  }
+  .section-scrollable .container-scrollable {
+    padding-right: 3px;
+    overflow-y: auto;
+    scroll-padding: 10px;
+  }
+  /* styles for customizable sheets with changable background */
+  .sheet-customizable .window-header {
+    position: absolute;
+    width: 100%;
+  }
+  .sheet-customizable .window-content {
+    padding-top: 36px;
+  }
+  .sheet-customizable:not(.minimized, .minimizing, .maximizing) {
+    min-height: 800px;
+    min-width: 700px;
+  }
+  .sheet-customizable:not(.minimized, .minimizing, .maximizing) .window-title {
+    visibility: hidden;
+  }
+  .sheet-customizable .sheet-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 1;
+    z-index: -1;
+    pointer-events: none;
+  }
+  .sheet-customizable .sheet-background img {
+    -o-object-fit: cover;
+       object-fit: cover;
+    border: none;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    -webkit-mask-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0.3)), to(rgba(0, 0, 0, 0)));
+    -webkit-mask-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0));
+            mask-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0.3)), to(rgba(0, 0, 0, 0)));
+            mask-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0));
+    z-index: 0;
+  }
   .section-dropdown .section-header {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -760,6 +863,84 @@ prose-mirror button.toggle:disabled {
   .section-dropdown .section-body.collapsed {
     display: none;
   }
+  .group-container {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    -webkit-box-pack: start;
+        -ms-flex-pack: start;
+            justify-content: flex-start;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+  }
+  .group-list {
+    margin: 5px;
+    padding: 0;
+  }
+  .group-list li {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    margin: 0px 0px 2px 0px;
+    height: 20px;
+    gap: 5px;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    font-family: var(--font-serif);
+    font-size: var(--font-size-14);
+    letter-spacing: 0.1em;
+    text-align: center;
+    text-transform: uppercase;
+  }
+  .group-list input {
+    height: 20px;
+  }
+  .group-list button {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    min-width: 0;
+    min-height: 0;
+    background: none;
+    border: none;
+  }
+  .group-header {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+            flex-direction: row;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    gap: 10px;
+    min-height: 20px;
+  }
+  .group-header button {
+    min-height: 0;
+    min-width: 0;
+    height: 20px;
+  }
+  .group-header h1,
+  .group-header h2,
+  .group-header h3,
+  .group-header h4 {
+    margin: 0;
+  }
 }
 /* 
     DEGENESIS@NEXT
@@ -768,16 +949,6 @@ prose-mirror button.toggle:disabled {
 
     */
 @layer dgns.sheets.character {
-  .theme-dark .application.sheet.dgns-character,
-  .application.sheet.dgns-character.theme-dark {
-    --dgns-ui-primary: var(--c-gold);
-    --dgns-ui-background: rgba(20, 20, 20, 0.98);
-  }
-  .theme-light .application.sheet.dgns-character,
-  .application.sheet.dgns-character.theme-light {
-    --dgns-ui-primary: var(--c-pred);
-    --dgns-ui-background: rgba(240, 240, 240, 0.98);
-  }
   .application.sheet.dgns-character {
     background: var(--dgns-ui-background);
     border: 2px solid var(--dgns-ui-primary);
@@ -808,14 +979,6 @@ prose-mirror button.toggle:disabled {
     fill: none;
     stroke: var(--dgns-ui-primary);
     stroke-width: 1;
-  }
-  .application.sheet.dgns-character .section-scrollable {
-    overflow-y: hidden;
-  }
-  .application.sheet.dgns-character .section-scrollable .container-scrollable {
-    padding-right: 3px;
-    overflow-y: auto;
-    scroll-padding: 10px;
   }
   .application.sheet.dgns-character .character-header {
     display: -webkit-box;
@@ -928,7 +1091,8 @@ prose-mirror button.toggle:disabled {
         -ms-flex-align: center;
             align-items: center;
   }
-  .application.sheet.dgns-character .field-under label {
+  .application.sheet.dgns-character .field-under label,
+  .application.sheet.dgns-character .field-under a {
     text-transform: uppercase;
     font-family: var(--font-serif);
     font-size: var(--font-size-16);
@@ -956,7 +1120,8 @@ prose-mirror button.toggle:disabled {
         -ms-flex-align: center;
             align-items: center;
   }
-  .application.sheet.dgns-character .field-row label {
+  .application.sheet.dgns-character .field-row label,
+  .application.sheet.dgns-character .field-row a {
     -webkit-box-flex: 1;
         -ms-flex: 1;
             flex: 1;
@@ -1055,12 +1220,16 @@ prose-mirror button.toggle:disabled {
     -webkit-box-direction: normal;
         -ms-flex-direction: column;
             flex-direction: column;
-    -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
+    -ms-flex-pack: distribute;
+        justify-content: space-around;
     -webkit-box-align: center;
         -ms-flex-align: center;
             align-items: center;
+  }
+  .application.sheet.dgns-character .ccc-container img {
+    aspect-ratio: 1;
+    width: 120px;
+    height: 120px;
   }
   .application.sheet.dgns-character .ccc-container .drop {
     border-radius: 10px;
@@ -1263,18 +1432,21 @@ prose-mirror button.toggle:disabled {
         -ms-flex-align: center;
             align-items: center;
   }
-  .application.sheet.dgns-character .attributes-skills-container .attribute-group .skills .skill label {
+  .application.sheet.dgns-character .attributes-skills-container .attribute-group .skills .skill label,
+  .application.sheet.dgns-character .attributes-skills-container .attribute-group .skills .skill a {
     font-family: var(--font-serif);
     font-size: var(--font-size-16);
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }
-  .application.sheet.dgns-character .attributes-skills-container .attribute-group .skills .skill label.name {
+  .application.sheet.dgns-character .attributes-skills-container .attribute-group .skills .skill label.name,
+  .application.sheet.dgns-character .attributes-skills-container .attribute-group .skills .skill a.name {
     -webkit-box-flex: 1;
         -ms-flex: 1;
             flex: 1;
   }
-  .application.sheet.dgns-character .attributes-skills-container .attribute-group .skills .skill label.value {
+  .application.sheet.dgns-character .attributes-skills-container .attribute-group .skills .skill label.value,
+  .application.sheet.dgns-character .attributes-skills-container .attribute-group .skills .skill a.value {
     font-family: var(--font-body);
     font-weight: 600;
   }
@@ -1284,6 +1456,395 @@ prose-mirror button.toggle:disabled {
     padding: 0;
     line-height: normal;
     text-align: center;
+  }
+}
+/* 
+    DEGENESIS@NEXT
+    -------------
+    Version  0.1
+
+    */
+@layer dgns.sheets.culture {
+  .dgns-culture .sheet-header {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+  }
+  .dgns-culture .center-container-header {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    gap: 5px;
+    /*  flex-shrink: 1;
+    flex-basis: 10px; */
+  }
+  .dgns-culture .center-container-header input {
+    background: none;
+    border-radius: 0;
+    border: 0;
+    font-family: var(--font-sans);
+    font-size: var(--font-size-14);
+    color: var(--dgns-ui-primary);
+    font-weight: 800;
+    field-sizing: content;
+  }
+  .dgns-culture .center-container-header input.subtitle {
+    margin-top: -5px;
+  }
+  .dgns-culture .center-container-header input:focus {
+    outline-color: var(--dgns-ui-primary);
+  }
+  .dgns-culture .center-container-header .item-image {
+    aspect-ratio: 1;
+    max-width: 120px;
+  }
+  .dgns-culture .data-container {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+  }
+  .dgns-culture .data-container .effects-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr;
+  }
+  .dgns-culture .data-container .effects-container > div {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+  }
+  .dgns-culture .lore-container {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+  }
+  .dgns-culture .description-container {
+    margin: 0px 10px;
+  }
+  .dgns-culture .description-container table,
+  .dgns-culture .description-container tr,
+  .dgns-culture .description-container td {
+    background: none;
+    margin: 0;
+  }
+  .dgns-culture .description-container td:nth-child(1) {
+    padding-left: 0px;
+    padding-right: 5px;
+  }
+  .dgns-culture .description-container td:last-child {
+    padding-left: 5px;
+    padding-right: 0px;
+  }
+}
+/* 
+    DEGENESIS@NEXT
+    -------------
+    Version  0.1
+
+    */
+@layer dgns.sheets.concept {
+  .dgns-concept .sheet-header {
+    height: 250px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+  }
+  .dgns-concept .center-container-header {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    gap: 5px;
+    /*  flex-shrink: 1;
+    flex-basis: 10px; */
+  }
+  .dgns-concept .center-container-header input {
+    background: none;
+    border-radius: 0;
+    border: 0;
+    font-family: var(--font-sans);
+    font-size: var(--font-size-14);
+    color: var(--dgns-ui-primary);
+    font-weight: 800;
+    field-sizing: content;
+  }
+  .dgns-concept .center-container-header input.subtitle {
+    margin-top: -5px;
+  }
+  .dgns-concept .center-container-header input:focus {
+    outline-color: var(--dgns-ui-primary);
+  }
+  .dgns-concept .center-container-header .item-image {
+    aspect-ratio: 1;
+    max-width: 225px;
+  }
+  .dgns-concept .data-container {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+  }
+  .dgns-concept .data-container .effects-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+  }
+  .dgns-concept .data-container .effects-container > div {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+  }
+  .dgns-concept .lore-container {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+  }
+  .dgns-concept .description-container {
+    margin: 0px 10px;
+  }
+  .dgns-concept .description-container table,
+  .dgns-concept .description-container tr,
+  .dgns-concept .description-container td {
+    background: none;
+    margin: 0;
+  }
+  .dgns-concept .description-container td:nth-child(1) {
+    padding-left: 0px;
+    padding-right: 5px;
+  }
+  .dgns-concept .description-container td:last-child {
+    padding-left: 5px;
+    padding-right: 0px;
+  }
+}
+/* 
+    DEGENESIS@NEXT
+    -------------
+    Version  0.1
+
+    */
+@layer dgns.sheets.cult {
+  .dgns-cult .sheet-header {
+    height: 250px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+  }
+  .dgns-cult .center-container-header {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    gap: 5px;
+    /*  flex-shrink: 1;
+    flex-basis: 10px; */
+  }
+  .dgns-cult .center-container-header input {
+    background: none;
+    border-radius: 0;
+    border: 0;
+    font-family: var(--font-sans);
+    font-size: var(--font-size-14);
+    color: var(--dgns-ui-primary);
+    font-weight: 800;
+    field-sizing: content;
+  }
+  .dgns-cult .center-container-header input.subtitle {
+    margin-top: -5px;
+  }
+  .dgns-cult .center-container-header input:focus {
+    outline-color: var(--dgns-ui-primary);
+  }
+  .dgns-cult .center-container-header .item-image {
+    aspect-ratio: 1;
+    max-width: 225px;
+  }
+  .dgns-cult .data-container {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+  }
+  .dgns-cult .data-container .effects-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+  }
+  .dgns-cult .data-container .effects-container > div {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+  }
+  .dgns-cult .lore-container {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+  }
+  .dgns-cult .description-container {
+    margin: 0px 10px;
+  }
+  .dgns-cult .description-container table,
+  .dgns-cult .description-container tr,
+  .dgns-cult .description-container td {
+    background: none;
+    margin: 0;
+  }
+  .dgns-cult .description-container td:nth-child(1) {
+    padding-left: 0px;
+    padding-right: 5px;
+  }
+  .dgns-cult .description-container td:last-child {
+    padding-left: 5px;
+    padding-right: 0px;
+  }
+}
+/* @use "sheets/sheet.common" as sheetCommon; // common set of css classes for functionality like dropdowns
+@use "sheets/sheet.character" as sheetCharacter; // specific actorsheet classes
+@use "sheets/sheet.culture" as sheetCulture; // specific style for item / culture sheet */
+/* 
+    DEGENESIS@NEXT
+    -------------
+    Version  0.1
+
+    */
+@layer dgns.sheets {
+  .application.dgns-roll {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+  }
+  .application.dgns-roll input.field-input.difficulty {
+    height: 48px;
+    width: 64px;
+    text-align: center;
+    font-size: var(--font-size-32);
+    font-weight: 700;
+    border-bottom: 2px solid var(--c-gold);
+    border-radius: 0px;
+    outline: none;
+  }
+  .application.dgns-roll input.field-input.difficulty:hover {
+    outline: 0;
+    outline: none;
+  }
+  .application.dgns-roll input.field-input.difficulty:focus {
+    outline: none;
+  }
+  .application.dgns-roll label {
+    font-family: var(--font-serif);
+    font-size: var(--font-size-18);
+    text-transform: uppercase;
+  }
+  .application.dgns-roll .header {
+    font-family: var(--font-serif);
+    font-size: var(--font-size-32);
+    text-transform: uppercase;
+    text-align: center;
+  }
+  .application.dgns-roll .section-difficulty {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+            flex-direction: row;
+    text-align: center;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    min-height: 70px;
+    gap: 20px;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+  }
+  .application.dgns-roll .section-input {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    text-align: center;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
   }
 }
 @layer foundry, dgns;

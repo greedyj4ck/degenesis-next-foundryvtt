@@ -4,9 +4,6 @@ AUTHOR: GREEDYJ4CK
 OG CREW: MOOMAN, DARKHAN, CLEMEVILZZ, KRISTJANLAANE, PABRUVA
 */
 
-// THIS FILE IS ENTRY POINT FOR ENTIRE SYSTEM
-// IMPORT MODULES
-
 import {
   registerSystemKeybindings,
   registerSystemSettings,
@@ -25,6 +22,11 @@ import hooks from "./module/hooks/_module.mjs";
 import * as applications from "./module/applications/_module.mjs";
 import * as documents from "./module/documents/_module.mjs";
 import * as dataModels from "./module/data/_module.mjs";
+
+// documents
+
+// rolls
+import * as rolls from "./module/rolls/_module.mjs";
 
 // V13 Compatibility layer
 const { Actors, Items } = foundry.documents.collections;
@@ -58,6 +60,8 @@ globalThis.degenesis = {
 };
 
 //CONFIG.debug.hooks = true;
+
+CONFIG.Dice.rolls = [rolls.DGNSRoll, rolls.DGNSActionRoll];
 
 // Configuring document class
 CONFIG.Actor.documentClass = documents.DegenesisActor;
@@ -121,12 +125,50 @@ Hooks.once("init", async function () {
       themes: {
         dark: "SETTINGS.UI.FIELDS.colorScheme.dark",
         light: "SETTINGS.UI.FIELDS.colorScheme.light",
-        artifacts: "SETTINGS.UI.FIELDS.colorScheme.artifacts",
-        darkBlood: "SETTINGS.UI.FIELDS.colorScheme.darkBlood",
-        lightBlood: "SETTINGS.UI.FIELDS.colorScheme.lightBlood",
+        // artifacts: "SETTINGS.UI.FIELDS.colorScheme.artifacts",
+        // darkBlood: "SETTINGS.UI.FIELDS.colorScheme.darkBlood",
+        // lightBlood: "SETTINGS.UI.FIELDS.colorScheme.lightBlood",
       },
     }
   );
+
+  Items.registerSheet("degenesis", applications.item.DegenesisCultureSheet, {
+    types: ["culture"],
+    makeDefault: true,
+    label: "TYPES.Item.TypeCultureSheet",
+    themes: {
+      dark: "SETTINGS.UI.FIELDS.colorScheme.dark",
+      light: "SETTINGS.UI.FIELDS.colorScheme.light",
+      // darkBlood: "SETTINGS.UI.FIELDS.colorScheme.darkBlood",
+      //lightBlood: "SETTINGS.UI.FIELDS.colorScheme.lightBlood",
+    },
+  });
+
+  Items.registerSheet("degenesis", applications.item.DegenesisConceptSheet, {
+    types: ["concept"],
+    makeDefault: true,
+    label: "TYPES.Item.TypeConceptSheet",
+    themes: {
+      dark: "SETTINGS.UI.FIELDS.colorScheme.dark",
+      light: "SETTINGS.UI.FIELDS.colorScheme.light",
+      //  artifacts: "SETTINGS.UI.FIELDS.colorScheme.artifacts",
+      // darkBlood: "SETTINGS.UI.FIELDS.colorScheme.darkBlood",
+      // lightBlood: "SETTINGS.UI.FIELDS.colorScheme.lightBlood",
+    },
+  });
+
+  Items.registerSheet("degenesis", applications.item.DegenesisCultSheet, {
+    types: ["cult"],
+    makeDefault: true,
+    label: "TYPES.Item.TypeCultSheet",
+    themes: {
+      dark: "SETTINGS.UI.FIELDS.colorScheme.dark",
+      light: "SETTINGS.UI.FIELDS.colorScheme.light",
+      //artifacts: "SETTINGS.UI.FIELDS.colorScheme.artifacts",
+      // darkBlood: "SETTINGS.UI.FIELDS.colorScheme.darkBlood",
+      // lightBlood: "SETTINGS.UI.FIELDS.colorScheme.lightBlood",
+    },
+  });
 
   hooks();
 

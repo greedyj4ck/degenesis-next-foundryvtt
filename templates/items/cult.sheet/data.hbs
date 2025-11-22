@@ -1,0 +1,21 @@
+<div class="data-container">
+    {{> "dgns.group.header" header="DGNS.Effects" }}
+    <div class="effects-container">
+
+
+        <div class="group-container">
+            <div class="group-header">
+                {{#if (sheetEditMode mode) }}<button type="button" data-action="configureSkillBonus"><i
+                            class="fa-solid fa-cog"></i></button>{{/if}}
+                <h4 class="uppercase">{{localize "DGNS.SkillBonus"}}</h4>
+            </div>
+            <ul class="group-list">
+                <li>Toughness</li>
+                <li>Artifact Lore</li>
+                <li>Engineering</li>
+                <li>Crafting</li>
+                <li>Survival</li>
+            </ul>
+        </div>
+    </div>
+</div>

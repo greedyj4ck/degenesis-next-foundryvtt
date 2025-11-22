@@ -16,6 +16,7 @@ export default class ConceptData extends foundry.abstract.TypeDataModel {
   static defineSchema() {
     return {
       ...GeneralFields.description,
+      ...GeneralFields.backgroundImage,
       ...IdentityBonusFields.attributeBonus,
       ...IdentityBonusFields.skillBonus,
     };

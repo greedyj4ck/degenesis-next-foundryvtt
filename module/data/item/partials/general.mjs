@@ -7,12 +7,42 @@ const {
   ArrayField,
   IntegerSortField,
   DocumentIdField,
+  FilePathField,
 } = foundry.data.fields;
 
 export default class GeneralFields {
+  static get subtitle() {
+    return {
+      subtitle: new StringField({ label: "DGNS.Subtitle" }),
+    };
+  }
+
   static get description() {
     return {
-      description: new StringField({ label: "DGNS.Description" }),
+      description: new HTMLField({ label: "DGNS.Description" }),
+    };
+  }
+
+  static get textSections() {
+    return {
+      textSections: new ArrayField(
+        new fields.HTMLField({
+          required: false,
+          blank: true,
+          label: "DGNS.TextSection",
+        })
+      ),
+    };
+  }
+
+  static get backgroundImage() {
+    return {
+      backgroundImage: new FilePathField({
+        categories: ["IMAGE"],
+        blank: true,
+        default: null,
+        label: "DGNS.BackgroundImage",
+      }),
     };
   }
 

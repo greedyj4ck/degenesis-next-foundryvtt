@@ -14,23 +14,32 @@
       <label class="value">{{localize "DGNS.Concept"}}</label>
     </div>
     <div class="cult">
-      {{!-- <label class="header">{{localize "DGNS.Cult"}}</label> --}}
-      <div class="drop"></div>
-      <label class="value">{{localize "DGNS.Cult"}}</label>
+      {{#if cult}}
+        <img src="{{cult.img}}" />
+        <label class="value">{{ cult.name }}</label>
+        {{#if (sheetEditMode ../mode) }}
+          <button type="button" data-action="removeCult" data-item-id="{{cult.id}}" class="remove-cult">
+            <i class="fas fa-times"></i> Leave Cult
+          </button>
+        {{/if}}
+      {{else}}
+        <div class="drop"></div>
+        <label class="value">CULT</label>
+      {{/if}}
 
     </div>
   </div>
 
 
 
-<!-- LEGACIES / POTENTIALS -->
+  <!-- LEGACIES / POTENTIALS -->
 
   <div class="lp-container">
 
     <div class="legacies-container">
       <div class="legacies-toolbar">
-      <label>{{localize "DGNS.Legacies"}}</label>
-      <button>+</button>  
+        <label>{{localize "DGNS.Legacies"}}</label>
+        <button>+</button>
       </div>
 
       <div class="legacies"></div>
@@ -39,33 +48,33 @@
 
     <div class="potentials-container">
       <div class="potentials-toolbar">
-      <label>{{localize "DGNS.Potentials"}}</label>
-      <button>+</button>  
+        <label>{{localize "DGNS.Potentials"}}</label>
+        <button>+</button>
       </div>
 
       <div class="potentials"></div>
     </div>
-  
+
   </div>
 
 
-<!-- BACKGROUNDS -->
+  <!-- BACKGROUNDS -->
 
-  
+
 
   <div class="backgrounds-container">
     <div class="header">
-    {{> "dgns.group.header" header="DGNS.Backgrounds" }}
+      {{> "dgns.group.header" header="DGNS.Backgrounds" }}
     </div>
 
     <div class="backgrounds">
-      
-    {{#each system.backgrounds}}
-    <div class="field-under">
-      <input class="field-input" type="number" name="system.backgrounds.{{@key}}" value="{{@this}}" />
-      <label>{{localize @key}}</label>
-    </div>
-    {{/each}}
+
+      {{#each system.backgrounds}}
+        <div class="field-under">
+          <input class="field-input" type="number" name="system.backgrounds.{{@key}}" value="{{@this}}" />
+          <label>{{localize @key}}</label>
+        </div>
+      {{/each}}
     </div>
 
   </div>

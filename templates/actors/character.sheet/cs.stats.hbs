@@ -41,8 +41,7 @@
       {{#each this.skills}}
       <div class="skill">
 
-        <label class="name">{{localize @key}}</label>
-
+        <a class="name" data-action="rollAction" data-skill="{{@key}}" >{{localize @key}}</a>
         {{#if (sheetEditMode ../../mode) }}
 
         <input

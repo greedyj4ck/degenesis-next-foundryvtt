@@ -15,7 +15,10 @@ export default class CultureData extends foundry.abstract.TypeDataModel {
 
   static defineSchema() {
     return {
+      ...GeneralFields.subtitle,
       ...GeneralFields.description,
+      ...GeneralFields.backgroundImage,
+      ...IdentityBonusFields.commonCults,
       ...IdentityBonusFields.attributeBonus,
       ...IdentityBonusFields.skillBonus,
     };

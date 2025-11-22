@@ -2,17 +2,6 @@
 @use "../colors";
 
 @layer dgns.sheets.character {
-  .theme-dark .application.sheet.dgns-character,
-  .application.sheet.dgns-character.theme-dark {
-    --dgns-ui-primary: var(--c-gold);
-    --dgns-ui-background: rgba(20, 20, 20, 0.98);
-  }
-  .theme-light .application.sheet.dgns-character,
-  .application.sheet.dgns-character.theme-light {
-    --dgns-ui-primary: var(--c-pred);
-    --dgns-ui-background: rgba(240, 240, 240, 0.98);
-  }
-
   .application.sheet.dgns-character {
     background: var(--dgns-ui-background);
     border: 2px solid var(--dgns-ui-primary);
@@ -50,15 +39,6 @@
         fill: none;
         stroke: var(--dgns-ui-primary);
         stroke-width: 1;
-      }
-    }
-
-    .section-scrollable {
-      overflow-y: hidden;
-      .container-scrollable {
-        padding-right: 3px;
-        overflow-y: auto;
-        scroll-padding: 10px;
       }
     }
 
@@ -136,7 +116,8 @@
       justify-content: center;
       align-items: center;
 
-      label {
+      label,
+      a {
         text-transform: uppercase;
         font-family: var(--font-serif);
         font-size: var(--font-size-16);
@@ -161,7 +142,8 @@
 
       align-items: center;
 
-      label {
+      label,
+      a {
         flex: 1;
         align-self: left;
         text-transform: uppercase;
@@ -246,8 +228,14 @@
       > * {
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: space-around;
         align-items: center;
+      }
+
+      img {
+        aspect-ratio: 1;
+        width: 120px;
+        height: 120px;
       }
 
       .drop {
@@ -393,7 +381,8 @@
             justify-content: center;
             align-items: center;
 
-            label {
+            label,
+            a {
               &.name {
                 flex: 1;
               }

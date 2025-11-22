@@ -1,0 +1,58 @@
+<div class="data-container">
+
+    {{> "dgns.group.header" header="DGNS.Effects" }}
+
+    <div class="effects-container">
+
+
+        <div class="group-container">
+            <div class="group-header">
+                {{#if (sheetEditMode mode) }}
+                    <button type="button" data-action="addCommonCult">+</button>
+                {{/if}}
+                <h4 class="uppercase">{{localize "DGNS.CommonCults"}}</h4>
+            </div>
+
+            <ul class="group-list">
+                {{#each system.commonCults as |cult idx|}}
+                    <li>
+                        {{#if (sheetEditMode ../mode) }}
+                            <input type="text" name="system.commonCults.{{idx}}" value="{{cult}}" />
+                            <button type="button" data-action="removeCommonCult" data-index="{{idx}}">✖</button>
+                        {{else}}
+                            {{cult}}
+                        {{/if}}
+                    </li>
+                {{/each}}
+            </ul>
+        </div>
+
+        <div class="group-container">
+            <div class="group-header">
+                {{#if (sheetEditMode mode) }}<button type="button" data-action="configureAttributeBonus"><i
+                            class="fa-solid fa-cog"></i></button>{{/if}}
+                <h4 class="uppercase">{{localize "DGNS.AttributeBonus"}}</h4>
+            </div>
+            <ul class="group-list">
+                <li>AGILITY</li>
+                <li>INSTINCT</li>
+            </ul>
+        </div>
+
+        <div class="group-container">
+            <div class="group-header">
+                {{#if (sheetEditMode mode) }}<button type="button" data-action="configureSkillBonus"><i
+                            class="fa-solid fa-cog"></i></button>{{/if}}
+                <h4 class="uppercase">{{localize "DGNS.SkillBonus"}}</h4>
+            </div>
+            <ul class="group-list">
+                <li>Toughness</li>
+                <li>Artifact Lore</li>
+                <li>Engineering</li>
+                <li>Crafting</li>
+                <li>Survival</li>
+            </ul>
+        </div>
+    </div>
+
+</div>

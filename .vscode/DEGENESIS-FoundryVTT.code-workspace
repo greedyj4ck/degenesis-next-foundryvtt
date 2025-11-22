@@ -1,11 +1,11 @@
 {
-	"folders": [
-		{
-			"path": ".."
-		},
-		{
-			"path": "../packs"
-		}
-	],
-	"settings": {}
+  "folders": [
+    {
+      "path": ".."
+    },
+    {
+      "path": "../packs"
+    }
+  ],
+  "settings": {}
 }
