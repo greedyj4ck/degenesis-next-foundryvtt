@@ -11,6 +11,7 @@ const {
 } = foundry.data.fields;
 
 export default class CultureData extends foundry.abstract.TypeDataModel {
+  static _sync = true;
   static _systemType = "culture";
 
   static defineSchema() {
@@ -22,5 +23,9 @@ export default class CultureData extends foundry.abstract.TypeDataModel {
       ...IdentityBonusFields.attributeBonus,
       ...IdentityBonusFields.skillBonus,
     };
+  }
+
+  get isSyncable() {
+    return this.constructor._sync;
   }
 }

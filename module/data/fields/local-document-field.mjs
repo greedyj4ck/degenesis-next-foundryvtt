@@ -5,7 +5,6 @@
 
 /**
  * A mirror of ForeignDocumentField that references a Document embedded within this Document.
- *
  * This is epic stuff. Guys from dnd5e did a splendid job.
  *
  * @param {typeof Document} model              The local DataModel class definition which this field should link to.
@@ -48,8 +47,10 @@ export default class LocalDocumentField extends foundry.data.fields
 
   /** @override */
   _cast(value) {
+    if (value === null || value === undefined || value === "") return null;
     if (typeof value === "string") return value;
     if (value instanceof this.model) return value._id;
+
     throw new Error(
       `The value provided to a LocalDocumentField must be a ${this.model.name} instance.`
     );
@@ -66,6 +67,9 @@ export default class LocalDocumentField extends foundry.data.fields
 
   /** @override */
   initialize(value, model, options = {}) {
+    if (value === null || value === undefined || value === "") {
+      return null;
+    }
     if (this.idOnly)
       return this.options.fallback || foundry.data.validators.isValidId(value)
         ? value
@@ -82,6 +86,14 @@ export default class LocalDocumentField extends foundry.data.fields
         });
       return document;
     };
+  }
+
+  clean(value, options) {
+    // Convert empty strings to null before cleaning
+    if (value === "") {
+      value = null;
+    }
+    return super.clean(value, options);
   }
 
   /* -------------------------------------------- */

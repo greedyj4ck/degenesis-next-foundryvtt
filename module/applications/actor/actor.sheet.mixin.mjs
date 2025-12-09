@@ -47,8 +47,8 @@ export default function ActorSheetMixin(Base) {
     async _renderFrame(options) {
       const html = await super._renderFrame(options);
 
+      // Adding edit mode toggle slider
       const header = html.children[0];
-
       if (this.isEditable) {
         const toggle = document.createElement("dgns-slidetoggle");
         toggle.checked = this._mode === this.constructor.MODES.EDIT;
@@ -58,10 +58,20 @@ export default function ActorSheetMixin(Base) {
           "aria-label",
           game.i18n.localize("DGNS.SheetModeEdit")
         );
-        toggle.addEventListener("change", this._onChangeSheetMode.bind(this));
+
+        // toggle.addEventListener("change", this._onChangeSheetMode.bind(this));
+        toggle.addEventListener("change", (event) => {
+          event.stopPropagation();
+          event.stopImmediatePropagation();
+          this._onChangeSheetMode(event);
+        });
         toggle.addEventListener("dblclick", (event) => event.stopPropagation());
         header.insertAdjacentElement("afterbegin", toggle);
       }
+
+      // Adding resize handler
+      let resizeHandle = html.lastChild;
+      resizeHandle.innerHTML = `<svg><path d="M0,11L11,0L11,11L0,11Z"/></svg>`;
 
       return html;
     }
@@ -71,8 +81,6 @@ export default function ActorSheetMixin(Base) {
     async getData(options) {}
 
     async _prepareContext(options) {
-      console.log(`Actorsheet-mixin prepare context`);
-
       const context = await super._prepareContext(options);
 
       if (!this._dropdownState) {
@@ -92,12 +100,8 @@ export default function ActorSheetMixin(Base) {
     /** Event listeners and handlers */
 
     activateListeners(html) {
-      console.log(`Activate listeners.`);
-
       // section dropdown containers
-
-      console.log(this._dropdownState);
-
+      //todo: move to separate helper function
       html.querySelectorAll(".section-dropdown").forEach((sectionEl) => {
         const sectionId = sectionEl.dataset.section;
         const body = sectionEl.querySelector(".section-body");
@@ -134,22 +138,8 @@ export default function ActorSheetMixin(Base) {
       toggle.dataset.tooltip = label;
       toggle.setAttribute("aria-label", label);
       this._mode = toggle.checked ? MODES.EDIT : MODES.PLAY;
-      await this.submit();
-
-      console.log(`Current mode`, this._mode);
-
+      // await this.submit();
       this.render();
-    }
-
-    _onChangeTab(event, tabs, active) {
-      super._onChangeTab(event, tabs, active);
-      // I think this event do not exist in Foundry API. Shit.
-      // Need to figure this out.
-
-      console.log(`Tab Change fired`);
-
-      this.form.className = this.form.className.replace(/tab-\w+/g, "");
-      this.form.classList.add(`tab-${active}`);
     }
 
     _disableFields(form) {
@@ -165,7 +155,6 @@ export default function ActorSheetMixin(Base) {
 
     _onResize(event) {
       super._onResize(event);
-      console.log(`on resize fired`);
 
       const { width, height } = this.position;
       const key = `${this.actor.type}${this.actor.limited ? ":limited" : ""}`;

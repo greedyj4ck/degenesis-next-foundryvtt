@@ -11,11 +11,10 @@ export async function preloadHandlebarsTemplates() {
     paths[`dgns.${path.split("/").pop().replace(".hbs", "")}`] = path;
   }
 
-  console.log(`preloading:`, paths);
-
   return await foundry.applications.handlebars.loadTemplates(paths);
 }
 
+//todo
 export async function registerHandlebarsHelpers() {
   Handlebars.registerHelper("sheetEditMode", function (mode) {
     return mode === 2 ? true : false;

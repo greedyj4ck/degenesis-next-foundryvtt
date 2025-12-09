@@ -1,20 +1,41 @@
 {
-  "DEGENESIS.SystemName": "DEGENESIS: Rebirth (Next)",
+  "DEGENESIS": {
+    "SystemName": "DEGENESIS: Rebirth (Next)"
+  },
 
-  "KEYBINDINGS.DGNS.SkipRollDialog": "",
+  "WARNINGS": {
+    "UsingCachedItem": "{name}: Linked item not found, using cached version."
+  },
 
-  "SETTINGS.UI.FIELDS.colorScheme.light": "Light",
-  "SETTINGS.UI.FIELDS.colorScheme.dark": "Dark",
-  "SETTINGS.UI.FIELDS.colorScheme.artifacts": "Artifacts",
-  "SETTINGS.UI.FIELDS.colorScheme.darkBlood": "Dark Blood",
-  "SETTINGS.UI.FIELDS.colorScheme.lightBlood": "Light Blood",
+  "SETTINGS": {
+    "UI": {
+      "FIELDS": {
+        "colorScheme": {
+          "light": "Light",
+          "dark": "Dark"
+        }
+      }
+    }
+  },
 
-  "TYPES.Actor.character": "Character",
-  "TYPES.Actor.npc": "NPC",
-  "TYPES.Actor.aberrant": "Psychonaut",
-  "TYPES.Actor.fromhell": "From Hell",
-  "TYPES.Actor.sleeper": "Sleeper",
-  "TYPES.Actor.marauder": "Marauder",
+  "KEYBINDINGS": {
+    "DGNS": {
+      "SkipRollDialog": "!SkipRollDialog"
+    }
+  },
+
+  "TYPES": {
+    "Actor": {
+      "character": "Character",
+      "npc": "NPC",
+      "aberrant": "Aberrant",
+      "fromhell": "From Hell",
+      "sleeper": "Sleeper",
+      "marauder": "Marauder",
+      "group": "Group"
+    },
+    "Item": {}
+  },
 
   "TYPES.Actor.TypeCharacterSheet": "Default Character Sheet",
   "TYPES.Actor.TypeNpcSheet": "Default NPC Sheet",

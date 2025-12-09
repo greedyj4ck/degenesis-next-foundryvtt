@@ -1,72 +1,59 @@
-<section
-  class="tab stats {{tab.cssClass}}"
-  data-group="primary"
-  data-tab="stats"
->
+<section class="tab stats {{tab.cssClass}}" data-group="main" data-tab="stats">
 
-{{> "dgns.group.header" header="DGNS.AttributesSkills" }}
+  {{> "dgns.group.header" header="DGNS.AttributesSkills" }}
 
 
-<div class="attributes-skills-container">
+  <div class="attributes-skills-container">
 
 
-{{#each system.attributes}}
+    {{#each system.attributes}}
 
-<div class="attribute-group">
+      <div class="attribute-group">
 
 
-  <div class="attribute {{@key}}">
+        <div class="attribute {{@key}}">
 
-    <label class="name">{{localize @key}}</label>
+          <label class="name">{{localize @key}}</label>
 
-      {{#if (sheetEditMode ../mode) }}
+          {{#if (sheetEditMode ../mode) }}
 
-    <input
-          class="field-input"
-          type="number"
-          name="system.attributes.{{@key}}.value"
-          value="{{this.value}}"
-        />
+            <input class="field-input" type="number" name="system.attributes.{{@key}}.value" value="{{this.value}}" />
 
-        {{else}}
+          {{else}}
 
-        <label class="value">{{this.value}}</label>
+            <label class="value">{{this.value}}</label>
 
-        {{/if}}
-  </div>
+          {{/if}}
+        </div>
 
 
 
-  <div class="skills">
-      {{#each this.skills}}
-      <div class="skill">
+        <div class="skills">
+          {{#each this.skills}}
+            <div class="skill">
 
-        <a class="name" data-action="rollAction" data-skill="{{@key}}" >{{localize @key}}</a>
-        {{#if (sheetEditMode ../../mode) }}
+              <a class="name" data-action="rollAction" data-skill="{{@key}}">{{localize @key}}</a>
+              {{#if (sheetEditMode ../../mode) }}
 
-        <input
-          class="field-input"
-          type="number"
-          name="system.attributes.{{@../key}}.skills.{{@key}}.value"
-          value="{{this.value}}"
-        />
+                <input class="field-input" type="number" name="system.attributes.{{@../key}}.skills.{{@key}}.value"
+                  value="{{this.value}}" />
 
-        {{else}}
+              {{else}}
 
-        <label class="value">{{this.value}}</label>
+                <label class="value">{{this.value}}</label>
 
-        {{/if}}
+              {{/if}}
+
+            </div>
+
+
+          {{/each}}
+
+        </div>
 
       </div>
-
-
-      {{/each}}
-
+    {{/each}}
   </div>
-
-</div>
-{{/each}}
-</div>
 
 
 

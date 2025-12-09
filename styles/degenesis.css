@@ -763,6 +763,15 @@ prose-mirror button.toggle:disabled {
   fill: var(--dgns-ui-primary);
 }
 
+.drop-placeholder {
+  opacity: 0.2;
+  aspect-ratio: 1;
+  display: block;
+  height: 85%;
+  border: 2px dashed var(--dgns-ui-primary);
+  border-radius: 10px;
+}
+
 /* 
     DEGENESIS@NEXT
     -------------
@@ -952,6 +961,12 @@ prose-mirror button.toggle:disabled {
   .application.sheet.dgns-character {
     background: var(--dgns-ui-background);
     border: 2px solid var(--dgns-ui-primary);
+    /*  section {
+      .history {
+        height: fit-content;
+        margin-bottom: 10px;
+      }
+    } */
   }
   .application.sheet.dgns-character .mode-slider {
     margin-right: 5px;
@@ -1188,17 +1203,84 @@ prose-mirror button.toggle:disabled {
     display: flex;
   }
   .application.sheet.dgns-character .ccc-container {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: row;
-            flex-direction: row;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
     -webkit-box-pack: center;
         -ms-flex-pack: center;
             justify-content: center;
+    /*  flex-direction: row;
+    justify-content: center; */
     gap: 30px;
+  }
+  .application.sheet.dgns-character .ccc-container .cult,
+  .application.sheet.dgns-character .ccc-container .concept,
+  .application.sheet.dgns-character .ccc-container .culture {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 30px 130px 30px;
+    grid-template-areas: "Controls" "Icon" "Label";
+  }
+  .application.sheet.dgns-character .ccc-container .cult .controls,
+  .application.sheet.dgns-character .ccc-container .concept .controls,
+  .application.sheet.dgns-character .ccc-container .culture .controls {
+    position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center; /* center the label */
+  }
+  .application.sheet.dgns-character .ccc-container .cult .controls label,
+  .application.sheet.dgns-character .ccc-container .concept .controls label,
+  .application.sheet.dgns-character .ccc-container .culture .controls label {
+    text-align: center;
+  }
+  .application.sheet.dgns-character .ccc-container .cult .controls button,
+  .application.sheet.dgns-character .ccc-container .concept .controls button,
+  .application.sheet.dgns-character .ccc-container .culture .controls button {
+    position: absolute;
+    right: 0;
+  }
+  .application.sheet.dgns-character .ccc-container .cult .label,
+  .application.sheet.dgns-character .ccc-container .concept .label,
+  .application.sheet.dgns-character .ccc-container .culture .label {
+    grid-area: "Label";
+    justify-self: center;
+    text-align: center;
+    word-break: break-word;
+  }
+  .application.sheet.dgns-character .ccc-container .cult .icon,
+  .application.sheet.dgns-character .ccc-container .concept .icon,
+  .application.sheet.dgns-character .ccc-container .culture .icon {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    height: 100%;
+    grid-area: "Icon";
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -webkit-transition: all 1s cubic-bezier(0.075, 0.82, 0.165, 1);
+    transition: all 1s cubic-bezier(0.075, 0.82, 0.165, 1);
+  }
+  .application.sheet.dgns-character .ccc-container .cult .icon:hover,
+  .application.sheet.dgns-character .ccc-container .concept .icon:hover,
+  .application.sheet.dgns-character .ccc-container .culture .icon:hover {
+    scale: 1.1;
+    -webkit-filter: brightness(1.1);
+            filter: brightness(1.1);
   }
   .application.sheet.dgns-character .ccc-container label {
     text-transform: uppercase;

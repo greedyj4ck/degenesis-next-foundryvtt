@@ -9,6 +9,16 @@ const DEGENESIS = {};
  * Cultures, concepts and cults data was moved into separate entities (documents).
  */
 
+DEGENESIS.alignments = {
+  ambition: {
+    label: "DGNS.Ambition",
+    description: "DGNS.AmbitionDescription",
+    affinity: [],
+    aversion: [],
+    constellation: [],
+  },
+};
+
 DEGENESIS.raptures = {
   biokinetics: "DGNS.Biokinetics",
   dushani: "DGNS.Dushani",

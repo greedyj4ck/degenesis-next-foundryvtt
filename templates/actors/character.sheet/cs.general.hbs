@@ -1,30 +1,96 @@
-<section class="tab general {{tab.cssClass}}" data-group="primary" data-tab="general">
+<section class="tab general {{tab.cssClass}}" data-group="main" data-tab="general">
+
+
 
   {{> "dgns.group.header" header="DGNS.Archetype" }}
 
   <div class="ccc-container">
     <div class="culture">
-      {{!-- <label class="header">{{localize "DGNS.Culture"}}</label> --}}
-      <div class="drop"></div>
-      <label class="value">{{localize "DGNS.Culture"}}</label>
+      {{#if culture}}
+        <div class="controls">
+          <label class="header">{{localize "DGNS.Culture"}}</label>
+          {{#if (sheetEditMode mode) }}
+            <!-- todo: add proper styilng -->
+            <button type="button" data-action="removeLinkedItem" data-item-type="culture" class="">
+              <i class="fas fa-eraser"></i>
+            </button>
+          {{/if}}
+        </div>
+        <div class="icon">
+          <img src="{{culture.img}}" />
+        </div>
+        <div class="label">
+          <label class="value">{{ culture.name }}</label>
+        </div>
+      {{else}}
+        <div class="controls">
+          <label class="header">{{localize "DGNS.Culture"}}</label>
+        </div>
+        <div class="icon">
+          <div class="drop-placeholder"></div>
+        </div>
+        <div class="label">
+          DROP ITEM
+        </div>
+      {{/if}}
     </div>
     <div class="concept">
-      {{!-- <label class="header">{{localize "DGNS.Concept"}}</label> --}}
-      <div class="drop"></div>
-      <label class="value">{{localize "DGNS.Concept"}}</label>
+      {{#if concept}}
+        <div class="controls">
+          <label class="header">{{localize "DGNS.Concept"}}</label>
+          {{#if (sheetEditMode mode) }}
+            <!-- todo: add proper styilng -->
+            <button type="button" data-action="removeLinkedItem" data-item-type="concept" class="remove-cult">
+              <i class="fas fa-eraser"></i>
+            </button>
+          {{/if}}
+        </div>
+        <div class="icon">
+          <img src="{{concept.img}}" />
+        </div>
+        <div class="label">
+          <label class="value">{{ concept.name }}</label>
+        </div>
+      {{else}}
+        <div class="controls">
+          <label class="header">{{localize "DGNS.Concept"}}</label>
+        </div>
+        <div class="icon">
+          <div class="drop-placeholder"></div>
+        </div>
+        <div class="label">
+          DROP ITEM
+        </div>
+      {{/if}}
     </div>
     <div class="cult">
       {{#if cult}}
-        <img src="{{cult.img}}" />
-        <label class="value">{{ cult.name }}</label>
-        {{#if (sheetEditMode ../mode) }}
-          <button type="button" data-action="removeCult" data-item-id="{{cult.id}}" class="remove-cult">
-            <i class="fas fa-times"></i> Leave Cult
-          </button>
-        {{/if}}
+        <div class="controls">
+          <label class="header">
+            {{#if (cult.isClan)}}{{localize "DGNS.Clan"}}{{else}}{{localize "DGNS.Cult"}}{{/if}}</label>
+          {{#if (sheetEditMode mode) }}
+            <!-- todo: add proper styilng -->
+            <button type="button" data-action="removeLinkedItem" data-item-type="cult" class="remove-cult">
+              <i class="fas fa-eraser"></i>
+            </button>
+          {{/if}}
+        </div>
+        <div class="icon">
+          <img src="{{cult.img}}" data-action="showLinkedItem" data-item-type="cult" />
+        </div>
+        <div class="label">
+          <label class="value">{{ cult.name }}</label>
+        </div>
       {{else}}
-        <div class="drop"></div>
-        <label class="value">CULT</label>
+        <div class="controls">
+          <label class="header">{{localize "DGNS.Cult"}}</label>
+        </div>
+        <div class="icon">
+          <div class="drop-placeholder"></div>
+        </div>
+        <div class="label">
+          DROP ITEM
+        </div>
       {{/if}}
 
     </div>

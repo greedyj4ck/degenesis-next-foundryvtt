@@ -11,6 +11,7 @@ const {
 } = foundry.data.fields;
 
 export default class ConceptData extends foundry.abstract.TypeDataModel {
+  static _sync = true;
   static _systemType = "concept";
 
   static defineSchema() {
@@ -20,5 +21,9 @@ export default class ConceptData extends foundry.abstract.TypeDataModel {
       ...IdentityBonusFields.attributeBonus,
       ...IdentityBonusFields.skillBonus,
     };
+  }
+
+  get isSyncable() {
+    return this.constructor._sync;
   }
 }

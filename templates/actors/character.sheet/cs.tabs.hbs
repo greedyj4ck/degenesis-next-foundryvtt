@@ -1,14 +1,9 @@
 <section class="sheet-body">
 
   {{! Tabs }}
-  <nav class="sheet-navigation tabs" data-group="primary">
-    {{#each tabs}}
-      <a
-        class="{{this.cssClass}}"
-        data-group="primary"
-        data-action="tab"
-        data-tab="{{this.id}}"
-      >
+  <nav class="sheet-navigation tabs" data-group="main">
+    {{#each mainTabs}}
+      <a class="{{this.cssClass}}" data-group="main" data-action="tab" data-tab="{{this.id}}">
 
         {{localize this.label}}
 

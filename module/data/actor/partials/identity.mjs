@@ -1,39 +1,23 @@
-import LocalDocumentField from "../../fields/local-document-field.mjs";
+/** @import {SchemaField, ForeignDocumentField} from "@client/data/fields.mjs" */
+/** @import { BaseItem } from "@client/documents/item.mjs"  */
+/** @import { BaseActor } from "@client/documents/actor.mjs"  */
 
-const {
-  SchemaField,
-  NumberField,
-  StringField,
-  BooleanField,
-  ArrayField,
-  IntegerSortField,
-} = foundry.data.fields;
+import CachedReferenceField from "../../fields/cached-reference-field.mjs";
+
+const { StringField, ForeignDocumentField } = foundry.data.fields;
+
+const { BaseItem, BaseActor } = foundry.documents;
 
 /** Culture / Concept / Cult / Custom Clan document fields */
-
 export default class IdentityFields {
   static get identity() {
     return {
-      culture: new LocalDocumentField(foundry.documents.BaseItem, {
-        required: false,
-        fallback: true,
-        label: "DGNS.Culture",
-      }),
-      concept: new LocalDocumentField(foundry.documents.BaseItem, {
-        required: false,
-        fallback: true,
-        label: "DGNS.Concept",
-      }),
-      cult: new LocalDocumentField(foundry.documents.BaseItem, {
-        required: false,
-        fallback: true,
-        label: "DGNS.Cult",
-      }),
-      clan: new LocalDocumentField(foundry.documents.BaseItem, {
-        required: false,
-        fallback: true,
-        label: "DGNS.Clan",
-      }),
+      // CachedReferenceFields for storing information about linked items
+      cultureItem: new CachedReferenceField(BaseItem),
+      conceptItem: new CachedReferenceField(BaseItem),
+      cultItem: new CachedReferenceField(BaseItem),
+      group: new ForeignDocumentField(BaseActor),
+      rank: new StringField({ label: "DGNS.Rank" }),
     };
   }
 }

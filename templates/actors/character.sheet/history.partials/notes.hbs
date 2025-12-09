@@ -1,0 +1,9 @@
+<div class="notes-container">
+    <div class="biography-header">
+        <h1>{{localize "DGNS.PlayerNotes"}}</h1>
+    </div>
+    <prose-mirror class="biography-editor" name="system.ownerNotes" data-document-u-u-i-d="{{document.uuid}}"
+        value="{{system.ownerNotes}}" collaborate="true" toggled="true">
+        {{{ enriched.ownerNotes }}}
+    </prose-mirror>
+</div>

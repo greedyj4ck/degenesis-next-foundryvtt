@@ -75,6 +75,8 @@ export default class DegenesisCultSheet extends ItemSheetMixin(
       ),
     };
 
+    console.log(`CultSheet | Context`);
+    console.log(context);
     return context;
   }
 

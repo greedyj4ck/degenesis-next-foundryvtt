@@ -5,6 +5,8 @@ import GeneralFields from "./partials/general.mjs";
 import DetailsFields from "./partials/details.mjs";
 import IdentityFields from "./partials/identity.mjs";
 
+import CachedReferenceField from "../fields/cached-reference-field.mjs";
+
 const {
   SchemaField,
   NumberField,
@@ -19,7 +21,6 @@ export default class CharacterData extends foundry.abstract.TypeDataModel {
   static _systemType = "character";
 
   static defineSchema() {
-    console.log(`Defining schema for Character...`);
     return {
       ...AttributesSkillsFields.attributes,
       //...AttributesSkillsFields.skills,
@@ -35,5 +36,44 @@ export default class CharacterData extends foundry.abstract.TypeDataModel {
   }
 
   /** @inheritdoc */
-  prepareBaseData() {}
+  prepareBaseData() {
+    // Resolving CacheReferenceFields into properties.
+    this.culture = CachedReferenceField.resolve(this.cultureItem);
+    this.concept = CachedReferenceField.resolve(this.conceptItem);
+    this.cult = CachedReferenceField.resolve(this.cultItem);
+  }
+
+  /** @inheritdoc */
+  /*   prepareDerivedData() {
+    console.log(`Character | DataModel | prepareDerivedData`);
+  } */
+  // async _preUpdate(changes, options, user) { }
+
+  //#endergion
+
+  //todo: move methods to Actor document
+  //#region Helper methods
+  async removeLinkedItem(itemType) {
+    await CachedReferenceField.removeLinked(`${itemType}Item`, this.parent);
+  }
+
+  /**
+   * Combine saving linked reference and creating cached document.
+   * @param {*} path
+   * @param {*} itemId
+   */
+  async setLinkedItem(path, itemId) {
+    await this.parent.update({ [`system.${path}.linked`]: itemId });
+  }
+  async setCulture(itemId) {
+    await this.setLinkedItem("cultureItem", itemId);
+  }
+  async setConcept(itemId) {
+    await this.setLinkedItem("conceptItem", itemId);
+  }
+  async setCult(itemId) {
+    await this.setLinkedItem("cultItem", itemId);
+  }
+
+  //#endregion
 }

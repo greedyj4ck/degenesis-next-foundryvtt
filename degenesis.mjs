@@ -74,6 +74,12 @@ CONFIG.Item.dataModels = dataModels.item.config;
 // Overriding foundry applications with custom ones
 CONFIG.ui.pause = applications.ui.DegenesisGamePause;
 
+// Temporary V14 fix
+CONFIG.ActiveEffect.phases = {
+  initial: { label: "Init" },
+  final: { label: "Final" },
+};
+
 Hooks.once("init", async function () {
   globalThis.degenesis = game.degenesis = Object.assign(
     game.system,
@@ -131,6 +137,16 @@ Hooks.once("init", async function () {
       },
     }
   );
+
+  Actors.registerSheet("degenesis", applications.actor.DegenesisGroupSheet, {
+    types: ["group"],
+    makeDefault: true,
+    label: "TYPES.Actor.TypeGroupSheet",
+    themes: {
+      dark: "SETTINGS.UI.FIELDS.colorScheme.dark",
+      light: "SETTINGS.UI.FIELDS.colorScheme.light",
+    },
+  });
 
   Items.registerSheet("degenesis", applications.item.DegenesisCultureSheet, {
     types: ["culture"],

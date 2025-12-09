@@ -5,6 +5,7 @@
 .vscode
 .vscode/launch.json
 .zed
+.dev
 debug.log
 degenesis.lock
 packs/ammunitions.db
@@ -19,6 +20,6 @@ packs/weapons.db
 *.psd
 *.ai
 foundry-config.yaml
-foundry
+foundry/
 node_modules
 packs/

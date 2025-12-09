@@ -4,8 +4,9 @@ import FromHellData from "./fromhell.mjs";
 import AberrantData from "./aberrant.mjs";
 import SleeperData from "./sleeper.mjs";
 import MarauderData from "./marauder.mjs";
+import GroupData from "./group.mjs";
 
-export { CharacterData, NPCData, FromHellData, AberrantData };
+export { CharacterData, NPCData, FromHellData, AberrantData, GroupData };
 
 export const config = {
   character: CharacterData,
@@ -14,4 +15,5 @@ export const config = {
   aberrant: AberrantData,
   sleeper: SleeperData,
   marauder: MarauderData,
+  group: GroupData,
 };

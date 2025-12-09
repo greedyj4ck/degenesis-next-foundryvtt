@@ -207,10 +207,69 @@
     }
 
     .ccc-container {
-      display: flex;
-      flex-direction: row;
+      display: grid;
+
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 1fr;
+
+      align-items: center;
       justify-content: center;
+
+      /*  flex-direction: row;
+      justify-content: center; */
       gap: 30px;
+
+      .cult,
+      .concept,
+      .culture {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 30px 130px 30px;
+
+        grid-template-areas:
+          "Controls"
+          "Icon"
+          "Label";
+
+        .controls {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center; /* center the label */
+
+          label {
+            text-align: center;
+          }
+
+          button {
+            position: absolute;
+            right: 0;
+          }
+        }
+
+        .label {
+          grid-area: "Label";
+          justify-self: center;
+          text-align: center;
+          word-break: break-word;
+        }
+
+        .icon {
+          display: flex;
+          height: 100%;
+          grid-area: "Icon";
+          justify-content: center;
+          align-items: center;
+
+          transition: all 1s cubic-bezier(0.075, 0.82, 0.165, 1);
+
+          &:hover {
+            scale: 1.1;
+            filter: brightness(1.1);
+          }
+        }
+      }
 
       label {
         text-transform: uppercase;
@@ -409,5 +468,14 @@
         }
       }
     }
+
+    // section specific
+
+    /*  section {
+      .history {
+        height: fit-content;
+        margin-bottom: 10px;
+      }
+    } */
   }
 }

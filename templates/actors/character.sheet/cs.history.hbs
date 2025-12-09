@@ -1,53 +1,38 @@
-<section
-  class="tab history {{tab.cssClass}} section-scrollable"
-  data-group="primary"
-  data-tab="history"
->
+<section class="tab history {{tab.cssClass}}" data-group="main" data-tab="history">
+  {{> "dgns.group.header" header="DGNS.History" }}
 
-{{> "dgns.group.header" header="DGNS.History" }}
-
-<div class="container-scrollable">
-
-<div class="biography-containe section-dropdown" data-section="biography"  data-collapsed="false" >
-  <div class="section-header biography-header ">
-    <button type="button" class="dropdown-toggle" aria-label="Toggle dropdown">
-      DROPDOWN
-    </button>
-    <div>{{localize "DGNS.Biography"}}</div>
-    </div>
-
-<div class="section-body">
-  <prose-mirror class="biography-editor" name="system.biography" data-document-u-u-i-d="{{document.uuid}}" value="{{system.biography}}" collaborate="true" toggled="true">
-    {{{ enriched.biography }}}
-  </prose-mirror>
-</div>
-
-  
-
-</div>
+  {{! Tabs }}
+  <nav class="sheet-navigation tabs" data-group="history">
+    {{#each historyTabs}}
+      <a class="{{this.cssClass}}" data-group="history" data-action="tab" data-tab="{{this.id}}">
+        {{localize this.label}}
+      </a>
+    {{/each}}
+  </nav>
 
 
-{{#if document.isOwner}}
-<div class="ownerNotes-container" >
-  <div class="biography-header"><h1>{{localize "DGNS.PlayerNotes"}}</h1></div>
-  <prose-mirror class="biography-editor" name="system.ownerNotes" data-document-u-u-i-d="{{document.uuid}}" value="{{system.ownerNotes}}" collaborate="true" toggled="true">
-    {{{ enriched.ownerNotes }}}
-  </prose-mirror>
-</div>
+  <section class="tab group {{subtabs.group.cssClass}} section-scrollable" data-group="history" data-tab="group">
+    {{> "systems/degenesisnext/templates/actors/character.sheet/history.partials/group.hbs" }}
+  </section>
+
+  <section class="tab biography {{subtabs.biography.cssClass}} section-scrollable" data-group="history"
+    data-tab="biography">
+    {{> "systems/degenesisnext/templates/actors/character.sheet/history.partials/biography.hbs" }}
+  </section>
+
+  {{#if document.isOwner}}
+    <section class="tab notes {{subtabs.notes.cssClass}} section-scrollable" data-group="history" data-tab="notes">
+      {{> "systems/degenesisnext/templates/actors/character.sheet/history.partials/notes.hbs" }}
+    </section>
+  {{/if}}
+
+  {{#if (isGM)}}
+    <section class="tab gmnotes {{subtabs.gmnotes.cssClass}} section-scrollable" data-group="history"
+      data-tab="gmnotes">
+      {{> "systems/degenesisnext/templates/actors/character.sheet/history.partials/gmnotes.hbs" }}
+    </section>
+  {{/if}}
 
 
-{{/if}}
 
-{{#if (isGM)}}
-<div class="gmNotes-container">
-  <div class="biography-header"><h1>{{localize "DGNS.GMNotes"}}</h1></div>
-  <prose-mirror class="biography-editor" name="system.gmNotes" data-document-u-u-i-d="{{document.uuid}}" value="{{system.gmNotes}}" collaborate="true" toggled="true">
-    {{{ enriched.gmNotes }}}
-  </prose-mirror>
-</div>
-
-
-{{/if}}
-
-</div>
 </section>

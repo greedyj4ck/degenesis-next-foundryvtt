@@ -3,6 +3,8 @@
  * @abstract
  */
 const { api, sheets } = foundry.applications;
+const { DialogV2 } = foundry.applications.api;
+const { TextEditor } = foundry.applications.ux;
 
 import ActorSheetMixin from "./actor.sheet.mixin.mjs";
 
@@ -11,8 +13,13 @@ export default class DegenesisCharacterSheet extends ActorSheetMixin(
 ) {
   static DEFAULT_OPTIONS = {
     actions: {
+      // data actions
+      showLinkedItem: this.showLinkedItem,
+      removeLinkedItem: this.removeLinkedItem,
+      //
+      unsetGroup: this.unsetGroup,
+      // roll actions
       rollAction: this.#rollAction,
-      removeCult: this._onRemoveCult,
     },
 
     form: {
@@ -62,7 +69,6 @@ export default class DegenesisCharacterSheet extends ActorSheetMixin(
         "systems/degenesisnext/templates/actors/character.sheet/cs.combat.hbs",
       scrollable: [""],
     },
-
     inventory: {
       template:
         "systems/degenesisnext/templates/actors/character.sheet/cs.inventory.hbs",
@@ -71,6 +77,12 @@ export default class DegenesisCharacterSheet extends ActorSheetMixin(
     history: {
       template:
         "systems/degenesisnext/templates/actors/character.sheet/cs.history.hbs",
+      templates: [
+        "systems/degenesisnext/templates/actors/character.sheet/history.partials/group.hbs",
+        "systems/degenesisnext/templates/actors/character.sheet/history.partials/biography.hbs",
+        "systems/degenesisnext/templates/actors/character.sheet/history.partials/notes.hbs",
+        "systems/degenesisnext/templates/actors/character.sheet/history.partials/gmnotes.hbs",
+      ],
       scrollable: [".container-scrollable"],
     },
 
@@ -79,127 +91,93 @@ export default class DegenesisCharacterSheet extends ActorSheetMixin(
     },
   };
 
-  static TABS = [];
+  /** @type {Record<string, foundry.applications.types.ApplicationTabsConfiguration>} */
+
+  static TABS = {
+    main: {
+      initial: "general", // Set the initial tab
+      tabs: [
+        { id: "general", label: "DGNS.General" },
+        { id: "stats", label: "DGNS.Stats" },
+        { id: "effects", label: "DGNS.Effects" },
+        { id: "combat", label: "DGNS.Combat" },
+        { id: "inventory", label: "DGNS.Inventory" },
+        { id: "history", label: "DGNS.History" },
+      ],
+      //labelPrefix: "DGNS.tab",
+    },
+    history: {
+      initial: "group",
+      tabs: [
+        { id: "group", label: "DGNS.Group" },
+        { id: "biography", label: "DGNS.Biography" },
+        { id: "notes", label: "DGNS.Notes" },
+        { id: "gmnotes", label: "DGNS.Gmnotes" },
+      ],
+    },
+  };
 
   /** Preparing sheet context */
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
 
-    const cultItem = this.actor.items.find((i) => i.type === "cult"); // find cult item
+    Object.assign(context, {
+      mode: this._mode,
+      owner: this.document.isOwner,
+      limited: this.document.limited,
+      isEditable: this.isEditable,
+      actor: this.actor,
+      system: this.actor.system,
+      flags: this.actor.flags,
+      actorFields: this.actor.schema.fields,
 
-    context.cult = cultItem
-      ? {
-          id: cultItem.id,
-          name: cultItem.name,
-          img: cultItem.img,
-          description: cultItem.system.description || "",
-          data: cultItem.system,
-        }
-      : null;
+      // Simplified Data Access
+      culture: this.actor.system.culture,
+      concept: this.actor.system.concept,
+      cult: this.actor.system.cult,
+      group: this.actor.system.group,
+      // Tabs
+      tabGroups: this.tabGroups,
+      mainTabs: this._prepareTabs("main"),
+      historyTabs: this._prepareTabs("history"),
 
-    context.document = this.document;
-    context.system = this.document.system;
-    context.fields = this.document.schema.fields;
-    context.systemFields = this.document.system.schema.fields;
-    context.isEditable = this.isEditable;
-    context.tabGroups = this.tabGroups;
-    context.tabs = this.getTabs();
-    context.mode = this._mode;
+      // Enriched fields
 
-    context.enriched = {
-      biography: await TextEditor.enrichHTML(this.document.system.biography, {
-        secrets: this.document.isOwner,
-      }),
-      ownerNotes: await TextEditor.enrichHTML(this.document.system.ownerNotes, {
-        secrets: this.document.isOwner,
-      }),
-      gmNotes: await TextEditor.enrichHTML(this.document.system.gmNotes, {
-        secrets: this.document.isOwner,
-      }),
-    };
-
-    console.log(`Sheet context:`);
-    console.log(context);
+      enriched: {
+        biography: await TextEditor.enrichHTML(this.document.system.biography, {
+          secrets: this.document.isOwner,
+        }),
+        ownerNotes: await TextEditor.enrichHTML(
+          this.document.system.ownerNotes,
+          {
+            secrets: this.document.isOwner,
+          }
+        ),
+        gmNotes: await TextEditor.enrichHTML(this.document.system.gmNotes, {
+          secrets: this.document.isOwner,
+        }),
+      },
+    });
 
     return context;
   }
 
-  async #close(options) {
-    console.log(`Closing options`);
-    console.log(options);
-  }
+  async _preparePartContext(partId, context, options) {
+    //context = await super._preparePartContext(partId, context, options);
 
-  async _preparePartContext(partId, context) {
-    switch (partId) {
-      case "general":
-        context.tab = context.tabs[partId];
-      case "stats":
-        context.tab = context.tabs[partId];
-      case "effects":
-        context.tab = context.tabs[partId];
-      case "combat":
-        context.tab = context.tabs[partId];
-      case "inventory":
-        context.tab = context.tabs[partId];
-      case "history":
-        context.tab = context.tabs[partId];
-        break;
-      default:
-    }
-    return context;
-  }
-
-  getTabs() {
-    let tabGroup = "primary";
-
-    if (!this.tabGroups[tabGroup]) this.tabGroups[tabGroup] = "general";
-    let tabs = {
-      general: {
-        id: "general",
-        label: "archetype",
-        group: tabGroup,
-        cssClass: this.tabGroups.primary === this.id ? "active" : "",
-      },
-      stats: {
-        id: "stats",
-        label: "statistics",
-        group: tabGroup,
-        cssClass: this.tabGroups.primary === this.id ? "active" : "",
-      },
-      effects: {
-        id: "effects",
-        label: "effects",
-        group: tabGroup,
-        cssClass: this.tabGroups.primary === this.id ? "active" : "",
-      },
-      combat: {
-        id: "combat",
-        label: "combat",
-        group: tabGroup,
-        cssClass: this.tabGroups.primary === this.id ? "active" : "",
-      },
-      inventory: {
-        id: "inventory",
-        label: "inventory",
-        group: tabGroup,
-        cssClass: this.tabGroups.primary === this.id ? "active" : "",
-      },
-      history: {
-        id: "history",
-        label: "history",
-        group: tabGroup,
-        cssClass: this.tabGroups.primary === this.id ? "active" : "",
-      },
-    };
-    for (let tab in tabs) {
-      if (this.tabGroups[tabGroup] === tabs[tab].id) {
-        tabs[tab].cssClass = "active";
-        tabs[tab].active = true;
+    if (context.mainTabs?.[partId]) {
+      context.tab = context.mainTabs[partId];
+      if (partId === "history") {
+        context.subtabs = context.historyTabs;
       }
     }
-    return tabs;
+
+    return context;
   }
 
+  /*   _configureRenderOptions(options) {
+    super._configureRenderOptions(options);
+  } */
   /**
    * Creating initial context menus for permanent objects
    */
@@ -240,28 +218,21 @@ export default class DegenesisCharacterSheet extends ActorSheetMixin(
     this.createContextMenus();
   }
 
-  /** @inheritdoc */
-  _onRender(context, options) {
-    // You may want to add other special handling here
-    // Foundry comes with a large number of utility classes, e.g. SearchFilter
-    // That you may want to implement yourself.
-    // console.log(this);
-
-    super._onRender(context, options);
-  }
-
   activateListeners(html) {
     super.activateListeners(html);
   }
 
+  /** @inheritdoc */
+  _onRender(context, options) {
+    super._onRender(context, options);
+    // You may want to add other special handling here
+    // Foundry comes with a large number of utility classes, e.g. SearchFilter
+    // That you may want to implement yourself.
+    console.log(this);
+  }
+
   async _renderFrame(options) {
     const html = await super._renderFrame(options);
-
-    console.log(`renderFrame on character sheet`, html);
-
-    let resizeHandle = html.lastChild;
-    resizeHandle.innerHTML = `<svg><path d="M0,11L11,0L11,11L0,11Z"/></svg>`;
-
     return html;
   }
 
@@ -269,8 +240,43 @@ export default class DegenesisCharacterSheet extends ActorSheetMixin(
     super._onResize(event);
   }
 
-  // character actions
+  async _onDrop(event) {
+    event.preventDefault();
 
+    // Get the dropped data
+    const data = TextEditor.getDragEventData(event);
+
+    if (data.type === "Actor") {
+      const actor = await Actor.implementation.fromDropData(data);
+      if (actor.type === "group") {
+        await this.actor.setGroup(actor);
+      }
+    }
+
+    if (data.type === "Item") {
+      // Get the item being dropped
+      const item = await Item.implementation.fromDropData(data);
+
+      // Handling Culture / Concept / Cult
+      if (item.type === "culture" && !item.actor) {
+        await this.actor.system.setCulture(item.id);
+        return false;
+      }
+      if (item.type === "cult" && !item.actor) {
+        await this.actor.system.setCult(item.id);
+        return false;
+      }
+      if (item.type === "concept" && !item.actor) {
+        await this.actor.system.setConcept(item.id);
+        return false;
+      }
+    }
+
+    // Allow the default drop behavior for non-cult items or if no cult exists
+    return super._onDrop(event);
+  }
+
+  // character actions
   static async #rollAction(event, target) {
     event.preventDefault();
 
@@ -282,47 +288,35 @@ export default class DegenesisCharacterSheet extends ActorSheetMixin(
     //  await this.actor.rollAbilityCheck(ability); actor logic
   }
 
-  async _onDrop(event) {
-    event.preventDefault();
+  /**
+   * Display linked Item, and fallback to cached one if main do not exist anymore.
+   * Mainly used with Culture / Concept / Cult
+   * @param {*} event
+   * @param {*} target
+   */
 
-    // Get the dropped data
-    const data = TextEditor.getDragEventData(event);
-
-    if (data.type !== "Item") return;
-
-    // Get the item being dropped
-    const item = await Item.implementation.fromDropData(data);
-
-    // Check if it's a cult type item
-    if (item.type === "cult") {
-      // Check if actor already has a cult item
-      const existingCult = this.actor.items.find((i) => i.type === "cult");
-
-      if (existingCult) {
-        ui.notifications.warn(
-          "This character already belongs to a cult. Remove the existing cult first."
-        );
-        return false;
-      }
-    }
-
-    // Allow the default drop behavior for non-cult items or if no cult exists
-    return super._onDrop(event);
-  }
-
-  static async _onRemoveCult(event, target) {
-    const cultId = target.dataset.itemId;
-
-    const confirm = await Dialog.confirm({
-      title: "Remove Cult",
-      content: "<p>Are you sure you want to remove this cult affiliation?</p>",
-      yes: () => true,
-      no: () => false,
-    });
-
-    if (confirm) {
-      await this.actor.deleteEmbeddedDocuments("Item", [cultId]);
-      ui.notifications.info("Cult affiliation removed.");
+  static async showLinkedItem(event, target) {
+    const itemType = target.dataset.itemType;
+    const itemId = this.actor.system[itemType].id;
+    const item =
+      itemId === this.actor.system[`${itemType}Item`].linked.id
+        ? game.items.get(itemId)
+        : this.actor.items.get(itemId);
+    if (item) {
+      item.sheet.render(true);
     }
   }
+
+  static async removeLinkedItem(event, target) {
+    const itemType = target.dataset.itemType;
+    await this.actor.system.removeLinkedItem(itemType);
+  }
+
+  static async unsetGroup() {
+    await this.actor.unsetGroup();
+  }
+
+  /*  changeTab(tab, group, options) {
+    super.changeTab(tab, group, options);
+  } */
 }
