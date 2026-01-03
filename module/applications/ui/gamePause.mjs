@@ -1,5 +1,4 @@
-export default class DegenesisGamePause extends foundry.applications.ui
-  .GamePause {
+export default class DGNSGamePause extends foundry.applications.ui.GamePause {
   async _prepareContext(_options) {
     return {
       cssClass: game.paused ? "paused" : "",

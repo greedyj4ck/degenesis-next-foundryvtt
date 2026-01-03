@@ -95,6 +95,23 @@ export default class AttributesSkillsFields {
     };
   }
 
+  static get modes() {
+    return {
+      modes: new SchemaField({
+        primalFocus: new StringField({
+          label: "DGNS.PrimalFocus",
+          initial: "primal",
+          choices: ["primal", "focus"],
+        }),
+        faithWillpower: new StringField({
+          label: "DGNS.FaithWillpower",
+          initial: "faith",
+          choices: ["faith", "willpower"],
+        }),
+      }),
+    };
+  }
+
   /** Deprecated  */
   static get skills() {
     return {

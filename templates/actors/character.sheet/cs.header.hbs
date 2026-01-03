@@ -2,40 +2,41 @@
 
   <div class="character-header">
     <div class="container-left">
-      Container left test
+
+      <nav class="tabs vertical">
+        {{#each headerTabs}}
+          <a class="{{this.cssClass}}" data-group="header" data-action="tab" data-tab="{{this.id}}"
+            data-tooltip="{{this.label}}">
+          </a>
+        {{/each}}
+      </nav>
+
+      <div class="content">
+        <section class="tab details {{headerTabs.details.cssClass}}" data-group="header" data-tab="details">
+          {{> "systems/degenesisnext/templates/actors/character.sheet/header.partials/details.hbs" }}
+        </section>
+        <section class="tab modes {{headerTabs.modes.cssClass}}" data-group="header" data-tab="modes">
+          {{> "systems/degenesisnext/templates/actors/character.sheet/header.partials/modes.hbs" }}
+        </section>
+        <section class="tab currency {{headerTabs.currency.cssClass}}" data-group="header" data-tab="currency">
+          {{> "systems/degenesisnext/templates/actors/character.sheet/header.partials/currency.hbs" }}
+        </section>
+        <section class="tab xp {{headerTabs.xp.cssClass}}" data-group="header" data-tab="xp">
+          {{> "systems/degenesisnext/templates/actors/character.sheet/header.partials/xp.hbs" }}
+        </section>
+      </div>
+
+
     </div>
     <div class="container-middle">
       <div class="image">
 
-        <div class="border"><svg
-            width="100%"
-            height="100%"
-            viewBox="0 0 110 110"
-            version="1.1"
-            style="fill-rule:evenodd;clip-rule:evenodd;stroke-miterlimit:10;"
-          >
-            <rect
-              x="6.1"
-              y="6.1"
-              width="97.8"
-              height="97.8"
-              class="rectangle"
-            />
-            <rect
-              x="9.5"
-              y="103.9"
-              width="90.4"
-              height="4.2"
-              class="rectangle"
-            />
+        <div class="border"><svg width="100%" height="100%" viewBox="0 0 110 110" version="1.1"
+            style="fill-rule:evenodd;clip-rule:evenodd;stroke-miterlimit:10;">
+            <rect x="6.1" y="6.1" width="97.8" height="97.8" class="rectangle" />
+            <rect x="9.5" y="103.9" width="90.4" height="4.2" class="rectangle" />
             <rect x="9.8" y="1.9" width="90.4" height="4.2" class="rectangle" />
-            <rect
-              x="106.1"
-              y="25.2"
-              width="3.5"
-              height="3.5"
-              class="rectangle"
-            />
+            <rect x="106.1" y="25.2" width="3.5" height="3.5" class="rectangle" />
             <path d="M107.9,25.2L107.9,9.6" class="line" />
             <path d="M104,9.9L108,9.9" class="line" />
             <rect x="0.4" y="81.6" width="3.5" height="3.5" class="rectangle" />
@@ -49,13 +50,8 @@
           </svg></div>
 
         <div class="content">
-          <img
-            class="profile-img"
-            src="{{document.img}}"
-            data-edit="img"
-            data-action="editImage"
-            title="{{document.name}}"
-          />
+          <img class="profile-img" src="{{document.img}}" data-edit="img" data-action="editImage"
+            title="{{document.name}}" />
         </div>
 
       </div>
@@ -65,74 +61,37 @@
       <div class="field-row">
 
         <label>{{localize "DGNS.Ego"}}</label>
-        <input
-          class="field-input"
-          type="number"
-          name="system.condition.ego.value"
-          value="{{system.condition.ego.value}}"
-        />
-        <input
-          class="field-input"
-          type="number"
-          name="system.condition.ego.max"
-          value="{{system.condition.ego.max}}"
-        />
+        <input class="field-input" type="number" name="system.condition.ego.value"
+          value="{{system.condition.ego.value}}" />
+        <input class="field-input" type="number" name="system.condition.ego.max" value="{{system.condition.ego.max}}" />
 
       </div>
       <div class="field-row">
 
         <label>{{localize "DGNS.Spore"}}</label>
-        <input
-          class="field-input"
-          type="number"
-          name="system.condition.spore.permanent"
-          value="{{system.condition.spore.permanent}}"
-        />
-        <input
-          class="field-input"
-          type="number"
-          name="system.condition.spore.value"
-          value="{{system.condition.spore.value}}"
-        />
-        <input
-          class="field-input"
-          type="number"
-          name="system.condition.spore.max"
-          value="{{system.condition.spore.max}}"
-        />
+        <input class="field-input" type="number" name="system.condition.spore.permanent"
+          value="{{system.condition.spore.permanent}}" />
+        <input class="field-input" type="number" name="system.condition.spore.value"
+          value="{{system.condition.spore.value}}" />
+        <input class="field-input" type="number" name="system.condition.spore.max"
+          value="{{system.condition.spore.max}}" />
 
       </div>
       <div class="field-row">
         <label>{{localize "DGNS.Fleshwounds"}}</label>
-        <input
-          class="field-input"
-          type="number"
-          name="system.condition.fleshwounds.value"
-          value="{{system.condition.fleshwounds.value}}"
-        />
-        <input
-          class="field-input"
-          type="number"
-          name="system.condition.fleshwounds.max"
-          value="{{system.condition.fleshwounds.max}}"
-        />
+        <input class="field-input" type="number" name="system.condition.fleshwounds.value"
+          value="{{system.condition.fleshwounds.value}}" />
+        <input class="field-input" type="number" name="system.condition.fleshwounds.max"
+          value="{{system.condition.fleshwounds.max}}" />
 
       </div>
       <div class="field-row">
 
         <label>{{localize "DGNS.Trauma"}}</label>
-        <input
-          class="field-input"
-          type="number"
-          name="system.condition.trauma.value"
-          value="{{system.condition.trauma.value}}"
-        />
-        <input
-          class="field-input"
-          type="number"
-          name="system.condition.trauma.max"
-          value="{{system.condition.trauma.max}}"
-        />
+        <input class="field-input" type="number" name="system.condition.trauma.value"
+          value="{{system.condition.trauma.value}}" />
+        <input class="field-input" type="number" name="system.condition.trauma.max"
+          value="{{system.condition.trauma.max}}" />
 
       </div>
 
@@ -143,34 +102,33 @@
   <div class="character-header-under">
 
     <div class="container-left">
+      <div class="field-under">
+        <label class="value"> {{system.general.movement}}</label>
+        <label>{{localize "DGNS.Movement"}}</label>
+      </div>
+      <div class="field-under">
+        <label class="value"> {{system.general.encumbrance.current}} | {{system.general.encumbrance.max}}</label>
+        <label>{{localize "DGNS.Encumbrance"}}</label>
+      </div>
+
 
     </div>
 
     <div class="container-center">
       <div class="field-under">
-        <input
-          class="field-input"
-          type="text"
-          name="system.rank"
-          value="{{system.rank}}"
-        />
+        <input class="field-input" type="text" name="system.rank" value="{{system.rank}}" />
         <label>{{localize "DGNS.Rank"}}</label>
       </div>
     </div>
 
     <div class="container-right">
       <div class="field-under">
-        <dgns-vision
-          name="system.state.vision.mallus"
-          value="{{system.state.vision.mallus}}"
-        ></dgns-vision>
+        <dgns-vision name="system.state.vision.mallus" value="{{system.state.vision.mallus}}"></dgns-vision>
         <label>{{localize "DGNS.Vision"}}</label>
       </div>
       <div class="field-under">
-        <dgns-discomfort
-          name="system.state.discomfort.mallus"
-          value="{{system.state.discomfort.mallus}}"
-        ></dgns-discomfort>
+        <dgns-discomfort name="system.state.discomfort.mallus"
+          value="{{system.state.discomfort.mallus}}"></dgns-discomfort>
         <label>{{localize "DGNS.Discomfort"}}</label>
       </div>
 

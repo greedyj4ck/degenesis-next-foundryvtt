@@ -20,9 +20,12 @@ export default class CharacterData extends foundry.abstract.TypeDataModel {
   /** @inheritdoc */
   static _systemType = "character";
 
+  // *------------------------*
+
   static defineSchema() {
     return {
-      ...AttributesSkillsFields.attributes,
+      ...AttributesSkillsFields.attributes, // Basic attributes and skills
+      ...AttributesSkillsFields.modes, // Primal / Focus and Faith / Willpower Flags
       //...AttributesSkillsFields.skills,
       ...GeneralFields.general,
       ...GeneralFields.state,
@@ -35,13 +38,18 @@ export default class CharacterData extends foundry.abstract.TypeDataModel {
     };
   }
 
+  // *------------------------*
+
   /** @inheritdoc */
   prepareBaseData() {
     // Resolving CacheReferenceFields into properties.
     this.culture = CachedReferenceField.resolve(this.cultureItem);
     this.concept = CachedReferenceField.resolve(this.conceptItem);
     this.cult = CachedReferenceField.resolve(this.cultItem);
+    this.actionNumbers = this.prepareActionNumbers();
   }
+
+  // *------------------------*
 
   /** @inheritdoc */
   /*   prepareDerivedData() {
@@ -51,8 +59,43 @@ export default class CharacterData extends foundry.abstract.TypeDataModel {
 
   //#endergion
 
-  //todo: move methods to Actor document
+  //#region Preparing data helpers
+  // *========================================*
+
+  /**
+   * Sum attribute value with skill value. Base action number.
+   * @returns {object} Object with skill names as properties.
+   */
+  prepareActionNumbers() {
+    let actionNumbers = {};
+
+    for (let attribute in this.attributes) {
+      for (let skill in this.attributes[attribute].skills) {
+        actionNumbers[skill] =
+          this.attributes[attribute].value +
+          this.attributes[attribute].skills[skill].value;
+      }
+    }
+    return actionNumbers;
+  }
+  // *------------------------*
+
   //#region Helper methods
+  // *------------------------*
+
+  /** Getter for primary chracter mode.  */
+  get PrimalOrFocus() {
+    return this.modes.primalFocus;
+  }
+
+  // *------------------------*
+
+  /** Getter for secondary chracter mode.  */
+  get FaithOrWillpower() {
+    return this.modes.faithWillpower;
+  }
+
+  //todo: move methods to Actor document
   async removeLinkedItem(itemType) {
     await CachedReferenceField.removeLinked(`${itemType}Item`, this.parent);
   }

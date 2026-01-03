@@ -1,0 +1,20 @@
+<div class="app-container">
+    <div class="split-vertical">
+
+        <div class="roll primary">
+            <h2>{{localize "DGNS.Roll.primary"}}</h2>
+            {{> "systems/degenesisnext/templates/rolls/partials/roll.combination.hbs" primary prefix="primary"}}
+            {{> "systems/degenesisnext/templates/rolls/partials/roll.configuration.hbs" primary prefix="primary" }}
+            {{> "systems/degenesisnext/templates/rolls/partials/roll.effects.hbs" primary }}
+            {{> "systems/degenesisnext/templates/rolls/partials/roll.summary.hbs" primary }}
+        </div>
+        <div class="roll secondary">
+            <h2>{{localize "DGNS.Roll.secondary"}}</h2>
+            {{> "systems/degenesisnext/templates/rolls/partials/roll.combination.hbs" secondary prefix="secondary"}}
+            {{> "systems/degenesisnext/templates/rolls/partials/roll.configuration.hbs" secondary prefix="secondary"}}
+            {{> "systems/degenesisnext/templates/rolls/partials/roll.effects.hbs" secondary }}
+            {{> "systems/degenesisnext/templates/rolls/partials/roll.summary.hbs" secondary}}
+        </div>
+    </div>
+    {{> "systems/degenesisnext/templates/rolls/partials/roll.buttons.hbs" }}
+</div>

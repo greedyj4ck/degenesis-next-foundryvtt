@@ -1,0 +1,37 @@
+<div class="combination-roll-card">
+    <h2>{{title}}</h2>
+
+    <div class="roll primary">
+        <h2>{{localize "DGNS.ROLL.primary"}}</h2>
+        <h3>{{primary.attribute}} + {{primary.skill}} ({{primary.difficulty}})</h3>
+        <div class="roll-result">
+            <div>{{primary.successes}}{{localize "UI.s"}}</div>
+            <div>{{primary.triggers}}{{localize "UI.t"}}</div>
+        </div>
+        <h2 class="{{primary.result}}">{{primary.resultLabel}}</h2>
+        <div class="dice">
+            {{#each primary.dice as |die d|}}
+                <img src="{{die.img}}" class="chat-roll-die" />{{die.total}}
+            {{/each}}
+        </div>
+    </div>
+
+    {{#if secondary}}
+        <div class="roll secondary">
+            <h2>{{localize "DGNS.ROLL.secondary"}}</h2>
+            <h3>{{secondary.attribute}} + {{secondary.skill}} ({{secondary.difficulty}})</h3>
+            <div class="roll-result">
+                <div>{{secondary.successes}}{{localize "UI.s"}}</div>
+                <div>{{secondary.triggers}}{{localize "UI.t"}}</div>
+            </div>
+            <h2 class="{{result}}">{{resultLabel}}</h2>
+            <div class="dice">
+                {{#each dice as |die d|}}
+
+                    <img src="{{die.img}}" class="chat-roll-die" />{{die.total}}
+                {{/each}}
+            </div>
+        </div>
+    {{/if}}
+
+</div>

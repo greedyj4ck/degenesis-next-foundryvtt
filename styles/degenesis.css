@@ -305,19 +305,19 @@
     text-transform: uppercase;
   }
   button:focus {
-    -webkit-box-shadow: none;
-            box-shadow: none;
+    box-shadow: none;
     outline-color: var(--dgns-ui-active-control-border);
   }
   #pause {
     z-index: 20 !important;
+    background: linear-gradient(to right, transparent 0%, var(--c-gold-9) 50%, var(--c-gold-9) 30%, transparent 100%);
   }
   #pause figcaption {
     font-weight: 500;
   }
   #pause svg {
-    width: 100px;
-    height: 100px;
+    width: 100px !important;
+    height: 100px !important;
     fill: var(--dgns-ui-primary);
   }
   #menu {
@@ -336,11 +336,13 @@
     background-color: var(--dgns-ui-hover-control-bg);
   }
 }
+.window-content {
+  backdrop-filter: none;
+}
+
 .app-v2--closing,
 .app-v2--opening {
-  -webkit-animation: none !important;
-          animation: none !important;
-  -webkit-transition: none !important;
+  animation: none !important;
   transition: none !important;
 }
 
@@ -370,18 +372,10 @@ dgns-slidetoggle {
 dgns-slidetoggle .slide-toggle-track {
   width: 100%;
   height: 100%;
-  -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.45);
-          box-shadow: 0 0 8px rgba(0, 0, 0, 0.45);
-  display: -webkit-box;
-  display: -ms-flexbox;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.45);
   display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: row;
-          flex-direction: row;
-  -webkit-box-pack: start;
-      -ms-flex-pack: start;
-          justify-content: start;
+  flex-direction: row;
+  justify-content: start;
   padding: var(--slide-toggle-padding);
 }
 dgns-slidetoggle .slide-toggle-thumb {
@@ -389,7 +383,6 @@ dgns-slidetoggle .slide-toggle-thumb {
   height: var(--slide-toggle-thumb-height);
   border: 2px solid var(--dgns-ui-primary);
   text-align: center;
-  -webkit-transition: margin-left var(--slide-toggle-transition-time) ease;
   transition: margin-left var(--slide-toggle-transition-time) ease;
 }
 dgns-slidetoggle[checked] .slide-toggle-track {
@@ -401,16 +394,11 @@ dgns-slidetoggle[checked] .slide-toggle-thumb {
 }
 
 dgns-vision button {
-  display: -webkit-box;
-  display: -ms-flexbox;
+  background: rgb(0, 0, 0);
   display: flex;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  border: 2px solid var(--dgns-ui-primary);
+  justify-content: center;
+  align-items: center;
+  border: var(--dgns-line-width) solid var(--dgns-ui-secondary);
   width: 48px;
   height: 32px;
   padding: 0;
@@ -420,25 +408,61 @@ dgns-vision button svg {
   height: 64px;
 }
 dgns-vision .vision-dropdown {
-  display: none;
+  max-width: 48px;
+  display: block;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
   position: fixed;
   z-index: 10;
+  transition: opacity 200ms ease, transform 200ms ease;
+}
+dgns-vision .vision-dropdown.active {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(24px);
 }
 dgns-vision .vision-dropdown-item {
-  background: aliceblue;
+  max-height: 48px;
+  outline: var(--dgns-line-width) solid var(--dgns-ui-secondary);
+  background: var(--dgns-ui-background);
+  position: relative;
+  overflow: hidden;
+}
+dgns-vision .vision-dropdown-item label {
+  position: absolute;
+  text-align: right;
+  bottom: 3px;
+  right: 3px;
+  color: var(--dgns-ui-primary);
+  font-size: var(--font-size-14);
+  font-family: var(--font-sans);
+  font-weight: 700;
+}
+dgns-vision .vision-dropdown-item::after {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 48px;
+  height: 24px;
+  top: 24px;
+  transition: opacity 300ms;
+  content: "&nbsp";
+  background: var(--dgns-ui-secondary);
+  filter: blur(10px);
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+}
+dgns-vision .vision-dropdown-item:hover::after {
+  opacity: 0.4;
 }
 
 dgns-discomfort button {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  border: 2px solid var(--dgns-ui-primary);
+  justify-content: center;
+  align-items: center;
+  border: var(--dgns-line-width) solid var(--dgns-ui-primary);
   width: 48px;
   height: 32px;
   padding: 0;
@@ -458,16 +482,9 @@ dgns-discomfort .discomfort-dropdown-item {
 
 prose-mirror {
   overflow: visible;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
-  -webkit-box-pack: start;
-      -ms-flex-pack: start;
-          justify-content: start;
+  flex-direction: column;
+  justify-content: start;
   border: 1px solid;
   /* &:hover {
     button.toggle {
@@ -480,15 +497,11 @@ prose-mirror {
   } */
 }
 prose-mirror.active {
-  min-height: -webkit-fit-content;
-  min-height: -moz-fit-content;
   min-height: fit-content;
   gap: 0;
 }
 prose-mirror.active .editor-content {
-  -webkit-box-flex: 1;
-      -ms-flex-positive: 1;
-          flex-grow: 1;
+  flex-grow: 1;
   margin-top: 0px;
 }
 prose-mirror .editor-container,
@@ -497,9 +510,7 @@ prose-mirror .code-mirror {
 }
 prose-mirror .editor-content {
   padding: 5px 10px;
-  -webkit-box-ordinal-group: 0;
-      -ms-flex-order: -1;
-          order: -1;
+  order: -1;
 }
 prose-mirror button.toggle {
   position: absolute;
@@ -541,8 +552,7 @@ prose-mirror button.toggle:disabled {
   background-position: center;
   background-repeat: repeat-y;
   border-radius: 0px;
-  -webkit-box-shadow: none;
-          box-shadow: none;
+  box-shadow: none;
 }
 .theme-dark ::-webkit-scrollbar-thumb {
   border: none;
@@ -571,15 +581,27 @@ prose-mirror button.toggle:disabled {
   background-position: center;
   background-repeat: repeat-y;
   border-radius: 0px;
-  -webkit-box-shadow: none;
-          box-shadow: none;
+  box-shadow: none;
 }
+svg {
+  width: 100%;
+  height: 100%;
+}
+svg .rectangle {
+  fill: none;
+  stroke: var(--dgns-ui-primary);
+  stroke-width: var(--dgns-line-width);
+}
+svg path.line {
+  fill: none;
+  stroke: var(--dgns-ui-primary);
+  stroke-width: var(--dgns-line-width);
+}
+
 .sheet-title {
   margin: 0 auto;
   width: 100%;
   max-height: 48px;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
 }
 .sheet-title svg {
@@ -589,44 +611,31 @@ prose-mirror button.toggle:disabled {
 .sheet-title svg path.square {
   fill: none;
   stroke: var(--dgns-ui-primary);
-  stroke-width: 2;
+  stroke-width: var(--dgns-line-width);
 }
 .sheet-title svg path.line {
   fill: none;
   stroke: var(--dgns-ui-primary);
-  stroke-width: 2;
+  stroke-width: var(--dgns-line-width);
 }
 .sheet-title div.line {
-  -webkit-box-flex: 1;
-      -ms-flex-positive: 1;
-          flex-grow: 1;
-  -ms-flex-preferred-size: auto;
-      flex-basis: auto;
+  flex-grow: 1;
+  flex-basis: auto;
 }
 .sheet-title div.line-left,
 .sheet-title div.line-right {
-  -webkit-box-flex: 0;
-      -ms-flex: 0 0 120px;
-          flex: 0 0 120px;
+  flex: 0 0 120px;
 }
 .sheet-title div.line-right svg {
-  -webkit-transform: scale(-1, 1);
-          transform: scale(-1, 1);
+  transform: scale(-1, 1);
 }
 .sheet-title div.center {
-  -webkit-box-flex: 1;
-      -ms-flex-positive: 1;
-          flex-grow: 1;
-  -ms-flex-preferred-size: auto;
-      flex-basis: auto;
+  flex-grow: 1;
+  flex-basis: auto;
   margin: 0 10px;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
   justify-items: center;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  align-items: center;
   white-space: no-wrap;
 }
 .sheet-title div.center input {
@@ -644,8 +653,6 @@ prose-mirror button.toggle:disabled {
 }
 
 .sheet-group-header {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
   margin: 10px auto;
   width: 100%;
@@ -658,12 +665,12 @@ prose-mirror button.toggle:disabled {
 .sheet-group-header svg path.square {
   fill: none;
   stroke: var(--dgns-ui-primary);
-  stroke-width: 2;
+  stroke-width: var(--dgns-line-width);
 }
 .sheet-group-header svg path.line {
   fill: none;
   stroke: var(--dgns-ui-primary);
-  stroke-width: 2;
+  stroke-width: var(--dgns-line-width);
 }
 .sheet-group-header div.header {
   text-align: center;
@@ -674,24 +681,18 @@ prose-mirror button.toggle:disabled {
 }
 .sheet-group-header div.line-left,
 .sheet-group-header div.line-right {
-  -webkit-box-flex: 1;
-      -ms-flex: 1 0 120px;
-          flex: 1 0 120px;
+  flex: 1 0 120px;
 }
 .sheet-group-header div.line-right svg {
-  -webkit-transform: scale(-1, 1);
-          transform: scale(-1, 1);
+  transform: scale(-1, 1);
 }
 
 .sheet-footer {
   max-height: 25px;
   width: 100%;
   margin-top: 5px;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-transform: scale(1, -1);
-          transform: scale(1, -1);
+  transform: scale(1, -1);
 }
 .sheet-footer svg {
   width: 100%;
@@ -700,44 +701,31 @@ prose-mirror button.toggle:disabled {
 .sheet-footer svg path.square {
   fill: none;
   stroke: var(--dgns-ui-primary);
-  stroke-width: 2;
+  stroke-width: var(--dgns-line-width);
 }
 .sheet-footer svg path.line {
   fill: none;
   stroke: var(--dgns-ui-primary);
-  stroke-width: 2;
+  stroke-width: var(--dgns-line-width);
 }
 .sheet-footer div.line {
-  -webkit-box-flex: 1;
-      -ms-flex-positive: 1;
-          flex-grow: 1;
-  -ms-flex-preferred-size: auto;
-      flex-basis: auto;
+  flex-grow: 1;
+  flex-basis: auto;
 }
 .sheet-footer div.line-left,
 .sheet-footer div.line-right {
-  -webkit-box-flex: 0;
-      -ms-flex: 0 0 120px;
-          flex: 0 0 120px;
+  flex: 0 0 120px;
 }
 .sheet-footer div.line-right svg {
-  -webkit-transform: scale(-1, 1);
-          transform: scale(-1, 1);
+  transform: scale(-1, 1);
 }
 .sheet-footer div.center {
-  -webkit-box-flex: 1;
-      -ms-flex-positive: 1;
-          flex-grow: 1;
-  -ms-flex-preferred-size: auto;
-      flex-basis: auto;
+  flex-grow: 1;
+  flex-basis: auto;
   margin: 0 10px;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
   justify-items: center;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  align-items: center;
   white-space: no-wrap;
 }
 .sheet-footer div.center input {
@@ -756,8 +744,7 @@ prose-mirror button.toggle:disabled {
 
 .window-resize-handle {
   background: none;
-  -webkit-filter: none;
-          filter: none;
+  filter: none;
 }
 .window-resize-handle svg path {
   fill: var(--dgns-ui-primary);
@@ -779,10 +766,18 @@ prose-mirror button.toggle:disabled {
 
     */
 @layer dgns.sheets {
+  :root {
+    --dgns-line-width: 1px;
+    --dgns-thin-line-width: 1px;
+    --dgns-border-radius-small: 4px;
+  }
   .theme-dark,
   .theme-dark * {
     --dgns-ui-primary: var(--c-gold);
-    --dgns-ui-background: rgba(15, 15, 15, 0.97);
+    --dgns-ui-secondary: var(--c-gold-8);
+    --dgns-ui-background: rgba(15, 15, 15, 0.95);
+    --dgns-ui-tabs-primary: var(--c-gold-7);
+    --dgns-ui-tabs-secondary: var(--c-resin-7);
   }
   .theme-light, .theme-light * {
     --dgns-ui-primary: var(--c-gold-6);
@@ -793,6 +788,9 @@ prose-mirror button.toggle:disabled {
     --dgns-ui-hover-control-content: rgba(240, 240, 240, 0.98);
     --dgns-ui-hover-control-bg: var(--c-pred);
   }
+  .application.sheet {
+    backdrop-filter: blur(4px);
+  }
   .application.sheet .mode-slider {
     margin-right: 5px;
   }
@@ -802,11 +800,83 @@ prose-mirror button.toggle:disabled {
   .application.sheet.minimized .window-header .window-title {
     visibility: visible;
   }
+  .application.sheet .tabs {
+    display: flex;
+    overflow: hidden;
+    min-height: 32px;
+    max-height: 32px;
+    width: fit-content;
+    gap: 0;
+    align-self: center;
+    flex-direction: row;
+    padding: 3px;
+    align-items: center;
+    justify-content: center;
+    border: var(--dgns-line-width) solid var(--dgns-ui-tabs-primary);
+    border-radius: var(--dgns-border-radius-small);
+  }
+  .application.sheet .tabs a {
+    padding: 0px 10px;
+    font-family: var(--font-headers);
+    font-size: var(--font-size-14);
+    font-weight: 600;
+    text-transform: uppercase;
+    text-shadow: none;
+    position: relative;
+    color: var(--dgns-ui-primary);
+    line-height: normal;
+    /*  &.active {
+      background-color: var(--dgns-ui-primary);
+      color: var(--dgns-ui-background);
+    } */
+  }
+  .application.sheet .tabs a:hover {
+    color: var(--dgns-ui-accent);
+  }
+  .application.sheet .tabs a::after {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 40px;
+    top: 10px;
+    transition: opacity 300ms;
+    content: "&nbsp";
+    background: var(--dgns-ui-secondary);
+    filter: blur(10px);
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0;
+  }
+  .application.sheet .tabs a.active::after {
+    opacity: 0.5;
+  }
+  .application.sheet .tabs.vertical {
+    height: fit-content;
+    flex-direction: column;
+    min-height: 32px;
+    max-height: none;
+    min-width: 32px;
+    max-width: 32px;
+  }
+  .application.sheet .tabs.vertical a {
+    min-height: 32px;
+    padding: 10px 0px;
+  }
+  .application.sheet .tabs.vertical a::after {
+    top: 0;
+    left: 0;
+  }
+  .application.sheet .tab {
+    height: 100%;
+    flex-direction: column;
+    margin: 0px 0px;
+  }
+  .application.sheet .tab.active {
+    display: flex;
+  }
   .section-scrollable {
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: column;
-            flex-direction: column;
+    flex-direction: column;
     overflow-y: hidden;
   }
   .section-scrollable .container-scrollable {
@@ -840,29 +910,19 @@ prose-mirror button.toggle:disabled {
     pointer-events: none;
   }
   .sheet-customizable .sheet-background img {
-    -o-object-fit: cover;
-       object-fit: cover;
+    object-fit: cover;
     border: none;
     width: 100%;
     height: 100%;
     position: relative;
-    -webkit-mask-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0.3)), to(rgba(0, 0, 0, 0)));
-    -webkit-mask-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0));
-            mask-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0.3)), to(rgba(0, 0, 0, 0)));
-            mask-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0));
+    mask-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0));
     z-index: 0;
   }
   .section-dropdown .section-header {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
     gap: 0.3rem;
-    -webkit-box-pack: start;
-        -ms-flex-pack: start;
-            justify-content: start;
-    -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center;
+    justify-content: start;
+    align-items: center;
     margin-bottom: 0.3rem;
     font-size: var(--font-size-14);
     font-weight: bold;
@@ -873,37 +933,22 @@ prose-mirror button.toggle:disabled {
     display: none;
   }
   .group-container {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: column;
-            flex-direction: column;
-    -webkit-box-pack: start;
-        -ms-flex-pack: start;
-            justify-content: flex-start;
-    -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
   }
   .group-list {
     margin: 5px;
     padding: 0;
   }
   .group-list li {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
     margin: 0px 0px 2px 0px;
     height: 20px;
     gap: 5px;
-    -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
-    -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center;
+    justify-content: center;
+    align-items: center;
     font-family: var(--font-serif);
     font-size: var(--font-size-14);
     letter-spacing: 0.1em;
@@ -914,8 +959,6 @@ prose-mirror button.toggle:disabled {
     height: 20px;
   }
   .group-list button {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
     min-width: 0;
     min-height: 0;
@@ -923,19 +966,10 @@ prose-mirror button.toggle:disabled {
     border: none;
   }
   .group-header {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: row;
-            flex-direction: row;
-    -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
-    -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
     gap: 10px;
     min-height: 20px;
   }
@@ -960,7 +994,9 @@ prose-mirror button.toggle:disabled {
 @layer dgns.sheets.character {
   .application.sheet.dgns-character {
     background: var(--dgns-ui-background);
-    border: 2px solid var(--dgns-ui-primary);
+    border: var(--dgns-line-width) solid var(--dgns-ui-secondary);
+    background-repeat: repeat;
+    background-size: 600px;
     /*  section {
       .history {
         height: fit-content;
@@ -968,45 +1004,15 @@ prose-mirror button.toggle:disabled {
       }
     } */
   }
-  .application.sheet.dgns-character .mode-slider {
-    margin-right: 5px;
-  }
   .application.sheet.dgns-character:not(.minimized, .minimizing, .maximizing) {
     min-height: 850px;
     min-width: 700px;
   }
-  .application.sheet.dgns-character.minimized .window-header .mode-slider {
-    display: none !important;
-  }
-  .application.sheet.dgns-character.minimized .window-header .window-title {
-    visibility: visible;
-  }
-  .application.sheet.dgns-character svg {
-    width: 100%;
-    height: 100%;
-  }
-  .application.sheet.dgns-character svg .rectangle {
-    fill: none;
-    stroke: var(--dgns-ui-primary);
-    stroke-width: 1;
-  }
-  .application.sheet.dgns-character svg path.line {
-    fill: none;
-    stroke: var(--dgns-ui-primary);
-    stroke-width: 1;
-  }
   .application.sheet.dgns-character .character-header {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: row;
-            flex-direction: row;
+    flex-direction: row;
     width: 100%;
-    -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
+    justify-content: center;
   }
   .application.sheet.dgns-character .character-header .image {
     width: 150px;
@@ -1014,6 +1020,7 @@ prose-mirror button.toggle:disabled {
     position: relative;
   }
   .application.sheet.dgns-character .character-header .image .border {
+    --dgns-line-width: 0.5px;
     pointer-events: none;
     position: absolute;
     z-index: 10;
@@ -1025,86 +1032,69 @@ prose-mirror button.toggle:disabled {
     margin: 10px auto;
   }
   .application.sheet.dgns-character .character-header .container-left {
-    -webkit-box-flex: 1;
-        -ms-flex: 1;
-            flex: 1;
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+  }
+  .application.sheet.dgns-character .character-header .container-left .content {
+    flex-grow: 1;
+  }
+  .application.sheet.dgns-character .character-header .container-left .modes-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+  }
+  .application.sheet.dgns-character .character-header .container-left .primalFocus {
+    flex: 2;
+    display: flex;
+    align-items: center;
+  }
+  .application.sheet.dgns-character .character-header .container-left .faithWillpower {
+    flex: 1;
+    display: flex;
+    align-items: center;
   }
   .application.sheet.dgns-character .character-header .container-middle {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
     width: 150px;
   }
   .application.sheet.dgns-character .character-header .container-right {
     width: 100%;
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: column;
-            flex-direction: column;
-    -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center;
-    -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
-    -webkit-box-flex: 1;
-        -ms-flex: 1;
-            flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
     gap: 5px;
   }
   .application.sheet.dgns-character .character-header-under {
     margin: 10px 0px;
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: row;
-            flex-direction: row;
+    flex-direction: row;
     width: 100%;
-    -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
+    justify-content: center;
   }
   .application.sheet.dgns-character .character-header-under > * {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: row;
-            flex-direction: row;
-    -webkit-box-flex: 1;
-        -ms-flex: 1;
-            flex: 1;
+    flex-direction: row;
+    flex: 1;
+  }
+  .application.sheet.dgns-character .character-header-under .container-left {
+    justify-content: space-evenly;
   }
   .application.sheet.dgns-character .character-header-under .container-center {
-    -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
+    justify-content: center;
   }
   .application.sheet.dgns-character .character-header-under .container-right {
-    -webkit-box-pack: space-evenly;
-        -ms-flex-pack: space-evenly;
-            justify-content: space-evenly;
+    justify-content: space-evenly;
   }
   .application.sheet.dgns-character .field-under {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: column;
-            flex-direction: column;
-    -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
-    -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
   .application.sheet.dgns-character .field-under label,
   .application.sheet.dgns-character .field-under a {
@@ -1120,28 +1110,18 @@ prose-mirror button.toggle:disabled {
     padding: 0 !important;
   }
   .application.sheet.dgns-character .field-row {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: row;
-            flex-direction: row;
+    flex-direction: row;
     padding: 0px 5px;
     gap: 5px;
     width: 100%;
     line-height: 85%;
-    -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center;
+    align-items: center;
   }
   .application.sheet.dgns-character .field-row label,
   .application.sheet.dgns-character .field-row a {
-    -webkit-box-flex: 1;
-        -ms-flex: 1;
-            flex: 1;
-    -ms-flex-item-align: left;
-        align-self: left;
+    flex: 1;
+    align-self: left;
     text-transform: uppercase;
     font-family: var(--font-serif);
     font-size: var(--font-size-16);
@@ -1150,68 +1130,25 @@ prose-mirror button.toggle:disabled {
   .application.sheet.dgns-character .field-row input {
     width: 30px;
     height: 30px;
-    -ms-flex-item-align: right;
-        align-self: right;
+    align-self: right;
     text-align: center;
     font-size: var(--font-size-14);
     font-weight: 600;
     padding: 0 !important;
   }
-  .application.sheet.dgns-character .tabs {
-    display: -webkit-box;
-    display: -ms-flexbox;
+  .application.sheet.dgns-character .details-container {
     display: flex;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: row;
-            flex-direction: row;
-    border: none;
-    gap: 3px;
-    -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
-  }
-  .application.sheet.dgns-character .tabs a {
-    padding: 0px 10px;
-    border: 2px solid var(--dgns-ui-primary);
-    font-family: var(--font-headers);
-    font-size: var(--font-size-14);
-    font-weight: 600;
-    text-transform: uppercase;
-    text-shadow: none;
-    color: var(--dgns-ui-primary);
-    line-height: normal;
-  }
-  .application.sheet.dgns-character .tabs a:hover {
-    color: var(--dgns-ui-accent);
-  }
-  .application.sheet.dgns-character .tabs a.active {
-    background-color: var(--dgns-ui-primary);
-    color: var(--dgns-ui-background);
-  }
-  .application.sheet.dgns-character .tab {
-    height: 100%;
-    margin: 0px 0px;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: column;
-            flex-direction: column;
-  }
-  .application.sheet.dgns-character .tab.active {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
   .application.sheet.dgns-character .ccc-container {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 1fr;
-    -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center;
-    -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
+    align-items: center;
+    justify-content: center;
     /*  flex-direction: row;
     justify-content: center; */
     gap: 30px;
@@ -1229,15 +1166,9 @@ prose-mirror button.toggle:disabled {
   .application.sheet.dgns-character .ccc-container .concept .controls,
   .application.sheet.dgns-character .ccc-container .culture .controls {
     position: relative;
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center;
-    -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center; /* center the label */
+    align-items: center;
+    justify-content: center; /* center the label */
   }
   .application.sheet.dgns-character .ccc-container .cult .controls label,
   .application.sheet.dgns-character .ccc-container .concept .controls label,
@@ -1261,26 +1192,18 @@ prose-mirror button.toggle:disabled {
   .application.sheet.dgns-character .ccc-container .cult .icon,
   .application.sheet.dgns-character .ccc-container .concept .icon,
   .application.sheet.dgns-character .ccc-container .culture .icon {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
     height: 100%;
     grid-area: "Icon";
-    -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
-    -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center;
-    -webkit-transition: all 1s cubic-bezier(0.075, 0.82, 0.165, 1);
+    justify-content: center;
+    align-items: center;
     transition: all 1s cubic-bezier(0.075, 0.82, 0.165, 1);
   }
   .application.sheet.dgns-character .ccc-container .cult .icon:hover,
   .application.sheet.dgns-character .ccc-container .concept .icon:hover,
   .application.sheet.dgns-character .ccc-container .culture .icon:hover {
     scale: 1.1;
-    -webkit-filter: brightness(1.1);
-            filter: brightness(1.1);
+    filter: brightness(1.1);
   }
   .application.sheet.dgns-character .ccc-container label {
     text-transform: uppercase;
@@ -1295,18 +1218,10 @@ prose-mirror button.toggle:disabled {
     font-size: var(--font-size-18);
   }
   .application.sheet.dgns-character .ccc-container > * {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: column;
-            flex-direction: column;
-    -ms-flex-pack: distribute;
-        justify-content: space-around;
-    -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
   }
   .application.sheet.dgns-character .ccc-container img {
     aspect-ratio: 1;
@@ -1321,41 +1236,24 @@ prose-mirror button.toggle:disabled {
     background: var(--dgns-ui-background);
   }
   .application.sheet.dgns-character .backgrounds-container {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: column;
-            flex-direction: column;
+    flex-direction: column;
     margin-top: auto;
   }
   .application.sheet.dgns-character .backgrounds-container .backgrounds {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: row;
-            flex-direction: row;
+    flex-direction: row;
     gap: 5px;
   }
   .application.sheet.dgns-character .lp-container {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
     width: 100%;
     margin-top: 5px;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: row;
-            flex-direction: row;
+    flex-direction: row;
     gap: 5px;
   }
   .application.sheet.dgns-character .lp-container > * {
-    -webkit-box-flex: 1;
-        -ms-flex: 1;
-            flex: 1;
+    flex: 1;
   }
   .application.sheet.dgns-character .lp-container button {
     max-width: 24px;
@@ -1367,54 +1265,26 @@ prose-mirror button.toggle:disabled {
     font-weight: 600;
   }
   .application.sheet.dgns-character .legacies-container {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: column;
-            flex-direction: column;
+    flex-direction: column;
   }
   .application.sheet.dgns-character .legacies-container .legacies-toolbar {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
     gap: 10px;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: reverse;
-        -ms-flex-direction: row-reverse;
-            flex-direction: row-reverse;
-    -webkit-box-pack: end;
-        -ms-flex-pack: end;
-            justify-content: flex-end;
-    -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    align-items: center;
   }
   .application.sheet.dgns-character .potentials-container {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: column;
-            flex-direction: column;
+    flex-direction: column;
   }
   .application.sheet.dgns-character .potentials-container .potentials-toolbar {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
     gap: 10px;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: row;
-            flex-direction: row;
-    -webkit-box-pack: end;
-        -ms-flex-pack: end;
-            justify-content: flex-end;
-    -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
   }
   .application.sheet.dgns-character .attributes-skills-container {
     display: grid;
@@ -1423,39 +1293,23 @@ prose-mirror button.toggle:disabled {
     height: 100%;
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 50% 50%;
-    -webkit-column-gap: 20px;
-       -moz-column-gap: 20px;
-            column-gap: 20px;
+    column-gap: 20px;
     row-gap: 5px;
     margin-bottom: 10px;
   }
   .application.sheet.dgns-character .attributes-skills-container .attribute-group {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: column;
-            flex-direction: column;
+    flex-direction: column;
     /*       &:hover {
       color: var(--dgns-ui-contrast);
     } */
   }
   .application.sheet.dgns-character .attributes-skills-container .attribute-group .attribute {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: row;
-            flex-direction: row;
+    flex-direction: row;
     width: 100%;
-    -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
-    -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center;
+    justify-content: center;
+    align-items: center;
   }
   .application.sheet.dgns-character .attributes-skills-container .attribute-group .attribute label {
     font-family: var(--font-body);
@@ -1465,9 +1319,7 @@ prose-mirror button.toggle:disabled {
     letter-spacing: 0.05em;
   }
   .application.sheet.dgns-character .attributes-skills-container .attribute-group .attribute label.name {
-    -webkit-box-flex: 1;
-        -ms-flex: 1;
-            flex: 1;
+    flex: 1;
   }
   .application.sheet.dgns-character .attributes-skills-container .attribute-group .attribute label.value {
     font-family: var(--font-body);
@@ -1482,37 +1334,24 @@ prose-mirror button.toggle:disabled {
     font-weight: 700;
   }
   .application.sheet.dgns-character .attributes-skills-container .attribute-group .skills {
-    -webkit-box-flex: 1;
-        -ms-flex: 1;
-            flex: 1;
+    flex: 1;
     height: 100%;
     margin-top: 5px;
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: column;
-            flex-direction: column;
-    -ms-flex-pack: distribute;
-        justify-content: space-around;
+    flex-direction: column;
+    justify-content: space-around;
     gap: 5px;
   }
   .application.sheet.dgns-character .attributes-skills-container .attribute-group .skills .skill {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: row;
-            flex-direction: row;
+    flex-direction: row;
     width: 100%;
-    -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
-    -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center;
+    justify-content: center;
+    align-items: center;
+  }
+  .application.sheet.dgns-character .attributes-skills-container .attribute-group .skills .skill .disabled {
+    text-decoration: line-through;
+    color: gray;
   }
   .application.sheet.dgns-character .attributes-skills-container .attribute-group .skills .skill label,
   .application.sheet.dgns-character .attributes-skills-container .attribute-group .skills .skill a {
@@ -1523,9 +1362,7 @@ prose-mirror button.toggle:disabled {
   }
   .application.sheet.dgns-character .attributes-skills-container .attribute-group .skills .skill label.name,
   .application.sheet.dgns-character .attributes-skills-container .attribute-group .skills .skill a.name {
-    -webkit-box-flex: 1;
-        -ms-flex: 1;
-            flex: 1;
+    flex: 1;
   }
   .application.sheet.dgns-character .attributes-skills-container .attribute-group .skills .skill label.value,
   .application.sheet.dgns-character .attributes-skills-container .attribute-group .skills .skill a.value {
@@ -1539,6 +1376,11 @@ prose-mirror button.toggle:disabled {
     line-height: normal;
     text-align: center;
   }
+  .application.sheet.dgns-character section.sheet-tabs {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 /* 
     DEGENESIS@NEXT
@@ -1548,27 +1390,14 @@ prose-mirror button.toggle:disabled {
     */
 @layer dgns.sheets.culture {
   .dgns-culture .sheet-header {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
+    justify-content: center;
   }
   .dgns-culture .center-container-header {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: column;
-            flex-direction: column;
-    -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
-    -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     gap: 5px;
     /*  flex-shrink: 1;
     flex-basis: 10px; */
@@ -1594,13 +1423,8 @@ prose-mirror button.toggle:disabled {
     max-width: 120px;
   }
   .dgns-culture .data-container {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: column;
-            flex-direction: column;
+    flex-direction: column;
   }
   .dgns-culture .data-container .effects-container {
     display: grid;
@@ -1608,21 +1432,12 @@ prose-mirror button.toggle:disabled {
     grid-template-rows: 1fr;
   }
   .dgns-culture .data-container .effects-container > div {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
+    justify-content: center;
   }
   .dgns-culture .lore-container {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: column;
-            flex-direction: column;
+    flex-direction: column;
   }
   .dgns-culture .description-container {
     margin: 0px 10px;
@@ -1651,27 +1466,14 @@ prose-mirror button.toggle:disabled {
 @layer dgns.sheets.concept {
   .dgns-concept .sheet-header {
     height: 250px;
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
+    justify-content: center;
   }
   .dgns-concept .center-container-header {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: column;
-            flex-direction: column;
-    -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
-    -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     gap: 5px;
     /*  flex-shrink: 1;
     flex-basis: 10px; */
@@ -1697,13 +1499,8 @@ prose-mirror button.toggle:disabled {
     max-width: 225px;
   }
   .dgns-concept .data-container {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: column;
-            flex-direction: column;
+    flex-direction: column;
   }
   .dgns-concept .data-container .effects-container {
     display: grid;
@@ -1711,21 +1508,12 @@ prose-mirror button.toggle:disabled {
     grid-template-rows: 1fr;
   }
   .dgns-concept .data-container .effects-container > div {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
+    justify-content: center;
   }
   .dgns-concept .lore-container {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: column;
-            flex-direction: column;
+    flex-direction: column;
   }
   .dgns-concept .description-container {
     margin: 0px 10px;
@@ -1754,27 +1542,14 @@ prose-mirror button.toggle:disabled {
 @layer dgns.sheets.cult {
   .dgns-cult .sheet-header {
     height: 250px;
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
+    justify-content: center;
   }
   .dgns-cult .center-container-header {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: column;
-            flex-direction: column;
-    -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
-    -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     gap: 5px;
     /*  flex-shrink: 1;
     flex-basis: 10px; */
@@ -1800,13 +1575,8 @@ prose-mirror button.toggle:disabled {
     max-width: 225px;
   }
   .dgns-cult .data-container {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: column;
-            flex-direction: column;
+    flex-direction: column;
   }
   .dgns-cult .data-container .effects-container {
     display: grid;
@@ -1814,21 +1584,12 @@ prose-mirror button.toggle:disabled {
     grid-template-rows: 1fr;
   }
   .dgns-cult .data-container .effects-container > div {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
+    justify-content: center;
   }
   .dgns-cult .lore-container {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: column;
-            flex-direction: column;
+    flex-direction: column;
   }
   .dgns-cult .description-container {
     margin: 0px 10px;
@@ -1857,14 +1618,35 @@ prose-mirror button.toggle:disabled {
     Version  0.1
 
     */
-@layer dgns.sheets {
+@layer dgns.apps {
   .application.dgns-roll {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
+    flex: 1;
+    overflow: hidden;
+    z-index: 999 !important;
+    backdrop-filter: blur(4px);
+    justify-content: center;
+  }
+  .application.dgns-roll:not(.minimized, .minimizing, .maximizing) {
+    min-height: 550px;
+    min-width: 450px;
+  }
+  .application.dgns-roll .split-vertical {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+  }
+  .application.dgns-roll .roll {
+    border: var(--dgns-line-width) solid var(--dgns-ui-secondary);
+    border-radius: var(--dgns-border-radius-small);
+    padding: 5px;
+  }
+  .application.dgns-roll .app-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 5px;
+    gap: 10px;
   }
   .application.dgns-roll input.field-input.difficulty {
     height: 48px;
@@ -1895,38 +1677,134 @@ prose-mirror button.toggle:disabled {
     text-align: center;
   }
   .application.dgns-roll .section-difficulty {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: row;
-            flex-direction: row;
+    flex-direction: row;
     text-align: center;
-    -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center;
+    align-items: center;
     min-height: 70px;
     gap: 20px;
-    -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
+    justify-content: center;
+  }
+  .application.dgns-roll .section-configuration {
+    display: flex;
+    width: fit-content;
+    padding: 0px 20px;
+    align-self: center;
+    gap: 20px;
+    border: var(--dgns-line-width) solid var(--dgns-ui-secondary);
+    border-radius: var(--dgns-border-radius-small);
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(50, 50, 50, 0.2));
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  .application.dgns-roll .section-configuration .section-input {
+    min-width: 80px;
+  }
+  .application.dgns-roll .section-configuration input {
+    border: 1px solid var(--dgns-ui-primary);
+    max-width: 40px;
+    height: 38px;
+    text-align: center;
+  }
+  .application.dgns-roll .section-configuration label {
+    padding-top: 5px;
+    font-size: var(--font-size-12);
+    font-family: var(--font-sans);
+    text-transform: uppercase;
+    font-weight: 700;
+    word-break: 20px;
+  }
+  .application.dgns-roll .section-effects {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3px;
+    max-height: 155px;
+  }
+  .application.dgns-roll .section-effects .effects-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow: auto;
+    padding: 5px;
+    border: var(--dgns-line-width) solid var(--dgns-ui-secondary);
+    border-radius: var(--dgns-border-radius-small);
+  }
+  .application.dgns-roll .section-effects .effect,
+  .application.dgns-roll .section-effects .legend {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+  }
+  .application.dgns-roll .section-effects .effect .name,
+  .application.dgns-roll .section-effects .legend .name {
+    flex: 4;
+  }
+  .application.dgns-roll .section-effects .effect .mod,
+  .application.dgns-roll .section-effects .legend .mod {
+    flex: 3;
+  }
+  .application.dgns-roll .section-effects .effect .toggle,
+  .application.dgns-roll .section-effects .legend .toggle {
+    flex: 1;
+  }
+  .application.dgns-roll .section-effects .legend {
+    padding: 5px 5px;
+    font-size: var(--font-size-12);
+    font-family: var(--font-sans);
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .application.dgns-roll .section-buttons {
+    margin-top: auto;
+    align-self: center;
   }
   .application.dgns-roll .section-input {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
+    margin: 10px 0px;
     text-align: center;
-    -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-        -ms-flex-direction: column;
-            flex-direction: column;
-    -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .application.dgns-roll .section-summary {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .application.dgns-roll .summary {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    width: 100%;
+  }
+  .application.dgns-roll .summary .total {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .application.dgns-roll .summary .total .dice {
+    justify-self: start;
+  }
+  .application.dgns-roll .summary .total .successes {
+    justify-self: center;
+  }
+  .application.dgns-roll .summary .total .triggers {
+    justify-self: end;
+  }
+  .application.dgns-roll .summary label.value {
+    font-size: var(--font-size-24);
+    font-family: var(--font-serif);
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .application.dgns-roll .summary label.legend {
+    font-size: var(--font-size-12);
+    font-family: var(--font-sans);
+    text-transform: uppercase;
+    font-weight: 700;
   }
 }
 @layer foundry, dgns;

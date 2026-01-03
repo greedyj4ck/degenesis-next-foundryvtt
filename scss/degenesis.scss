@@ -4,6 +4,7 @@
     Version  0.1
 
     */
+
 @forward "colors";
 
 @use "fonts"; // fonts classes
@@ -20,6 +21,6 @@
 @use "sheets/sheet.character" as sheetCharacter; // specific actorsheet classes
 @use "sheets/sheet.culture" as sheetCulture; // specific style for item / culture sheet */
 // apps
-@use "apps/rollDialog" as appRollDialog;
+@use "apps/app.roll" as appRollDialog;
 
 @layer foundry, dgns;

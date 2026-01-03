@@ -5,6 +5,7 @@ import item from "./item.mjs";
 import actor from "./actor.mjs";
 import hotbar from "./apps/hotbar.mjs";
 import handlebars from "./handlebars.mjs";
+import chatmessages from "./apps/chat.message.mjs";
 
 export default function () {
   // Foundry Default Applications
@@ -12,6 +13,7 @@ export default function () {
   pause();
   sidebarApp();
   handlebars();
+  chatmessages();
   //hotbar();
 
   // Custom Apps

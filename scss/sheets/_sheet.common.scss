@@ -5,10 +5,19 @@
   // global elements styling
   // dropdown classes
 
+  :root {
+    --dgns-line-width: 1px;
+    --dgns-thin-line-width: 1px;
+    --dgns-border-radius-small: 4px;
+  }
+
   .theme-dark,
   .theme-dark * {
     --dgns-ui-primary: var(--c-gold);
-    --dgns-ui-background: rgba(15, 15, 15, 0.97);
+    --dgns-ui-secondary: var(--c-gold-8);
+    --dgns-ui-background: rgba(15, 15, 15, 0.95);
+    --dgns-ui-tabs-primary: var(--c-gold-7);
+    --dgns-ui-tabs-secondary: var(--c-resin-7);
   }
   .theme-light, .theme-light * /* .application.sheet.dgns-character,
   .application.sheet.dgns-character.theme-light */ {
@@ -22,9 +31,12 @@
   }
 
   .application.sheet {
+    backdrop-filter: blur(4px);
     .mode-slider {
       margin-right: 5px;
     }
+
+    // Fix for minimizing application
     &.minimized {
       .window-header {
         .mode-slider {
@@ -33,6 +45,104 @@
         .window-title {
           visibility: visible;
         }
+      }
+    }
+
+    // TABS
+
+    .tabs {
+      display: flex;
+      overflow: hidden;
+      min-height: 32px;
+      max-height: 32px;
+      width: fit-content;
+      gap: 0;
+
+      align-self: center;
+      flex-direction: row;
+
+      padding: 3px;
+
+      align-items: center;
+      justify-content: center;
+      border: var(--dgns-line-width) solid var(--dgns-ui-tabs-primary);
+      border-radius: var(--dgns-border-radius-small);
+
+      a {
+        padding: 0px 10px;
+        //border: 2px solid var(--dgns-ui-primary);
+
+        font-family: var(--font-headers);
+        font-size: var(--font-size-14);
+        font-weight: 600;
+        text-transform: uppercase;
+        text-shadow: none;
+
+        position: relative;
+        color: var(--dgns-ui-primary);
+        line-height: normal;
+
+        &:hover {
+          color: var(--dgns-ui-accent);
+        }
+
+        &::after {
+          position: absolute;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 80px;
+          height: 40px;
+
+          top: 10px;
+
+          transition: opacity 300ms;
+
+          content: "&nbsp";
+          background: var(--dgns-ui-secondary);
+          filter: blur(10px);
+          border-radius: 50%;
+          pointer-events: none;
+          opacity: 0;
+        }
+
+        &.active::after {
+          opacity: 0.5;
+        }
+
+        /*  &.active {
+          background-color: var(--dgns-ui-primary);
+          color: var(--dgns-ui-background);
+        } */
+      }
+
+      &.vertical {
+        height: fit-content;
+        flex-direction: column;
+        min-height: 32px;
+        max-height: none;
+        min-width: 32px;
+        max-width: 32px;
+
+        a {
+          //background-color: aqua;
+          min-height: 32px;
+          padding: 10px 0px;
+
+          &::after {
+            top: 0;
+            left: 0;
+          }
+        }
+      }
+    }
+
+    .tab {
+      height: 100%;
+      flex-direction: column;
+      margin: 0px 0px;
+
+      &.active {
+        display: flex;
       }
     }
   }

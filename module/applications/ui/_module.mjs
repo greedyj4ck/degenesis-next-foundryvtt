@@ -1,1 +1,1 @@
-export { default as DegenesisGamePause } from "./gamePause.mjs";
+export { default as DGNSGamePause } from "./gamePause.mjs";

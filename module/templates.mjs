@@ -13,14 +13,3 @@ export async function preloadHandlebarsTemplates() {
 
   return await foundry.applications.handlebars.loadTemplates(paths);
 }
-
-//todo
-export async function registerHandlebarsHelpers() {
-  Handlebars.registerHelper("sheetEditMode", function (mode) {
-    return mode === 2 ? true : false;
-  });
-
-  Handlebars.registerHelper("isGM", function (options) {
-    return game.user.isGM;
-  });
-}

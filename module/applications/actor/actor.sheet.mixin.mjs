@@ -1,7 +1,8 @@
+/** @import HandlebarsApplicationMixin from '@client/applications/api/handlebars-application.mjs*/
+
 const { api, sheets } = foundry.applications;
 
-import TabsDgns from "../tabs.mjs";
-
+/** Class extending HandlebarsApplicationMixin */
 export default function ActorSheetMixin(Base) {
   return class DegenesisActorSheet extends api.HandlebarsApplicationMixin(
     Base

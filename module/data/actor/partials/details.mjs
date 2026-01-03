@@ -21,9 +21,25 @@ export default class DetailsFields {
       details: new SchemaField({
         age: new StringField({ label: "DGNS.Age" }),
         sex: new StringField({ label: "DGNS.Sex" }),
-        height: new StringField({ label: "DGNS.Age" }),
-        weight: new StringField({ label: "DGNS.Age" }),
-        experience: new StringField({ label: "DGNS.Experience" }),
+        height: new StringField({ label: "DGNS.Height" }),
+        weight: new StringField({ label: "DGNS.Weight" }),
+        experience: new SchemaField({
+          current: new NumberField({
+            integer: true,
+            nullable: false,
+            initial: 0,
+          }),
+          spent: new NumberField({
+            integer: true,
+            nullable: false,
+            initial: 0,
+          }),
+          total: new NumberField({
+            integer: true,
+            nullable: false,
+            initial: 0,
+          }),
+        }),
       }),
     };
   }

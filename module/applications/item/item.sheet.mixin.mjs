@@ -1,7 +1,7 @@
 const { api, sheets } = foundry.applications;
 
 export default function ItemSheetMixin(Base) {
-  return class DegenesisItemSheet extends api.HandlebarsApplicationMixin(Base) {
+  return class DGNSItemSheet extends api.HandlebarsApplicationMixin(Base) {
     static TABS = [];
 
     static MODES = {

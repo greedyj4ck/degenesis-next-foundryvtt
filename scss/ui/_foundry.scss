@@ -205,9 +205,18 @@
       font-weight: 500;
     }
 
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      var(--c-gold-9) 50%,
+      var(--c-gold-9) 30%,
+      transparent 100%
+    );
+    //background-color: rgba(0, 0, 0, 0.1);
+
     svg {
-      width: 100px;
-      height: 100px;
+      width: 100px !important;
+      height: 100px !important;
       fill: var(--dgns-ui-primary);
     }
   }
@@ -230,6 +239,10 @@
       }
     }
   }
+}
+
+.window-content {
+  backdrop-filter: none;
 }
 
 .app-v2--closing,

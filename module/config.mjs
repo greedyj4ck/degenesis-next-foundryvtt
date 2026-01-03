@@ -1,13 +1,7 @@
-//export const DEGENESIS = {};
-//export const CLUSTER = {};
-//export const MODULE = "degenesis";
+import { Damage } from "./logic/damage.mjs";
 
 // Namespace configuration
 const DEGENESIS = {};
-
-/**
- * Cultures, concepts and cults data was moved into separate entities (documents).
- */
 
 DEGENESIS.alignments = {
   ambition: {
@@ -569,6 +563,9 @@ DEGENESIS.weaponGroupSkill = {
     ego: "DGNS.Ego",
     trauma: "DGNS.Trauma",
   });
+
+DEGENESIS.standardDamageModifiers = Damage.standardModifiers;
+DEGENESIS.formHellDamageModifiers = Damage.fromHellModifiers;
 
 DEGENESIS.damageModifiers = {
   F: { blueprint: "+F", calculate: (force, triggers) => force },

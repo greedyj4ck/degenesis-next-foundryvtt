@@ -14,7 +14,9 @@ const {
 export default class SkillField extends SchemaField {
   constructor(attribute, label, schemaOptions = {}) {
     const fields = {
+      // Link to attribute
       attribute: new StringField({ initial: attribute }),
+      //Current value
       value: new NumberField({
         nullable: false,
         integer: true,
@@ -22,6 +24,7 @@ export default class SkillField extends SchemaField {
         min: 0,
         label: label,
       }),
+      // Limit during creation
       limit: new NumberField({
         nullable: false,
         integer: true,

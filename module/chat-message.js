@@ -9,7 +9,7 @@ import { DEG_Utility } from "./utility.js";
  * @extends { ChatMessage }
  *
  */
-export class DegenesisChatMessage extends ChatMessage {
+export class DGNSChatMessage extends ChatMessage {
   /** @override */
   async getHTML() {
     // Determine some metadata

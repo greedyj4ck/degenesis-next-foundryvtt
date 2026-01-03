@@ -1,1 +1,1 @@
-export default class DegenesisItem extends Item {}
+export default class DGNSItem extends Item {}

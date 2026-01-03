@@ -1,45 +1,17 @@
-@use "partials";
 @use "../colors";
+@use "partials";
+@use "partials/sheet.variables" as *;
 
 @layer dgns.sheets.character {
   .application.sheet.dgns-character {
-    background: var(--dgns-ui-background);
-    border: 2px solid var(--dgns-ui-primary);
-
-    .mode-slider {
-      margin-right: 5px;
-    }
+    background: (var(--dgns-ui-background));
+    border: var(--dgns-line-width) solid var(--dgns-ui-secondary);
+    background-repeat: repeat;
+    background-size: 600px;
 
     &:not(.minimized, .minimizing, .maximizing) {
       min-height: 850px;
       min-width: 700px;
-    }
-
-    &.minimized {
-      .window-header {
-        .mode-slider {
-          display: none !important;
-        }
-        .window-title {
-          visibility: visible;
-        }
-      }
-    }
-
-    svg {
-      width: 100%;
-      height: 100%;
-
-      .rectangle {
-        fill: none;
-        stroke: var(--dgns-ui-primary);
-        stroke-width: 1;
-      }
-      path.line {
-        fill: none;
-        stroke: var(--dgns-ui-primary);
-        stroke-width: 1;
-      }
     }
 
     .character-header {
@@ -54,6 +26,7 @@
         position: relative;
 
         .border {
+          --dgns-line-width: 0.5px; //override to thin some elements
           pointer-events: none;
           position: absolute;
           z-index: 10;
@@ -68,6 +41,32 @@
 
       .container-left {
         flex: 1;
+        display: flex;
+        flex-direction: row;
+        gap: 5px;
+
+        .content {
+          flex-grow: 1;
+        }
+
+        .modes-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          flex: 1;
+        }
+
+        .primalFocus {
+          flex: 2;
+          display: flex;
+          align-items: center;
+        }
+
+        .faithWillpower {
+          flex: 1;
+          display: flex;
+          align-items: center;
+        }
       }
       .container-middle {
         display: flex;
@@ -98,6 +97,7 @@
       }
 
       .container-left {
+        justify-content: space-evenly;
       }
 
       .container-center {
@@ -163,47 +163,12 @@
       }
     }
 
-    // TABS
-
-    .tabs {
+    .details-container {
       display: flex;
-      flex-direction: row;
-      border: none;
-      gap: 3px;
-      justify-content: center;
-
-      a {
-        padding: 0px 10px;
-        border: 2px solid var(--dgns-ui-primary);
-
-        font-family: var(--font-headers);
-        font-size: var(--font-size-14);
-        font-weight: 600;
-        text-transform: uppercase;
-        text-shadow: none;
-
-        color: var(--dgns-ui-primary);
-        line-height: normal;
-
-        &:hover {
-          color: var(--dgns-ui-accent);
-        }
-
-        &.active {
-          background-color: var(--dgns-ui-primary);
-          color: var(--dgns-ui-background);
-        }
-      }
-    }
-
-    .tab {
-      height: 100%;
-      margin: 0px 0px;
+      flex: 1;
       flex-direction: column;
-
-      &.active {
-        display: flex;
-      }
+      justify-content: center;
+      align-items: center;
     }
 
     .ccc-container {
@@ -440,6 +405,12 @@
             justify-content: center;
             align-items: center;
 
+            //todo: maybe move it to utility class or something
+            .disabled {
+              text-decoration: line-through;
+              color: gray;
+            }
+
             label,
             a {
               &.name {
@@ -470,6 +441,12 @@
     }
 
     // section specific
+
+    section.sheet-tabs {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
     /*  section {
       .history {

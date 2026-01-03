@@ -17,8 +17,13 @@
     ".old/**"
   ],
   "liveSassCompile.settings.generateMap": false,
+  "liveSassCompile.settings.autoprefix": [],
   //autoprefix, will auto add perfix like -webkit- -moz-..
-  "liveSassCompile.settings.autoprefix": ["> 1%", "last 2 versions"],
+  //"liveSassCompile.settings.autoprefix": ["> 1%", "last 2 versions"],
   "liveSassCompile.settings.showOutputWindowOn": "None",
-  "discord.enabled": true
+  "discord.enabled": true,
+  "files.exclude": {
+    "node_modules/": true,
+    "foundry/": true
+  }
 }

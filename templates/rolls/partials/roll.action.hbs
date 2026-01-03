@@ -1,0 +1,31 @@
+<div class="action">
+
+    <div class="header">{{attribute}} + {{skill}}</div>
+    <div class="section-difficulty">
+        <button type="button" data-action="manageDifficulty" data-method="decreaseDifficulty" data-prefix="{{prefix}}">
+            <i class="fas fa-minus"></i>
+        </button>
+        <div class="section-input">
+            <input class="field-input difficulty" type="number" name="{{prefix}}.difficulty" value="{{difficulty}}"
+                min="1" max="12" />
+            <label>Difficulty</label>
+        </div>
+
+        <button type="button" data-action="manageDifficulty" data-method="increaseDifficulty" data-prefix="{{prefix}}">
+            <i class="fas fa-plus"></i>
+        </button>
+    </div>
+</div>
+
+
+<div class="selection-group">
+    <label>{{localize "DGNS.Skill"}}</label>
+    <select name="{{prefix}}.skill" class="skill-selection">
+        <option value="">—</option>
+        {{#select skill}} {{!-- skill pochodzi z obiektu rzutu (primary lub secondary) --}}
+            {{#each availableSkills}}
+                <option value="{{this.id}}">{{this.label}}</option>
+            {{/each}}
+        {{/select}}
+    </select>
+</div>

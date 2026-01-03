@@ -16,7 +16,6 @@ export default class GeneralFields {
         encumbrance: new SchemaField({
           max: new NumberField({ initial: 0, integer: true }),
           current: new NumberField({ initial: 0, integer: true }),
-          override: new NumberField({ initial: 0, integer: true }),
         }),
         armor: new NumberField({ initial: 0, integer: true }),
         actionModifier: new NumberField({ initial: 0, integer: true }),

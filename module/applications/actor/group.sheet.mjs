@@ -8,7 +8,7 @@ const { TextEditor } = foundry.applications.ux;
 
 import ActorSheetMixin from "./actor.sheet.mixin.mjs";
 
-export default class DegenesisGroupSheet extends ActorSheetMixin(
+export default class DGNSGroupSheet extends ActorSheetMixin(
   sheets.ActorSheetV2
 ) {
   static DEFAULT_OPTIONS = {

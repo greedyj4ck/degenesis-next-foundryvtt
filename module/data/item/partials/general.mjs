@@ -4,6 +4,7 @@ const {
   StringField,
   HTMLField,
   BooleanField,
+  ObjectField,
   ArrayField,
   IntegerSortField,
   DocumentIdField,
@@ -103,13 +104,9 @@ export default class GeneralFields {
     return {
       qualities: new ArrayField(
         new SchemaField({
-          name: new StringField({}),
-          values: new ArrayField(
-            new SchemaField({
-              name: new StringField({}),
-              value: new StringField({}),
-            })
-          ),
+          key: new StringField({ required: true }), //quality object key
+          enabled: new BooleanField({ initial: true }), // toggling state
+          def: new ObjectField({ initial: {} }), //entire quality definition
         })
       ),
     };

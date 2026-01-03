@@ -4,7 +4,10 @@
 import CachedReferenceField from "../data/fields/cached-reference-field.mjs";
 
 /** Dialogs  */
-import DGNSActionRollDialog from "../applications/roll/roll-action.mjs";
+import DGNSActionRollDialog from "../applications/roll/action.dialog.mjs";
+import DGNSCombinationRollDialog from "../applications/roll/combination.dialog.mjs";
+
+/** Roll logic and helper functions  */
 
 /**
  *
@@ -13,7 +16,7 @@ import DGNSActionRollDialog from "../applications/roll/roll-action.mjs";
  * @inheritdoc
  *
  */
-export default class DegenesisActor extends Actor {
+export default class DGNSActor extends Actor {
   static DEFAULT_ICON = "systems/degenesisnext/assets/tokens/default.png";
 
   // #region Data Preparation
@@ -171,10 +174,58 @@ export default class DegenesisActor extends Actor {
     return hasUpdates ? updates : null;
   }
 
-  // #region Rolls
-  async actionRoll(skill) {
-    let config = await DGNSActionRollDialog.create({ skill: skill });
-    return config;
+  // #region Rolls and rolls data preparation
+  // *========================================*
+
+  /**
+   * Setup roll data for skill check.
+   * @param {*} attribute
+   * @param {*} skill
+   */
+  setupSkill(attribute, skill) {
+    return { dialogData, cardData, rollData };
   }
+
+  // *----------------------------------*
+
+  async actionRoll(attribute, skill) {
+    let actionNumber = this.system.actionNumbers[skill];
+
+    let rollConfig = {
+      actor: this,
+      definiton: {
+        attribute: attribute,
+        skill: skill,
+        actionNumber: actionNumber,
+      },
+    };
+
+    console.log(`Setting action roll for: ${attribute}+${skill}`);
+    console.log(`Action number: ${actionNumber}`);
+
+    await DGNSActionRollDialog.create(rollConfig);
+  }
+
+  // *----------------------------------*
+
+  async combinationRoll(attribute, skill) {
+    let actionNumber = this.system.actionNumbers[skill];
+    let rollConfig = {
+      actor: this,
+      definiton: {
+        primary: {
+          attribute: attribute,
+          skill: skill,
+          actionNumber: actionNumber,
+        },
+      },
+    };
+
+    console.log(`Setting action roll for: ${attribute}+${skill}`);
+    console.log(`Action number: ${actionNumber}`);
+
+    await DGNSCombinationRollDialog.create(rollConfig);
+  }
+
   // #endregion
 }

@@ -1,3 +1,5 @@
+@use "sheet.variables" as *;
+
 .sheet-title {
   margin: 0 auto;
   width: 100%;
@@ -11,12 +13,12 @@
     path.square {
       fill: none;
       stroke: var(--dgns-ui-primary);
-      stroke-width: 2;
+      stroke-width: var(--dgns-line-width);
     }
     path.line {
       fill: none;
       stroke: var(--dgns-ui-primary);
-      stroke-width: 2;
+      stroke-width: var(--dgns-line-width);
     }
   }
 
@@ -80,12 +82,12 @@
     path.square {
       fill: none;
       stroke: var(--dgns-ui-primary);
-      stroke-width: 2;
+      stroke-width: var(--dgns-line-width);
     }
     path.line {
       fill: none;
       stroke: var(--dgns-ui-primary);
-      stroke-width: 2;
+      stroke-width: var(--dgns-line-width);
     }
   }
 

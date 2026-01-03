@@ -71,11 +71,11 @@ const icons = {
 };
 
 const vision = [
-  { value: 0, icon: icons[0] },
-  { value: 1, icon: icons[1] },
-  { value: 2, icon: icons[2] },
-  { value: 3, icon: icons[3] },
-  { value: 4, icon: icons[4] },
+  { value: 0, icon: icons[0], tooltip: "0" },
+  { value: 1, icon: icons[1], tooltip: "-1" },
+  { value: 2, icon: icons[2], tooltip: "-2" },
+  { value: 3, icon: icons[3], tooltip: "-3" },
+  { value: 4, icon: icons[4], tooltip: "-4" },
 ];
 
 export default class VisionElement extends StyleSheetMixin(
@@ -200,7 +200,13 @@ export default class VisionElement extends StyleSheetMixin(
       const item = document.createElement("div");
       item.className = "vision-dropdown-item";
       item.setAttribute("data-value", vision.value);
+
+      const malus = document.createElement("label");
+      malus.className = "vision-malus";
+      malus.textContent = vision.tooltip;
+
       item.innerHTML = vision.icon;
+      item.appendChild(malus);
 
       item.addEventListener("click", (ev) => {
         let selection = ev.target.closest("div");
@@ -256,7 +262,6 @@ export default class VisionElement extends StyleSheetMixin(
       dropdown = this.firstChild.lastChild;
     }
 
-    dropdown.style.display =
-      dropdown.style.display === "block" ? "none" : "block";
+    dropdown.classList.toggle("active");
   }
 }

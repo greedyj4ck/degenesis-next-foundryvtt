@@ -1,3 +1,5 @@
+/** @import ActorSheetV2 from '@client/applications/sheets/actor-sheet.mjs*/
+
 /**
  * Extend the basic ActorSheet class to suppose system-specific logic and functionality.
  * @abstract
@@ -8,7 +10,7 @@ const { TextEditor } = foundry.applications.ux;
 
 import ActorSheetMixin from "./actor.sheet.mixin.mjs";
 
-export default class DegenesisCharacterSheet extends ActorSheetMixin(
+export default class DGNSCharacterSheet extends ActorSheetMixin(
   sheets.ActorSheetV2
 ) {
   static DEFAULT_OPTIONS = {
@@ -19,7 +21,8 @@ export default class DegenesisCharacterSheet extends ActorSheetMixin(
       //
       unsetGroup: this.unsetGroup,
       // roll actions
-      rollAction: this.#rollAction,
+      rollAction: this.#onActionRoll,
+      rollCombination: this._onRollCombination,
     },
 
     form: {
@@ -43,6 +46,12 @@ export default class DegenesisCharacterSheet extends ActorSheetMixin(
     actorHeader: {
       template:
         "systems/degenesisnext/templates/actors/character.sheet/cs.header.hbs",
+      templates: [
+        "systems/degenesisnext/templates/actors/character.sheet/header.partials/details.hbs",
+        "systems/degenesisnext/templates/actors/character.sheet/header.partials/modes.hbs",
+        "systems/degenesisnext/templates/actors/character.sheet/header.partials/currency.hbs",
+        "systems/degenesisnext/templates/actors/character.sheet/header.partials/xp.hbs",
+      ],
     },
     tabs: {
       template:
@@ -104,7 +113,15 @@ export default class DegenesisCharacterSheet extends ActorSheetMixin(
         { id: "inventory", label: "DGNS.Inventory" },
         { id: "history", label: "DGNS.History" },
       ],
-      //labelPrefix: "DGNS.tab",
+    },
+    header: {
+      initial: "details",
+      tabs: [
+        { id: "details", label: "DGNS.Details", icon: "" },
+        { id: "modes", label: "DGNS.Modes", icon: "" },
+        { id: "currency", label: "DGNS.Currency", icon: "" },
+        { id: "xp", label: "DGNS.Experience", icon: "" },
+      ],
     },
     history: {
       initial: "group",
@@ -138,8 +155,9 @@ export default class DegenesisCharacterSheet extends ActorSheetMixin(
       group: this.actor.system.group,
       // Tabs
       tabGroups: this.tabGroups,
-      mainTabs: this._prepareTabs("main"),
-      historyTabs: this._prepareTabs("history"),
+      mainTabs: this._prepareTabs("main"), // main navigation groups
+      headerTabs: this._prepareTabs("header"), // header display groups
+      historyTabs: this._prepareTabs("history"), // history subtabs
 
       // Enriched fields
 
@@ -164,9 +182,11 @@ export default class DegenesisCharacterSheet extends ActorSheetMixin(
 
   async _preparePartContext(partId, context, options) {
     //context = await super._preparePartContext(partId, context, options);
+    // now that i am thinking, if i need it anyway
 
     if (context.mainTabs?.[partId]) {
       context.tab = context.mainTabs[partId];
+
       if (partId === "history") {
         context.subtabs = context.historyTabs;
       }
@@ -183,18 +203,19 @@ export default class DegenesisCharacterSheet extends ActorSheetMixin(
    */
   createContextMenus() {
     // menus needs to be defined as function
+
     function _actionRollContextOptions() {
       return [
         {
           name: "Action roll",
-          callback: (target) => {
-            console.log(`Context action`);
+          callback: async (target) => {
+            await this._onActionRoll(null, target);
           },
         },
         {
           name: "Combination roll",
-          callback: (target) => {
-            console.log(this);
+          callback: async (target) => {
+            await this._onCombinationRoll(null, target);
           },
         },
       ];
@@ -202,7 +223,7 @@ export default class DegenesisCharacterSheet extends ActorSheetMixin(
 
     // appv2 helper function
     this._createContextMenu(
-      _actionRollContextOptions,
+      _actionRollContextOptions.bind(this),
       `[data-action=rollAction]`,
       {
         hookName: "getActionRollContextOptions",
@@ -219,6 +240,7 @@ export default class DegenesisCharacterSheet extends ActorSheetMixin(
   }
 
   activateListeners(html) {
+    console.log(`Activate listeners`);
     super.activateListeners(html);
   }
 
@@ -276,16 +298,25 @@ export default class DegenesisCharacterSheet extends ActorSheetMixin(
     return super._onDrop(event);
   }
 
-  // character actions
-  static async #rollAction(event, target) {
-    event.preventDefault();
+  // *--- Static Methods for Actions ---*
+  // Simple wrappers to use
+  static async #onActionRoll(event, target) {
+    await this._onActionRoll(event, target);
+  }
 
+  async _onCombinationRoll(event, target) {
+    if (event) event.preventDefault();
     const skill = target.dataset.skill;
-    console.log(`Action roll for ${skill}`);
+    const attribute = target.dataset.attribute;
+    await this.actor.combinationRoll(attribute, skill);
+  }
 
-    await this.actor.actionRoll(skill);
-
-    //  await this.actor.rollAbilityCheck(ability); actor logic
+  // Main method to be used by click and context menu
+  async _onActionRoll(event, target) {
+    if (event) event.preventDefault();
+    const skill = target.dataset.skill;
+    const attribute = target.dataset.attribute;
+    await this.actor.actionRoll(attribute, skill);
   }
 
   /**
