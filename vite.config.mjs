@@ -22,10 +22,13 @@ export default defineConfig({
       output: {
         entryFileNames: "[name].mjs",
         assetFileNames: (assetInfo) => {
-          // Vite domyślnie nazywa plik stylu "style.css" w trybie lib
-          if (assetInfo.name && assetInfo.name.endsWith(".css")) {
+          const names = assetInfo.names || [];
+          const isCss = names.some((n) => n.endsWith(".css"));
+
+          if (isCss) {
             return "styles/degenesis.css";
           }
+
           return "assets/[name].[ext]";
         },
       },

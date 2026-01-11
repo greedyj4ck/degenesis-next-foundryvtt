@@ -11,7 +11,9 @@ export default class DegenesisWeaponSheet extends ItemSheetMixin(
   sheets.ItemSheetV2
 ) {
   static DEFAULT_OPTIONS = {
-    actions: {},
+    actions: {
+      manageQuality: this.#onManageQuality,
+    },
     form: {
       submitOnChange: true,
     },
@@ -66,6 +68,7 @@ export default class DegenesisWeaponSheet extends ItemSheetMixin(
         { id: "description", label: "DGNS.Description" },
         { id: "details", label: "DGNS.Details" },
         { id: "qualities", label: "DGNS.Qualities" },
+        { id: "mods", label: "DGNS.Mods" },
         { id: "effects", label: "DGNS.Effects" },
       ],
     },
@@ -77,6 +80,7 @@ export default class DegenesisWeaponSheet extends ItemSheetMixin(
 
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
+    const availableQualities = Qualities.weapon;
 
     //todo: move standard stuff to mixin
     Object.assign(context, {
@@ -88,8 +92,23 @@ export default class DegenesisWeaponSheet extends ItemSheetMixin(
       isEditable: this.isEditable,
 
       // System data
-      qualities: Qualities.weapon,
-      qualities2: Qualities.agent,
+      qualities: availableQualities.map((def) => {
+        const data = this.document.system.qualities.find(
+          (q) => q.key === def.key
+        );
+        return {
+          key: def.key,
+          label: def.label,
+          description: def.description,
+          // Jeśli nie ma w bazie, domyślnie jest wyłączona (false)
+          enabled: data ? data.enabled : false,
+          // Mapujemy inputy, wstrzykując aktualne wartości z bazy lub defaulty
+          inputs: (def.inputs || []).map((input) => ({
+            ...input,
+            value: data?.values?.[input.name] ?? input.default,
+          })),
+        };
+      }),
 
       // Tabs
       tabGroups: this.tabGroups,
@@ -104,6 +123,9 @@ export default class DegenesisWeaponSheet extends ItemSheetMixin(
 
     console.log(`WeaponSheet | Context`);
     console.log(context);
+
+    console.log(`WeaponSheet | Qualities`);
+    console.log(context.system.qualities);
     return context;
   }
 
@@ -123,5 +145,48 @@ export default class DegenesisWeaponSheet extends ItemSheetMixin(
    */
   get title() {
     return `${this.document.name}`;
+  }
+
+  /* ---------------------------------- */
+  /*              Listeners             */
+  /* ---------------------------------- */
+
+  activateListeners(html) {
+    super.activateListeners(this.element);
+    //manual binding for change event for inputs
+    html.querySelectorAll(".quality-input").forEach((input) => {
+      input.addEventListener("change", (event) => {
+        this._onManageQuality(event, event.currentTarget);
+      });
+    });
+  }
+
+  /* ---------------------------------- */
+  /*              Qualities             */
+  /* ---------------------------------- */
+
+  /** Static wrapper for logic. */
+  static async #onManageQuality(event, target) {
+    await this._onManageQuality(event, target);
+  }
+
+  async _onManageQuality(event, target) {
+    if (event) event.preventDefault();
+    let { field = null, value = null } = {};
+
+    const action = target.dataset.type;
+    const qualityKey = target.closest(".quality")?.dataset.qualityKey;
+
+    if (action === "update") {
+      field = target.dataset.field;
+      value = target.value;
+    }
+
+    return await this.document._manageQualities(
+      action,
+      qualityKey,
+      field,
+      value
+    );
   }
 }

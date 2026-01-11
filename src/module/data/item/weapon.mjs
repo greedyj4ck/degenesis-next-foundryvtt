@@ -18,12 +18,9 @@ export default class WeaponData extends BaseItemData {
       ...GeneralFields.weaponGroup, // group field with weaponOptions
 
       ...CombatFields.damage,
-      //...CombatFields.damageBonus,
       ...CombatFields.handling,
       ...CombatFields.distance,
-      //...CombatFields.magazine,
       ...CombatFields.ammunition,
-      //...CombatFields.caliber,
       ...CombatFields.skills,
     };
   }

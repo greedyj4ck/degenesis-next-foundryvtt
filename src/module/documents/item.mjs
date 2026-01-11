@@ -1,7 +1,83 @@
 import { WEAPON_GROUPS_SKILLS } from "../logic/config/items.mjs";
-import { Qualities } from "../logic/quality.mjs";
+import { Qualities, QUALITY_DEFINITIONS } from "../logic/quality.mjs";
 
 export default class DGNSItem extends Item {
+  /* -------------------------------------------------------------------------- */
+  /*                                  Qualities                                 */
+  /* -------------------------------------------------------------------------- */
+
+  async _manageQualities(
+    action,
+    qualityKey = null,
+    field = null,
+    value = null
+  ) {
+    console.log(
+      `Manage quality fired. ${action} | ${qualityKey} | ${field} | ${value}|`
+    );
+
+    if (!qualityKey) return;
+
+    switch (action) {
+      case "toggle":
+        return this._toggleQuality(qualityKey);
+      case "update":
+        return this._updateQuality(qualityKey, field, value);
+    }
+  }
+
+  async _toggleQuality(qualityKey) {
+    if (!qualityKey) return;
+
+    // find current qualities
+    const quality = this.system.qualities.find((q) => q.key === qualityKey);
+
+    let qualities = {};
+
+    // create new one if do not exist
+    if (quality) {
+      const newState = !quality.enabled;
+      qualities = this.system.qualities.map((q) =>
+        q.key === qualityKey ? { ...q, enabled: newState } : q
+      );
+    } else {
+      const defaultValues = {};
+
+      const definition = QUALITY_DEFINITIONS[qualityKey];
+      definition.inputs?.forEach((i) => (defaultValues[i.name] = i.default));
+      qualities = [
+        ...this.system.qualities,
+        {
+          key: qualityKey,
+          enabled: true,
+          values: defaultValues,
+        },
+      ];
+    }
+
+    await this.update({ "system.qualities": qualities });
+
+    /*     if (definition?.activeEffects) {
+      if (newState) await this._applyQualityEffects(definition, qualityKey);
+      else await this._removeQualityEffects(qualityKey);
+    } */
+  }
+
+  async _updateQuality(qualityKey, field, value) {
+    if (!qualityKey || !field || !value) return;
+
+    const qualities = this.system.qualities.map((q) => {
+      if (q.key !== qualityKey) return q;
+
+      return {
+        ...q,
+        values: { ...q.values, [field]: value },
+      };
+    });
+
+    return this.update({ "system.qualities": qualities });
+  }
+
   /* -------------------------------------------------------------------------- */
   /*                                   Getters                                  */
   /* -------------------------------------------------------------------------- */
@@ -10,8 +86,6 @@ export default class DGNSItem extends Item {
    * Return true if it is a weapon within melee range.
    */
   get isMelee() {
-    console.log(`isMelee getter`);
-    console.log(this);
     if (this.type === "weapon") {
       return WEAPON_GROUPS_SKILLS[this.system.group] == "projectiles" ||
         this.system.group == "sonic"

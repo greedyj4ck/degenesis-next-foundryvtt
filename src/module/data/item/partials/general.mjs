@@ -114,7 +114,7 @@ export default class GeneralFields {
         new SchemaField({
           key: new StringField({ required: true }), //quality object key
           enabled: new BooleanField({ initial: true }), // toggling state
-          def: new ObjectField({ initial: {} }), //entire quality definition
+          values: new ObjectField({ initial: {} }),
         })
       ),
     };

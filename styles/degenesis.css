@@ -854,7 +854,7 @@ svg path.line {
   .theme-dark * {
     --dgns-ui-primary: var(--c-gold);
     --dgns-ui-secondary: var(--c-gold-8);
-    --dgns-ui-background: hsla(from var(--dgns-ui-secondary) h 30 4/ 0.98);
+    --dgns-ui-background: hsla(from var(--dgns-ui-secondary) h 0 6/ 0.98);
     --dgns-ui-tabs-primary: var(--c-gold-7);
     --dgns-ui-tabs-secondary: var(--c-resin-7);
   }
@@ -866,6 +866,11 @@ svg path.line {
     --dgns-ui-control-bg: #f0f0f0fa;
     --dgns-ui-hover-control-content: rgba(240, 240, 240, 0.98);
     --dgns-ui-hover-control-bg: var(--c-pred);
+  }
+  .scrollable {
+    scrollbar-gutter: auto;
+    padding: 0;
+    margin: 0;
   }
   .application.sheet {
     backdrop-filter: blur(4px);
@@ -2053,6 +2058,65 @@ svg path.line {
   }
   .application.sheet.dgns-weapon section.details .container .field.centered label {
     padding: 0;
+  }
+  .application.sheet.dgns-weapon section.qualities {
+    /*  .qualities-grid {
+      display: grid;
+      gap: 5px;
+      grid-template-columns: repeat(auto-fill, minmax(30%, 1fr));
+      grid-template-rows: ;
+    } */
+  }
+  .application.sheet.dgns-weapon section.qualities .qualities-grid {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: 1fr 1fr;
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
+  .application.sheet.dgns-weapon section.qualities .qualities-grid fieldset {
+    display: flex;
+    justify-content: center;
+    position: relative;
+  }
+  .application.sheet.dgns-weapon section.qualities label {
+    text-align: right;
+    font-family: var(--font-serif);
+    font-size: var(--font-size-12);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .application.sheet.dgns-weapon section.qualities .fieldset-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  .application.sheet.dgns-weapon section.qualities .fieldset-content .inputs {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: stretch;
+    align-items: stretch;
+  }
+  .application.sheet.dgns-weapon section.qualities .fieldset-content .inputs input {
+    padding: 0;
+    text-align: center;
+    max-height: 26px;
+    max-width: 40px;
+  }
+  .application.sheet.dgns-weapon section.qualities .fieldset-content .inputs input[type=text] {
+    flex-grow: 1;
+    max-width: 100%;
+  }
+  .application.sheet.dgns-weapon section.qualities .fieldset-content .inputs .input {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    flex-grow: 1;
   }
   .application.sheet.dgns-weapon .checkbox-row {
     display: flex;

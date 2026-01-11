@@ -138,37 +138,134 @@ const Damage = {
 const InputDifficulty = {
   name: "difficulty",
   label: "DGNS.Difficulty",
-  type: "Number",
+  type: "number",
   default: 1
 };
 const InputAngle = {
   name: "angle",
   label: "DGNS.Angle",
-  type: "Number",
+  type: "number",
   default: 45
 };
 const InputRadius = {
   name: "radius",
   label: "DGNS.Radius",
-  type: "Number",
+  type: "number",
   default: 2
 };
 const InputTime = {
   name: "time",
   label: "DGNS.Time",
-  type: "Number",
+  type: "number",
   default: 1
 };
 const InputDamage = {
   name: "damage",
   label: "DGNS.Damage",
-  type: "Number",
+  type: "number",
+  default: 1
+};
+const InputTrigger = {
+  name: "trigger",
+  label: "DGNS.Trigger",
+  type: "number",
+  default: 1
+};
+const InputArmorRating = {
+  name: "armorRating",
+  label: "DGNS.ArmorRating",
+  type: "number",
+  default: 1
+};
+const InputRounds = {
+  name: "rounds",
+  label: "DGNS.Rounds",
+  type: "number",
+  default: 1
+};
+const InputPenalty = {
+  name: "penalty",
+  label: "DGNS.Penalty",
+  type: "number",
+  default: 1
+};
+const InputBonus = {
+  name: "bonus",
+  label: "DGNS.Bonus",
+  type: "number",
+  default: 1
+};
+const InputEnemyType = {
+  name: "enemyType",
+  label: "DGNS.EnemyType",
+  type: "text",
+  default: 1
+};
+const InputPotency = {
+  name: "potency",
+  label: "DGNS.Potency",
+  type: "number",
+  default: 1
+};
+const InputEffect = {
+  name: "effect",
+  label: "DGNS.Effect",
+  type: "text",
+  default: ""
+};
+const InputDuration = {
+  name: "duration",
+  label: "DGNS.Duration",
+  type: "text",
+  default: ""
+};
+const InputTarget = {
+  name: "target",
+  label: "DGNS.Target",
+  type: "text",
+  default: ""
+};
+const InputDesporeing = {
+  name: "desporeing",
+  label: "DGNS.Desporeing",
+  type: "text",
+  default: ""
+};
+const InputTargetGroup = {
+  name: "targetGroup",
+  label: "DGNS.TargetGroup",
+  type: "text",
+  default: ""
+};
+const InputArmor = {
+  name: "armor",
+  label: "DGNS.Armor",
+  type: "number",
+  default: 1
+};
+const InputCriticalDamage = {
+  name: "criticalDamage",
+  label: "DGNS.CriticalDamageRating",
+  type: "number",
+  default: 1
+};
+const InputBonusSuccesses = {
+  name: "bonusSuccesses",
+  label: "DGNS.BonusSuccesses",
+  type: "number",
+  default: 1
+};
+const InputRating = {
+  name: "rating",
+  label: "DGNS.Rating",
+  type: "number",
   default: 1
 };
 const QUALITY_DEFINITIONS = {
+  // Weapon Qualities
   areaDamage: {
-    label: "DGNS.QUALITY.AreaDamage.Name",
-    description: "DGNS.Quality.AreaDamage.Description",
+    label: "DGNS.QUALITY.areaDamage.name",
+    description: "DGNS.QUALITY.areaDamage.description",
     category: "passive",
     itemTypes: ["weapon"],
     inputs: [InputAngle],
@@ -179,8 +276,8 @@ const QUALITY_DEFINITIONS = {
     activeEffects: null
   },
   armorPiercing: {
-    label: "DGNS.QUALITY.ArmorPiercing.Name",
-    description: "DGNS.Quality.ArmorPiercing.Description",
+    label: "DGNS.QUALITY.armorPiercing.name",
+    description: "DGNS.QUALITY.armorPiercing.description",
     category: "passive",
     itemTypes: ["weapon"],
     inputs: [],
@@ -191,7 +288,7 @@ const QUALITY_DEFINITIONS = {
     activeEffects: () => {
       return [
         {
-          label: "DGNS.QUALITY.ArmorPiercing.Name",
+          label: "DGNS.QUALITY.armorPiercing.name",
           key: "system.flags.armorPiercing",
           value: true,
           mode: CONST.ACTIVE_EFFECT_MODES.OVERRIDE
@@ -200,8 +297,8 @@ const QUALITY_DEFINITIONS = {
     }
   },
   biometricallyEncoded: {
-    label: "DGNS.QUALITY.BiometricallyEncoded.Name",
-    description: "DGNS.Quality.BiometricallyEncoded.Description",
+    label: "DGNS.QUALITY.biometricallyEncoded.name",
+    description: "DGNS.QUALITY.biometricallyEncoded.description",
     category: "active",
     itemTypes: ["weapon"],
     inputs: [InputDifficulty],
@@ -212,8 +309,8 @@ const QUALITY_DEFINITIONS = {
     activeEffects: null
   },
   blunt: {
-    label: "DGNS.QUALITY.Blunt.Name",
-    description: "DGNS.Quality.Blunt.Description",
+    label: "DGNS.QUALITY.blunt.name",
+    description: "DGNS.QUALITY.blunt.description",
     category: "passive",
     itemTypes: ["weapon"],
     inputs: [],
@@ -224,7 +321,7 @@ const QUALITY_DEFINITIONS = {
     activeEffects: () => {
       return [
         {
-          label: "DGNS.QUALITY.Blunt.Name",
+          label: "DGNS.QUALITY.blunt.name",
           key: "system.flags.blunt",
           value: true,
           mode: CONST.ACTIVE_EFFECT_MODES.OVERRIDE
@@ -233,10 +330,10 @@ const QUALITY_DEFINITIONS = {
     }
   },
   camo: {
-    label: "DGNS.QUALITY.Camo.Name",
-    description: "DGNS.Quality.Camo.Description",
+    label: "DGNS.QUALITY.camo.name",
+    description: "DGNS.QUALITY.camo.description",
     category: "passive",
-    itemTypes: ["weapon"],
+    itemTypes: ["weapon", "armor"],
     inputs: [InputDifficulty],
     chatButtons: null,
     onItemUse: null,
@@ -245,8 +342,8 @@ const QUALITY_DEFINITIONS = {
     activeEffects: null
   },
   cloud: {
-    label: "DGNS.QUALITY.Cloud.Name",
-    description: "DGNS.Quality.Cloud.Description",
+    label: "DGNS.QUALITY.cloud.name",
+    description: "DGNS.QUALITY.cloud.description",
     category: "passive",
     itemTypes: ["weapon"],
     inputs: [InputRadius, InputTime],
@@ -257,8 +354,8 @@ const QUALITY_DEFINITIONS = {
     activeEffects: null
   },
   dazed: {
-    label: "DGNS.QUALITY.Dazed.Name",
-    description: "DGNS.Quality.Dazed.Description",
+    label: "DGNS.QUALITY.dazed.name",
+    description: "DGNS.QUALITY.dazed.description",
     category: "passive",
     itemTypes: ["weapon"],
     inputs: [InputDamage],
@@ -269,8 +366,8 @@ const QUALITY_DEFINITIONS = {
     activeEffects: null
   },
   deviation: {
-    label: "DGNS.QUALITY.Deviation.Name",
-    description: "DGNS.Quality.Deviation.Description",
+    label: "DGNS.QUALITY.deviation.name",
+    description: "DGNS.QUALITY.deviation.description",
     category: "passive",
     itemTypes: ["weapon"],
     inputs: [],
@@ -286,6 +383,281 @@ const QUALITY_DEFINITIONS = {
       return { distance: finalDistance };
     },
     activeEffects: null
+  },
+  doubleBarreled: {
+    label: "DGNS.QUALITY.doubleBarreled.name",
+    description: "DGNS.QUALITY.doubleBarreled.description",
+    category: "passive",
+    itemTypes: ["weapon"],
+    inputs: []
+  },
+  entangled: {
+    label: "DGNS.QUALITY.entangled.name",
+    description: "DGNS.QUALITY.entangled.description",
+    category: "passive",
+    itemTypes: ["weapon"],
+    inputs: [InputPenalty]
+  },
+  explosive: {
+    label: "DGNS.QUALITY.explosive.name",
+    description: "DGNS.QUALITY.explosive.description",
+    category: "passive",
+    itemTypes: ["weapon"],
+    inputs: []
+  },
+  fatal: {
+    label: "DGNS.QUALITY.fatal.name",
+    description: "DGNS.QUALITY.fatal.description",
+    category: "passive",
+    itemTypes: ["weapon"],
+    inputs: []
+  },
+  fireHazardous: {
+    label: "DGNS.QUALITY.fireHazardous.name",
+    description: "DGNS.QUALITY.fireHazardous.description",
+    category: "passive",
+    itemTypes: ["weapon"],
+    inputs: []
+  },
+  fragile: {
+    label: "DGNS.QUALITY.fragile.name",
+    description: "DGNS.QUALITY.fragile.description",
+    category: "passive",
+    itemTypes: ["weapon"],
+    inputs: []
+  },
+  impact: {
+    label: "DGNS.QUALITY.impact.name",
+    description: "DGNS.QUALITY.impact.description",
+    category: "passive",
+    itemTypes: ["weapon"],
+    inputs: [InputTrigger]
+  },
+  jamming: {
+    label: "DGNS.QUALITY.jamming.name",
+    description: "DGNS.QUALITY.jamming.description",
+    category: "passive",
+    itemTypes: ["weapon"],
+    inputs: []
+  },
+  muzzleLoader: {
+    label: "DGNS.QUALITY.muzzleLoader.name",
+    description: "DGNS.QUALITY.muzzleLoader.description",
+    category: "passive",
+    itemTypes: ["weapon"],
+    inputs: []
+  },
+  outOfControl: {
+    label: "DGNS.QUALITY.outOfControl.name",
+    description: "DGNS.QUALITY.outOfControl.description",
+    category: "passive",
+    itemTypes: ["weapon"],
+    inputs: [InputDifficulty]
+  },
+  piercing: {
+    label: "DGNS.QUALITY.piercing.name",
+    description: "DGNS.QUALITY.piercing.description",
+    category: "passive",
+    itemTypes: ["weapon"],
+    inputs: [InputArmorRating]
+  },
+  salvoes: {
+    label: "DGNS.QUALITY.salvoes.name",
+    description: "DGNS.QUALITY.salvoes.description",
+    category: "passive",
+    itemTypes: ["weapon"],
+    inputs: [InputRounds]
+  },
+  scatter: {
+    label: "DGNS.QUALITY.scatter.name",
+    description: "DGNS.QUALITY.scatter.description",
+    category: "passive",
+    itemTypes: ["weapon"],
+    inputs: []
+  },
+  sensitive: {
+    label: "DGNS.QUALITY.sensitive.name",
+    description: "DGNS.QUALITY.sensitive.description",
+    category: "passive",
+    itemTypes: ["weapon"],
+    inputs: []
+  },
+  smoothRunning: {
+    label: "DGNS.QUALITY.smoothRunning.name",
+    description: "DGNS.QUALITY.smoothRunning.description",
+    category: "passive",
+    itemTypes: ["weapon"],
+    inputs: [InputTrigger]
+  },
+  special: {
+    label: "DGNS.QUALITY.special.name",
+    description: "DGNS.QUALITY.special.description",
+    category: "passive",
+    itemTypes: ["weapon"],
+    inputs: []
+  },
+  specialDamage: {
+    label: "DGNS.QUALITY.specialDamage.name",
+    description: "DGNS.QUALITY.specialDamage.description",
+    category: "passive",
+    itemTypes: ["weapon"],
+    inputs: [InputEnemyType, InputDamage]
+  },
+  standard: {
+    label: "DGNS.QUALITY.standard.name",
+    description: "DGNS.QUALITY.standard.description",
+    category: "passive",
+    itemTypes: ["weapon"],
+    inputs: [InputBonus]
+  },
+  talisman: {
+    label: "DGNS.QUALITY.talisman.name",
+    description: "DGNS.QUALITY.talisman.description",
+    category: "passive",
+    itemTypes: ["weapon"],
+    inputs: [InputBonus]
+  },
+  terrifying: {
+    label: "DGNS.QUALITY.terrifying.name",
+    description: "DGNS.QUALITY.terrifying.description",
+    category: "passive",
+    itemTypes: ["weapon", "armor"],
+    inputs: [InputDifficulty]
+  },
+  thunderStrike: {
+    label: "DGNS.QUALITY.thunderStrike.name",
+    description: "DGNS.QUALITY.thunderStrike.description",
+    category: "passive",
+    itemTypes: ["weapon"],
+    inputs: []
+  },
+  extendedReload: {
+    label: "DGNS.QUALITY.extendedReload.name",
+    description: "DGNS.QUALITY.extendedReload.description",
+    category: "passive",
+    itemTypes: ["weapon"],
+    inputs: [InputTime]
+  },
+  gruesome: {
+    label: "DGNS.QUALITY.gruesome.name",
+    description: "DGNS.QUALITY.gruesome.description",
+    category: "passive",
+    itemTypes: ["weapon"],
+    inputs: [InputRating]
+  },
+  stun: {
+    label: "DGNS.QUALITY.stun.name",
+    description: "DGNS.QUALITY.stun.description",
+    category: "passive",
+    itemTypes: ["weapon"],
+    inputs: [InputRating]
+  },
+  panic: {
+    label: "DGNS.QUALITY.panic.name",
+    description: "DGNS.QUALITY.panic.description",
+    category: "passive",
+    itemTypes: ["weapon"],
+    inputs: [InputRating]
+  },
+  singleLoader: {
+    label: "DGNS.QUALITY.singleLoader.name",
+    description: "DGNS.QUALITY.singleLoader.description",
+    category: "passive",
+    itemTypes: ["weapon"],
+    inputs: [InputRounds]
+  },
+  // Agent qualities
+  poisoned: {
+    label: "DGNS.QUALITY.poisoned.name",
+    description: "DGNS.QUALITY.poisoned.description",
+    category: "passive",
+    itemTypes: ["agent"],
+    inputs: [InputPotency, InputEffect, InputDuration]
+  },
+  attractant: {
+    label: "DGNS.QUALITY.attractant.name",
+    description: "DGNS.QUALITY.attractant.description",
+    category: "passive",
+    itemTypes: ["agent"],
+    inputs: [InputTarget]
+  },
+  narcotic: {
+    label: "DGNS.QUALITY.narcotic.name",
+    description: "DGNS.QUALITY.narcotic.description",
+    category: "passive",
+    itemTypes: ["agent"],
+    inputs: [InputPotency, InputDamage]
+  },
+  pseudoDesporeing: {
+    label: "DGNS.QUALITY.pseudoDesporeing.name",
+    description: "DGNS.QUALITY.pseudoDesporeing.description",
+    category: "passive",
+    itemTypes: ["agent"],
+    inputs: [InputDesporeing, InputDuration]
+  },
+  //Armor qualities
+  respected: {
+    label: "DGNS.QUALITY.respected.name",
+    description: "DGNS.QUALITY.respected.description",
+    category: "passive",
+    itemTypes: ["armor"],
+    inputs: [InputTargetGroup, InputBonus]
+  },
+  firstImpression: {
+    label: "DGNS.QUALITY.firstImpression.name",
+    description: "DGNS.QUALITY.firstImpression.description",
+    category: "passive",
+    itemTypes: ["armor"],
+    inputs: [InputBonus]
+  },
+  fireResistant: {
+    label: "DGNS.QUALITY.fireResistant.name",
+    description: "DGNS.QUALITY.fireResistant.description",
+    category: "passive",
+    itemTypes: ["armor"],
+    inputs: [InputArmor]
+  },
+  unstable: {
+    label: "DGNS.QUALITY.unstable.name",
+    description: "DGNS.QUALITY.unstable.description",
+    category: "passive",
+    itemTypes: ["armor"],
+    inputs: [InputCriticalDamage]
+  },
+  insulated: {
+    label: "DGNS.QUALITY.insulated.name",
+    description: "DGNS.QUALITY.insulated.description",
+    category: "passive",
+    itemTypes: ["armor"],
+    inputs: []
+  },
+  bulletproof: {
+    label: "DGNS.QUALITY.bulletproof.name",
+    description: "DGNS.QUALITY.bulletproof.description",
+    category: "passive",
+    itemTypes: ["armor"],
+    inputs: [InputArmor]
+  },
+  massive: {
+    label: "DGNS.QUALITY.massive.name",
+    description: "DGNS.QUALITY.massive.description",
+    category: "passive",
+    itemTypes: ["armor"],
+    inputs: [InputArmor]
+  },
+  brittle: {
+    label: "DGNS.QUALITY.brittle.name",
+    description: "DGNS.QUALITY.brittle.description",
+    category: "passive",
+    itemTypes: ["armor"],
+    inputs: [InputCriticalDamage]
+  },
+  sealed: {
+    label: "DGNS.QUALITY.sealed.name",
+    description: "DGNS.QUALITY.sealed.description",
+    category: "passive",
+    itemTypes: ["armor"],
+    inputs: [InputBonusSuccesses]
   }
 };
 const Qualities = {
@@ -293,18 +665,20 @@ const Qualities = {
     return Object.entries(QUALITY_DEFINITIONS).filter(([key, def]) => def.itemTypes.includes(itemType)).map(([key, def]) => ({ key, ...def }));
   },
   get weapon() {
-    return Object.entries(QUALITY_DEFINITIONS).filter(([key, def]) => def.itemTypes.includes("weapon")).map(([key, def]) => ({ key, ...def }));
+    return Object.entries(QUALITY_DEFINITIONS).filter(([key, def]) => def.itemTypes.includes("weapon")).map(([key, def]) => ({ key, ...def })).sort((a, b) => a.key.localeCompare(b.key));
   },
   get armor() {
-    return Object.entries(QUALITY_DEFINITIONS).filter(([key, def]) => def.itemTypes.includes("armor")).map(([key, def]) => ({ key, ...def }));
+    return Object.entries(QUALITY_DEFINITIONS).filter(([key, def]) => def.itemTypes.includes("armor")).map(([key, def]) => ({ key, ...def })).sort((a, b) => a.key.localeCompare(b.key));
   },
   get agent() {
-    return Object.entries(QUALITY_DEFINITIONS).filter(([key, def]) => def.itemTypes.includes("agent")).map(([key, def]) => ({ key, ...def }));
+    return Object.entries(QUALITY_DEFINITIONS).filter(([key, def]) => def.itemTypes.includes("agent")).map(([key, def]) => ({ key, ...def })).sort((a, b) => a.key.localeCompare(b.key));
+  },
+  get all() {
+    return Object.entries(QUALITY_DEFINITIONS).map(([key, def]) => ({
+      key,
+      ...def
+    })).sort((a, b) => a.key.localeCompare(b.key));
   }
-  // todo: fix map method
-  /* get all() {
-    return QUALITY_DEFINITIONS.map(([key, def]) => ({ key, ...def }));
-  }, */
 };
 const Condition = {
   calculateMaxTrauma: (actor) => {
@@ -1656,8 +2030,6 @@ function ItemSheetMixin(Base) {
       return context;
     }
     activateListeners(html) {
-      console.log(`ItemSheetMixin activateListeners.`);
-      console.log(this._dropdownState);
       html.querySelectorAll(".section-dropdown").forEach((sectionEl) => {
         const sectionId = sectionEl.dataset.section;
         const body = sectionEl.querySelector(".section-body");
@@ -1787,7 +2159,9 @@ class DegenesisWeaponSheet extends ItemSheetMixin(
   sheets$3.ItemSheetV2
 ) {
   static DEFAULT_OPTIONS = {
-    actions: {},
+    actions: {
+      manageQuality: this.#onManageQuality
+    },
     form: {
       submitOnChange: true
     },
@@ -1838,6 +2212,7 @@ class DegenesisWeaponSheet extends ItemSheetMixin(
         { id: "description", label: "DGNS.Description" },
         { id: "details", label: "DGNS.Details" },
         { id: "qualities", label: "DGNS.Qualities" },
+        { id: "mods", label: "DGNS.Mods" },
         { id: "effects", label: "DGNS.Effects" }
       ]
     }
@@ -1847,6 +2222,7 @@ class DegenesisWeaponSheet extends ItemSheetMixin(
   /* -------------------------------------------------------------------------- */
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
+    const availableQualities = Qualities.weapon;
     Object.assign(context, {
       mode: this._mode,
       document: this.document,
@@ -1855,8 +2231,23 @@ class DegenesisWeaponSheet extends ItemSheetMixin(
       systemFields: this.document.system.schema.fields,
       isEditable: this.isEditable,
       // System data
-      qualities: Qualities.weapon,
-      qualities2: Qualities.agent,
+      qualities: availableQualities.map((def) => {
+        const data = this.document.system.qualities.find(
+          (q) => q.key === def.key
+        );
+        return {
+          key: def.key,
+          label: def.label,
+          description: def.description,
+          // Jeśli nie ma w bazie, domyślnie jest wyłączona (false)
+          enabled: data ? data.enabled : false,
+          // Mapujemy inputy, wstrzykując aktualne wartości z bazy lub defaulty
+          inputs: (def.inputs || []).map((input) => ({
+            ...input,
+            value: data?.values?.[input.name] ?? input.default
+          }))
+        };
+      }),
       // Tabs
       tabGroups: this.tabGroups,
       mainTabs: this._prepareTabs("main"),
@@ -1869,6 +2260,8 @@ class DegenesisWeaponSheet extends ItemSheetMixin(
     });
     console.log(`WeaponSheet | Context`);
     console.log(context);
+    console.log(`WeaponSheet | Qualities`);
+    console.log(context.system.qualities);
     return context;
   }
   async _preparePartContext(partId, context, options) {
@@ -1882,6 +2275,40 @@ class DegenesisWeaponSheet extends ItemSheetMixin(
    */
   get title() {
     return `${this.document.name}`;
+  }
+  /* ---------------------------------- */
+  /*              Listeners             */
+  /* ---------------------------------- */
+  activateListeners(html) {
+    super.activateListeners(this.element);
+    html.querySelectorAll(".quality-input").forEach((input) => {
+      input.addEventListener("change", (event) => {
+        this._onManageQuality(event, event.currentTarget);
+      });
+    });
+  }
+  /* ---------------------------------- */
+  /*              Qualities             */
+  /* ---------------------------------- */
+  /** Static wrapper for logic. */
+  static async #onManageQuality(event, target) {
+    await this._onManageQuality(event, target);
+  }
+  async _onManageQuality(event, target) {
+    if (event) event.preventDefault();
+    let { field = null, value = null } = {};
+    const action = target.dataset.type;
+    const qualityKey = target.closest(".quality")?.dataset.qualityKey;
+    if (action === "update") {
+      field = target.dataset.field;
+      value = target.value;
+    }
+    return await this.document._manageQualities(
+      action,
+      qualityKey,
+      field,
+      value
+    );
   }
 }
 const { api: api$2, sheets: sheets$2 } = foundry.applications;
@@ -4060,14 +4487,62 @@ class DGNSActor extends Actor {
 }
 class DGNSItem extends Item {
   /* -------------------------------------------------------------------------- */
+  /*                                  Qualities                                 */
+  /* -------------------------------------------------------------------------- */
+  async _manageQualities(action, qualityKey = null, field = null, value = null) {
+    console.log(
+      `Manage quality fired. ${action} | ${qualityKey} | ${field} | ${value}|`
+    );
+    if (!qualityKey) return;
+    switch (action) {
+      case "toggle":
+        return this._toggleQuality(qualityKey);
+      case "update":
+        return this._updateQuality(qualityKey, field, value);
+    }
+  }
+  async _toggleQuality(qualityKey) {
+    if (!qualityKey) return;
+    const quality = this.system.qualities.find((q) => q.key === qualityKey);
+    let qualities = {};
+    if (quality) {
+      const newState = !quality.enabled;
+      qualities = this.system.qualities.map(
+        (q) => q.key === qualityKey ? { ...q, enabled: newState } : q
+      );
+    } else {
+      const defaultValues = {};
+      const definition = QUALITY_DEFINITIONS[qualityKey];
+      definition.inputs?.forEach((i) => defaultValues[i.name] = i.default);
+      qualities = [
+        ...this.system.qualities,
+        {
+          key: qualityKey,
+          enabled: true,
+          values: defaultValues
+        }
+      ];
+    }
+    await this.update({ "system.qualities": qualities });
+  }
+  async _updateQuality(qualityKey, field, value) {
+    if (!qualityKey || !field || !value) return;
+    const qualities = this.system.qualities.map((q) => {
+      if (q.key !== qualityKey) return q;
+      return {
+        ...q,
+        values: { ...q.values, [field]: value }
+      };
+    });
+    return this.update({ "system.qualities": qualities });
+  }
+  /* -------------------------------------------------------------------------- */
   /*                                   Getters                                  */
   /* -------------------------------------------------------------------------- */
   /**
    * Return true if it is a weapon within melee range.
    */
   get isMelee() {
-    console.log(`isMelee getter`);
-    console.log(this);
     if (this.type === "weapon") {
       return WEAPON_GROUPS_SKILLS[this.system.group] == "projectiles" || this.system.group == "sonic" ? false : true;
     }
@@ -4902,8 +5377,7 @@ class GeneralFields2 {
           //quality object key
           enabled: new BooleanField$d({ initial: true }),
           // toggling state
-          def: new ObjectField({ initial: {} })
-          //entire quality definition
+          values: new ObjectField({ initial: {} })
         })
       )
     };
@@ -5563,12 +6037,9 @@ class WeaponData extends BaseItemData {
       ...GeneralFields2.weaponGroup,
       // group field with weaponOptions
       ...CombatFields.damage,
-      //...CombatFields.damageBonus,
       ...CombatFields.handling,
       ...CombatFields.distance,
-      //...CombatFields.magazine,
       ...CombatFields.ammunition,
-      //...CombatFields.caliber,
       ...CombatFields.skills
     };
   }

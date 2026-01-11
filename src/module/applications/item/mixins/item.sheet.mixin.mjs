@@ -78,11 +78,6 @@ export default function ItemSheetMixin(Base) {
     }
 
     activateListeners(html) {
-      console.log(`ItemSheetMixin activateListeners.`);
-
-      // section dropdown containers
-      console.log(this._dropdownState);
-
       html.querySelectorAll(".section-dropdown").forEach((sectionEl) => {
         const sectionId = sectionEl.dataset.section;
         const body = sectionEl.querySelector(".section-body");

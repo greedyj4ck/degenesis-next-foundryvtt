@@ -101,6 +101,78 @@
       }
     }
 
+    section.qualities {
+      /*  .qualities-grid {
+        display: grid;
+        gap: 5px;
+        grid-template-columns: repeat(auto-fill, minmax(30%, 1fr));
+        grid-template-rows: ;
+      } */
+
+      .qualities-grid {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: 1fr 1fr;
+
+        margin-top: 5px;
+        margin-bottom: 5px;
+
+        fieldset {
+          display: flex;
+          justify-content: center;
+          position: relative;
+
+          legend {
+          }
+        }
+      }
+      label {
+        text-align: right;
+        font-family: var(--font-serif);
+        font-size: var(--font-size-12);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .fieldset-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+
+        .inputs {
+          width: 100%;
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 10px;
+
+          justify-content: stretch;
+          align-items: stretch;
+
+          input {
+            padding: 0;
+            text-align: center;
+            max-height: 26px;
+            max-width: 40px;
+
+            &[type="text"] {
+              flex-grow: 1;
+              max-width: 100%;
+            }
+          }
+
+          .input {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            flex-grow: 1;
+          }
+        }
+      }
+    }
+
     .checkbox-row {
       display: flex;
       align-items: center;

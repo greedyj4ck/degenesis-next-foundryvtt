@@ -1,21 +1,35 @@
 <section class="tab qualities {{tab.cssClass}} scrollable" data-group="main" data-tab="qualities">
 
-    {{log qualities}}
-
-
-    <div class="container">
-
+    <div class="qualities-grid">
         {{#each qualities as |quality key| }}
+            <fieldset class="quality" data-quality-key="{{quality.key}}">
+                <legend>{{localize quality.label}}
+                    <a class="quality-control" data-action="manageQuality" data-type="toggle">
+                        <i class="fas {{#if quality.enabled}}fa-toggle-on{{else}}fa-toggle-off{{/if}}"></i>
+                    </a>
+                </legend>
+                <div class="fieldset-content">
+                    {{#if quality.inputs.length}}
+                        <div class="inputs">
+                            {{#each this.inputs as |input|}}
+                                <div class="input {{input.type}}">
+                                    <label>{{localize input.label}}</label>
+                                    <input class="quality-input" data-type="update" type="{{input.type}}"
+                                        value="{{input.value}}" data-quality-key="{{quality.key}}"
+                                        data-field="{{input.name}}" />
 
-            {{quality.key}}
 
-            <fieldset>
-                <legend>{{quality.label}}</legend>
+
+                                </div>
+                            {{/each}}
+                        </div>
+                    {{else}}
+                        <label>No configuration</label>
+                    {{/if}}
+
+
+                </div>
             </fieldset>
-
-
-
-
         {{/each}}
 
 

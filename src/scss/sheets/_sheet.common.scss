@@ -15,7 +15,7 @@
   .theme-dark * {
     --dgns-ui-primary: var(--c-gold);
     --dgns-ui-secondary: var(--c-gold-8);
-    --dgns-ui-background: hsla(from var(--dgns-ui-secondary) h 30 4/ 0.98);
+    --dgns-ui-background: hsla(from var(--dgns-ui-secondary) h 0 6/ 0.98);
     --dgns-ui-tabs-primary: var(--c-gold-7);
     --dgns-ui-tabs-secondary: var(--c-resin-7);
   }
@@ -28,6 +28,12 @@
     --dgns-ui-control-bg: #f0f0f0fa;
     --dgns-ui-hover-control-content: rgba(240, 240, 240, 0.98);
     --dgns-ui-hover-control-bg: var(--c-pred);
+  }
+
+  .scrollable {
+    scrollbar-gutter: auto;
+    padding: 0;
+    margin: 0;
   }
 
   .application.sheet {

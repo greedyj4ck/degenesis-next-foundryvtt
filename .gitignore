@@ -1,4 +1,6 @@
 # IDE
+
+.env
 .old
 .idea/
 .vs/
@@ -20,6 +22,7 @@ packs/weapons.db
 *.psd
 *.ai
 foundry-config.yaml
+foundry.config.json
 foundry/
 node_modules
 packs/

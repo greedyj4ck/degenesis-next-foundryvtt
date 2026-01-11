@@ -11,17 +11,17 @@
       "fromhell": "From Hell",
       "sleeper": "Sleeper",
       "marauder": "Marauder",
-      "group": "Group"
+      "group": "Group",
+
+      "TypeCharacterSheet": "Default Character Sheet",
+      "TypeNpcSheet": "Default NPC Sheet",
+      "TypeAberrantSheet": "Default Abberant Sheet",
+      "TypeFromHellSheet": "Default From Hell Sheet"
     },
     "Item": {
       "weapon": "Weapon"
     }
   },
-
-  "TYPES.Actor.TypeCharacterSheet": "Default Character Sheet",
-  "TYPES.Actor.TypeNpcSheet": "Default NPC Sheet",
-  "TYPES.Actor.TypeAberrantSheet": "Default Abberant Sheet",
-  "TYPES.Actor.TypeFromHellSheet": "Default From Hell Sheet",
 
   "SETTINGS": {
     "UI": {
@@ -210,9 +210,193 @@
     },
 
     "QUALITY": {
-      "AreaDamage": {
-        "Name": "Area Damage",
-        "Description": "The weapon doesn’t aim directly at an enemy: it covers an area stated in degrees. Everything inside this area can take Damage."
+      "areaDamage": {
+        "name": "Area Damage",
+        "description": "The weapon doesn’t aim directly at an enemy: it covers an area stated in degrees. Everything inside this area can take Damage."
+      },
+      "armorPiercing": {
+        "name": "Armor piercing",
+        "description": "The projectile used is highly compact and fast. It pierces armor as if it were made of paper. Armor piercing projectiles do not necessarily cause more Damage, but they ignore the special Qualities like “Massive” or “Bulletproof” the target’s armor might have."
+      },
+      "biometricallyEncoded": {
+        "name": "Biometrically Encoded",
+        "description": "The shaft contains biometrical sensors that are only triggered when the right person wields the weapon. Often, the electronics hum and vibrate to show their readiness. In the hands of a stranger, nothing happens: he cannot fire the weapon. To switch off this protective mechanism or change the encoding, the circuits have to be formatted or bypassed. Both require a skillful technician with an electronics workshop. He first has to make an Action roll on AGI+Crafting against the Difficulty of the Quality to lay bare the electronics. With INT+Engineering (Difficulty), he identifies the circuitry, understands its workings, and manipulates it. If one of the rolls fails, the Difficulty rises by (1). If it rises to (12), the weapon powers down. The only value it now has is its scrap value."
+      },
+      "blunt": {
+        "name": "Blunt",
+        "description": "Judgment hammers and clubs are Blunt weapons. They are especially effective against armor with the “Massive” Quality."
+      },
+      "camo": {
+        "name": "Camouflage",
+        "description": "Desc"
+      },
+      "cloud": {
+        "name": "Cloud",
+        "description": "Desc"
+      },
+      "dazed": {
+        "name": "Dazed",
+        "description": "Desc"
+      },
+      "deviation": {
+        "name": "Deviation",
+        "description": "Desc"
+      },
+      "doubleBarreled": {
+        "name": "Double Barreled",
+        "description": "Desc"
+      },
+      "entangled": {
+        "name": "Entangled",
+        "description": "Desc"
+      },
+      "explosive": {
+        "name": "Explosive",
+        "description": "Desc"
+      },
+      "fatal": {
+        "name": "Fatal",
+        "description": "Desc"
+      },
+      "fireHazardous": {
+        "name": "Fire Hazardous",
+        "description": "Desc"
+      },
+      "fragile": {
+        "name": "Fragile",
+        "description": "Desc"
+      },
+      "impact": {
+        "name": "Impact",
+        "description": "Desc"
+      },
+      "jamming": {
+        "name": "Jamming",
+        "description": "Desc"
+      },
+      "muzzleLoader": {
+        "name": "Muzzle Loader",
+        "description": "Desc"
+      },
+      "outOfControl": {
+        "name": "Out of Control",
+        "description": "Desc"
+      },
+      "piercing": {
+        "name": "Piercing",
+        "description": "Desc"
+      },
+      "salvoes": {
+        "name": "Salvoes",
+        "description": "Desc"
+      },
+      "scatter": {
+        "name": "Scatter",
+        "description": "Desc"
+      },
+      "sensitive": {
+        "name": "Sensitive",
+        "description": "Desc"
+      },
+      "smoothRunning": {
+        "name": "Smooth Running",
+        "description": "Desc"
+      },
+      "special": {
+        "name": "Special",
+        "description": "Desc"
+      },
+      "specialDamage": {
+        "name": "Special Damage",
+        "description": "Desc"
+      },
+      "standard": {
+        "name": "Standard",
+        "description": "Desc"
+      },
+      "talisman": {
+        "name": "Talisman",
+        "description": "Desc"
+      },
+      "terrifying": {
+        "name": "Terrifying",
+        "description": "Desc"
+      },
+      "thunderStrike": {
+        "name": "Thunder Strike",
+        "description": "Desc"
+      },
+      "extendedReload": {
+        "name": "Extended Reload",
+        "description": "Desc"
+      },
+      "gruesome": {
+        "name": "Gruesome",
+        "description": "Desc"
+      },
+      "stun": {
+        "name": "Stun",
+        "description": "Desc"
+      },
+      "panic": {
+        "name": "Panic",
+        "description": "Desc"
+      },
+      "singleLoader": {
+        "name": "Single Loader",
+        "description": "Desc"
+      },
+      "poisoned": {
+        "name": "Poisoned",
+        "description": "Desc"
+      },
+      "attractant": {
+        "name": "Attractant",
+        "description": "Desc"
+      },
+      "narcotic": {
+        "name": "Narcotic",
+        "description": "Desc"
+      },
+      "pseudoDesporeing": {
+        "name": "Pseudo Desporeing",
+        "description": "Desc"
+      },
+      "respected": {
+        "name": "Respected",
+        "description": "Desc"
+      },
+      "firstImpression": {
+        "name": "First Impression",
+        "description": "Desc"
+      },
+      "fireResistant": {
+        "name": "Fire resistant",
+        "description": "Desc"
+      },
+      "unstable": {
+        "name": "Unstable",
+        "description": "Desc"
+      },
+      "insulated": {
+        "name": "Insulated",
+        "description": "Desc"
+      },
+      "bulletproof": {
+        "name": "Bulletproof",
+        "description": "Desc"
+      },
+      "massive": {
+        "name": "Massive",
+        "description": "Desc"
+      },
+      "brittle": {
+        "name": "Brittle",
+        "description": "Desc"
+      },
+      "sealed": {
+        "name": "Sealed",
+        "description": "Desc"
       }
     }
   },
@@ -467,10 +651,6 @@
   "DGNS.Permanent": "Permanent",
   "DGNS.Number": "Number",
 
-  "DGNS.AreaDamageDescription": "The weapon doesn’t aim directly at an enemy: it covers an area stated in degrees. Everything inside this area can take Damage.",
-  "DGNS.ArmorpiercingDescription": "The projectile used is highly compact and fast. It pierces armor as if it were made of paper. Armor piercing projectiles do not necessarily cause more Damage, but they ignore the special Qualities like “Massive” or “Bulletproof” the target’s armor might have.",
-  "DGNS.BiometricallyEncodedDescription": "The shaft contains biometrical sensors that are only triggered when the right person wields the weapon. Often, the electronics hum and vibrate to show their readiness. In the hands of a stranger, nothing happens: he cannot fire the weapon. To switch off this protective mechanism or change the encoding, the circuits have to be formatted or bypassed. Both require a skillful technician with an electronics workshop. He first has to make an Action roll on AGI+Crafting against the Difficulty of the Quality to lay bare the electronics. With INT+Engineering (Difficulty), he identifies the circuitry, understands its workings, and manipulates it. If one of the rolls fails, the Difficulty rises by (1). If it rises to (12), the weapon powers down. The only value it now has is its scrap value.",
-  "DGNS.BluntDescription": "Judgment hammers and clubs are Blunt weapons. They are especially effective against armor with the “Massive” Quality.",
   "DGNS.WeaponCamoDescription": "A weapon with the “Camo” Quality does not necessarily look like a weapon or is easily hidden. The Quality rating equals the Difficulty to see through this camouflage with a roll on INS+Perception",
   "DGNS.CloudDescription": "When a grenade is detonated, its agent spreads andcovers an area with a radius of several meters. If there isno wind, the cloud hovers above the battlefield for a few Combat Rounds before dissipating. If someone remainsin the cloud, the Damage or other effects are cumulativeunless stated otherwise.",
   "DGNS.DazedDescription": "A weapon with this Quality does not cause Flesh Wounds, but instead directly reduces Ego Points. Unless noted differently, armor reduces the Damage.",
