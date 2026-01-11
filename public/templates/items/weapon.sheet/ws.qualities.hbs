@@ -1,0 +1,31 @@
+<section class="tab qualities {{tab.cssClass}} scrollable" data-group="main" data-tab="qualities">
+
+    {{log qualities}}
+
+
+    <div class="container">
+
+        {{#each qualities as |quality key| }}
+
+            {{quality.key}}
+
+            <fieldset>
+                <legend>{{quality.label}}</legend>
+            </fieldset>
+
+
+
+
+        {{/each}}
+
+
+
+
+
+
+
+    </div>
+
+
+
+</section>

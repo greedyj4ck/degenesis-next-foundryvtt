@@ -1,0 +1,12 @@
+// Common styles for all sheets
+@forward "sheet.common";
+@forward "sheet.item";
+
+// Actors Sheets
+@forward "sheet.character";
+
+// Items Sheets
+@forward "sheet.culture";
+@forward "sheet.concept";
+@forward "sheet.cult";
+@forward "sheet.weapon";

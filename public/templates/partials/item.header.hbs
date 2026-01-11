@@ -1,0 +1,84 @@
+<div class="sheet-header">
+
+    <div class="sheet-background">
+        {{#if system.backgroundImage}}
+            <img class="background-sheet-image" src="{{system.backgroundImage}}" />
+        {{/if }}
+    </div>
+
+
+    <div class="container">
+        <div class="column image">
+            <div class="border"><svg width="100%" height="100%" viewBox="0 0 110 110" version="1.1"
+                    style="fill-rule:evenodd;clip-rule:evenodd;stroke-miterlimit:10;">
+                    <rect x="6.1" y="6.1" width="97.8" height="97.8" class="rectangle" />
+                    <rect x="9.5" y="103.9" width="90.4" height="4.2" class="rectangle" />
+                    <rect x="9.8" y="1.9" width="90.4" height="4.2" class="rectangle" />
+                    <rect x="106.1" y="25.2" width="3.5" height="3.5" class="rectangle" />
+                    <path d="M107.9,25.2L107.9,9.6" class="line" />
+                    <path d="M104,9.9L108,9.9" class="line" />
+                    <rect x="0.4" y="81.6" width="3.5" height="3.5" class="rectangle" />
+                    <path d="M2.1,85.1L2.1,100.7" class="line" />
+                    <path d="M6,100.4L2,100.4" class="line" />
+                    <path d="M2.1,9.5L2.1,63.7" class="line" />
+                    <path d="M6,9.9L2,9.9" class="line" />
+                    <path d="M107.8,100.6L107.8,46.5" class="line" />
+                    <path d="M104,100.2L108,100.2" class="line" />
+                    <rect x="6.5" y="6.5" width="97" height="97" class="rectangle" />
+                </svg></div>
+            <div class="content">
+                <img class="profile-img" src="{{document.img}}" data-edit="img" data-action="editImage"
+                    title="{{document.name}}" />
+            </div>
+        </div>
+        <div class="column">
+            <div class="header-field">
+                <input class="field-input" type="text" name="name" value="{{document.name}}" />
+                <label class="field-label">Name</label>
+            </div>
+            <div class="header-field">
+                <select class="field-select" type="text" name="system.group" value="{{system.group}}">
+                    <option value="">None </option>
+                    {{selectOptions system.schema.fields.group.choices 
+                  selected=system.group 
+                  localize=true}}
+                </select>
+                <label class="field-label">group</label>
+            </div>
+        </div>
+
+        <div class="column">
+            <div class="header-field small">
+                <input class="field-input" type="text" name="system.quantity" value="{{system.quantity}}" />
+                <label class="field-label">quantity</label>
+            </div>
+            <div class="header-field small">
+                <input class="field-input" type="text" name="system.encumbrance" value="{{system.encumbrance}}" />
+                <label class="field-label">encumbrance</label>
+            </div>
+            <div class="header-field small">
+                <input class="field-input" type="text" name="system.resources" value="{{system.resources}}" />
+                <label class="field-label">resources</label>
+            </div>
+            <div class="header-field small">
+                <input class="field-input" type="text" name="system.tech" value="{{system.tech}}" />
+                <label class="field-label">tech</label>
+            </div>
+            <div class="header-field centered">
+                <input class="field-input" type="text" name="system.value" value="{{system.value}}" />
+                <label class="field-label">value</label>
+            </div>
+        </div>
+    </div>
+
+
+
+</div>
+
+
+
+
+
+
+
+</div>

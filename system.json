@@ -34,15 +34,8 @@
     }
   ],
   "esmodules": ["degenesis.mjs"],
-  "styles": [
-    "styles/degenesis.css",
-    "styles/animate.min.css",
-    "lib/select2.min.css"
-  ],
-  "scripts": [
-    "https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js",
-    "lib/select2.full.min.js"
-  ],
+  "styles": ["styles/degenesis.css"],
+  "scripts": [""],
 
   "languages": [
     {

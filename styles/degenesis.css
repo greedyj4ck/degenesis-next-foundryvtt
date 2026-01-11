@@ -150,6 +150,35 @@
 } */
 /* Foundry default variables / styles override */
 @layer foundry {
+  * {
+    scrollbar-width: unset;
+    scrollbar-color: unset;
+  }
+  *::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+    border: none;
+    background-color: transparent;
+  }
+  *::-webkit-scrollbar-thumb {
+    border: 1px solid var(--dgns-ui-primary);
+    background-color: var(--dgns-ui-secondary);
+    border-radius: 3px !important;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: var(--dgns-ui-accent);
+  }
+  *::-webkit-scrollbar-track {
+    border: none;
+    background-color: transparent;
+    box-shadow: none;
+  }
+  *::-webkit-scrollbar-button, *::-webkit-scrollbar-track-piece, *::-webkit-scrollbar-corner, *::-webkit-resizer {
+    display: none;
+  }
+  :root {
+    --dgns-line-width: 1px;
+  }
   body {
     --font-sans: "Montserrat";
     --font-serif: "Crimson Pro";
@@ -166,10 +195,10 @@
     --dgns-ui-accent: var(--c-resin-4);
     --dgns-ui-contrast: var(--c-pred);
     --dgns-ui-background: rgba(15, 15, 15, 0.98);
-    --dgns-ui-control-content: var(--c-gold-4);
+    --dgns-ui-control-content: var(--c-gold-6);
     --dgns-ui-hover-control-content: var(--c-gold-3);
     --dgns-ui-active-content: var(--c-resin-4);
-    --dgns-ui-control-border: var(--c-gold-4);
+    --dgns-ui-control-border: var(--c-gold-7);
     --dgns-ui-hover-control-border: var(--c-gold-3);
     --dgns-ui-active-control-border: var(--c-resin-4);
     --dgns-ui-control-bg: var(--c-gold-9);
@@ -208,10 +237,33 @@
     font-family: "Montserrat";
     color: var(--dgns-ui-primary);
   }
+  h1.divider,
+  h2.divider,
+  h3.divider,
+  h4.divider,
+  h5.divider {
+    font-family: var(--font-serif);
+    font-size: var(--font-size-14);
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+  h1.divider::before, h1.divider::after,
+  h2.divider::before,
+  h2.divider::after,
+  h3.divider::before,
+  h3.divider::after,
+  h4.divider::before,
+  h4.divider::after,
+  h5.divider::before,
+  h5.divider::after {
+    mask-image: none;
+    border: var(--dgns-line-width) solid var(--dgns-ui-primary) !important;
+    border-image-width: 0;
+  }
   .application {
     background: none;
     background-color: var(--dgns-ui-background);
-    border: 1px solid var(--dgns-ui-primary);
+    border: 1px solid var(--dgns-ui-secondary);
   }
   .application .window-content {
     padding: 0.5rem;
@@ -274,6 +326,9 @@
     color: var(--dgns-ui-active-content);
   }
   #sidebar-content {
+    font-family: var(--font-serif);
+    font-size: var(--font-size-18);
+    font-weight: 500;
     color: var(--dgns-ui-primary);
   }
   #sidebar-content .sidebar-tab:not(.sidebar-popout) {
@@ -290,7 +345,6 @@
   }
   #sidebar-content button {
     white-space: nowrap;
-    border-radius: 0;
     font-size: var(--font-size-12);
   }
   button {
@@ -303,6 +357,9 @@
     font-weight: 800;
     font-size: var(--font-size-14);
     text-transform: uppercase;
+    border: var(--dgns-line-width) solid var(--dgns-ui-tabs-primary);
+    border-radius: var(--dgns-border-radius-small, 10px);
+    overflow: hidden;
   }
   button:focus {
     box-shadow: none;
@@ -334,6 +391,29 @@
   #context-menu .context-item:hover {
     color: var(--dgns-ui-hover-control-content);
     background-color: var(--dgns-ui-hover-control-bg);
+  }
+  dialog#menu {
+    border: var(--dgns-line-width) solid var(--dgns-ui-secondary);
+  }
+  dialog#menu li {
+    color: var(--dgns-ui-secondary);
+    transition: color 0.1s ease-in;
+  }
+  dialog#menu li h1,
+  dialog#menu li h2,
+  dialog#menu li h3 {
+    color: inherit;
+    font-family: var(--font-serif);
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+  dialog#menu li:hover {
+    text-shadow: none;
+    box-shadow: none;
+    color: var(--dgns-ui-primary);
+  }
+  dialog#menu i {
+    opacity: 1;
   }
 }
 .window-content {
@@ -522,67 +602,6 @@ prose-mirror button.toggle:disabled {
   display: none;
 }
 
-/* COMPONENTS: _SCROLLBAR.SCSS */
-:root,
-* {
-  scrollbar-width: unset !important;
-  scrollbar-color: unset !important;
-}
-
-::-webkit-scrollbar {
-  width: 6px;
-  border: none;
-  background-color: transparent;
-}
-
-.theme-light ::-webkit-scrollbar-thumb {
-  border: none;
-  border: 1px solid var(--c-grey-5);
-  background-color: var(--c-grey-8);
-  border-radius: 3px !important;
-}
-.theme-light ::-webkit-scrollbar-thumb:hover {
-  border: 1px solid var(--c-pred-5);
-  background-color: var(--c-pred-7);
-}
-.theme-light ::-webkit-scrollbar-track {
-  width: 4px;
-  border: none;
-  background-color: transparent;
-  background-position: center;
-  background-repeat: repeat-y;
-  border-radius: 0px;
-  box-shadow: none;
-}
-.theme-dark ::-webkit-scrollbar-thumb {
-  border: none;
-  border: 1px solid var(--c-gold-5);
-  background-color: var(--c-gold-7);
-  border-radius: 3px !important;
-}
-.theme-dark ::-webkit-scrollbar-thumb:hover {
-  border: 1px solid var(--c-pred-5);
-  background-color: var(--c-pred-7);
-}
-.theme-dark ::-webkit-scrollbar-thumb {
-  border: none;
-  border: 1px solid var(--c-gold-5);
-  background-color: var(--c-gold-7);
-  border-radius: 3px !important;
-}
-.theme-dark ::-webkit-scrollbar-thumb:hover {
-  border: 1px solid var(--c-pred-5);
-  background-color: var(--c-pred-7);
-}
-.theme-dark ::-webkit-scrollbar-track {
-  width: 4px;
-  border: none;
-  background-color: transparent;
-  background-position: center;
-  background-repeat: repeat-y;
-  border-radius: 0px;
-  box-shadow: none;
-}
 svg {
   width: 100%;
   height: 100%;
@@ -687,6 +706,60 @@ svg path.line {
   transform: scale(-1, 1);
 }
 
+.sheet-titlebar {
+  max-height: 25px;
+  width: 100%;
+  margin-top: 5px;
+  display: flex;
+}
+.sheet-titlebar svg {
+  width: 100%;
+  height: 100%;
+}
+.sheet-titlebar svg path.square {
+  fill: none;
+  stroke: var(--dgns-ui-primary);
+  stroke-width: var(--dgns-line-width);
+}
+.sheet-titlebar svg path.line {
+  fill: none;
+  stroke: var(--dgns-ui-primary);
+  stroke-width: var(--dgns-line-width);
+}
+.sheet-titlebar div.line {
+  flex-grow: 1;
+  flex-basis: auto;
+}
+.sheet-titlebar div.line-left,
+.sheet-titlebar div.line-right {
+  flex: 0 0 120px;
+}
+.sheet-titlebar div.line-right svg {
+  transform: scale(-1, 1);
+}
+.sheet-titlebar div.center {
+  flex-grow: 1;
+  flex-basis: auto;
+  margin: 0 10px;
+  display: flex;
+  justify-items: center;
+  align-items: center;
+  white-space: no-wrap;
+}
+.sheet-titlebar div.center input {
+  background: none;
+  border-radius: 0;
+  border: 0;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-14);
+  color: var(--dgns-ui-primary);
+  font-weight: 800;
+  field-sizing: content;
+}
+.sheet-titlebar div.center input:focus {
+  outline-color: var(--dgns-ui-primary);
+}
+
 .sheet-footer {
   max-height: 25px;
   width: 100%;
@@ -775,7 +848,7 @@ svg path.line {
   .theme-dark * {
     --dgns-ui-primary: var(--c-gold);
     --dgns-ui-secondary: var(--c-gold-8);
-    --dgns-ui-background: rgba(15, 15, 15, 0.95);
+    --dgns-ui-background: hsla(from var(--dgns-ui-secondary) h 30 4/ 0.98);
     --dgns-ui-tabs-primary: var(--c-gold-7);
     --dgns-ui-tabs-secondary: var(--c-resin-7);
   }
@@ -784,7 +857,7 @@ svg path.line {
     --dgns-ui-secondary: var(--c-gold-6);
     --dgns-ui-background: rgba(245, 245, 245, 0.98);
     --dgns-ui-control-content: var(--c-gold-6);
-    --dgns-ui-control-bg: rgba(240, 240, 240, 0.98);
+    --dgns-ui-control-bg: #f0f0f0fa;
     --dgns-ui-hover-control-content: rgba(240, 240, 240, 0.98);
     --dgns-ui-hover-control-bg: var(--c-pred);
   }
@@ -812,7 +885,8 @@ svg path.line {
     padding: 3px;
     align-items: center;
     justify-content: center;
-    border: var(--dgns-line-width) solid var(--dgns-ui-tabs-primary);
+    background-color: rgba(from var(--dgns-ui-control-bg) r g b/0.45);
+    border: var(--dgns-line-width) solid var(--dgns-ui-secondary);
     border-radius: var(--dgns-border-radius-small);
   }
   .application.sheet .tabs a {
@@ -891,10 +965,6 @@ svg path.line {
   }
   .sheet-customizable .window-content {
     padding-top: 36px;
-  }
-  .sheet-customizable:not(.minimized, .minimizing, .maximizing) {
-    min-height: 800px;
-    min-width: 700px;
   }
   .sheet-customizable:not(.minimized, .minimizing, .maximizing) .window-title {
     visibility: hidden;
@@ -985,6 +1055,101 @@ svg path.line {
     margin: 0;
   }
 }
+@layer dgns.sheets {
+  .application.sheet.dgns-item {
+    /* -------------------------------------------------------------------------- */
+    /*                                  Controls                                  */
+    /* -------------------------------------------------------------------------- */
+    /* ---------------------------- General / Section --------------------------- */
+    /* ---------------------------- Specific Sections --------------------------- */
+  }
+  .application.sheet.dgns-item .header-field {
+    grid-column: span 2;
+    display: flex;
+    flex-direction: column;
+  }
+  .application.sheet.dgns-item .header-field .field-input {
+    height: 26px;
+    font-family: var(--font-sans);
+    font-size: var(--font-size-14);
+    font-weight: 700;
+    color: var(--dgns-ui-primary);
+    text-transform: uppercase;
+  }
+  .application.sheet.dgns-item .header-field .field-label {
+    font-family: var(--font-serif);
+    font-size: var(--font-size-14);
+    padding-left: 5px;
+    text-transform: uppercase;
+  }
+  .application.sheet.dgns-item .header-field.small {
+    grid-column: span 1;
+  }
+  .application.sheet.dgns-item .header-field.small .field-input {
+    text-align: center;
+  }
+  .application.sheet.dgns-item .header-field.small .field-label {
+    text-align: center;
+    padding: 0;
+  }
+  .application.sheet.dgns-item .header-field.centered .field-input {
+    text-align: center;
+  }
+  .application.sheet.dgns-item .header-field.centered .field-label {
+    text-align: center;
+    padding: 0;
+  }
+  .application.sheet.dgns-item .sheet-header .container {
+    display: flex;
+    flex-direction: row;
+    padding: 10px 0px;
+    gap: 10px;
+    align-items: start;
+  }
+  .application.sheet.dgns-item .sheet-header .container .column {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+  .application.sheet.dgns-item .sheet-header .container .column:not(.image) {
+    padding: 10px 0px;
+    flex: 1;
+  }
+  .application.sheet.dgns-item .sheet-header .image {
+    min-width: 150px;
+    width: 150px;
+    height: 150px;
+    position: relative;
+  }
+  .application.sheet.dgns-item .sheet-header .image .border {
+    --dgns-line-width: 0.5px;
+    pointer-events: none;
+    position: absolute;
+    z-index: 10;
+  }
+  .application.sheet.dgns-item .sheet-header .image .content {
+    width: 130px;
+    height: 130px;
+    position: relative;
+    margin: 10px auto;
+  }
+  .application.sheet.dgns-item section.tab {
+    flex: 1;
+    padding-top: 5px;
+  }
+  .application.sheet.dgns-item section.sheet-tabs {
+    display: flex;
+    flex: 0;
+    justify-content: center;
+  }
+  .application.sheet.dgns-item section.sheet-tabs nav {
+    width: 100%;
+  }
+  .application.sheet.dgns-item section.sheet-tabs nav a {
+    flex: 1;
+  }
+}
 /* 
     DEGENESIS@NEXT
     -------------
@@ -992,21 +1157,119 @@ svg path.line {
 
     */
 @layer dgns.sheets.character {
+  /* -------------------------------------------------------------------------- */
+  /*                             Character sheet                                */
+  /* -------------------------------------------------------------------------- */
   .application.sheet.dgns-character {
     background: var(--dgns-ui-background);
     border: var(--dgns-line-width) solid var(--dgns-ui-secondary);
     background-repeat: repeat;
     background-size: 600px;
-    /*  section {
-      .history {
-        height: fit-content;
-        margin-bottom: 10px;
-      }
-    } */
+    --dgns-table-header-height: var(--font-size-24);
+    /* -------------------------------------------------------------------------- */
+    /*                          General Inputs / Controls                         */
+    /* -------------------------------------------------------------------------- */
+    /* ------------------------------ Sheet Header ------------------------------ */
+    /* -------------------------------------------------------------------------- */
+    /*                                  Sections                                  */
+    /* -------------------------------------------------------------------------- */
+    /* ---------------------------------- Tabs ---------------------------------- */
+    /* --------------------------------- Effects -------------------------------- */
+    /* -------------------------------- Inventory ------------------------------- */
   }
   .application.sheet.dgns-character:not(.minimized, .minimizing, .maximizing) {
     min-height: 850px;
     min-width: 700px;
+  }
+  .application.sheet.dgns-character .items-table {
+    --h: var(--dgns-table-header-height, var(--font-size-24));
+  }
+  .application.sheet.dgns-character .items-table .header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    height: var(--h);
+    font-size: var(--font-size-12);
+    font-family: var(--font-sans);
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+  .application.sheet.dgns-character .items-table .header .name {
+    corner-shape: bevel;
+    border: var(--dgns-line-width) solid var(--c-gold-7);
+    border-radius: var(--h);
+    display: flex;
+    align-items: center;
+    padding: 0 25px;
+    height: 100%;
+    min-width: 200px;
+  }
+  .application.sheet.dgns-character .items-table .header .transition {
+    width: calc(4 * var(--h));
+    height: var(--h);
+  }
+  .application.sheet.dgns-character .items-table .header .transition svg.line line {
+    stroke: var(--c-gold-7);
+    stroke-width: var(--dgns-line-width);
+  }
+  .application.sheet.dgns-character .items-table .header .legends {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    width: 100%;
+    height: var(--h);
+    border-bottom: var(--dgns-line-width) solid var(--c-gold-7);
+  }
+  .application.sheet.dgns-character .items-table .entries {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 10px 0px;
+    gap: 10px;
+  }
+  .application.sheet.dgns-character .items-table .entries .entry {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    width: 100%;
+    gap: 10px;
+  }
+  .application.sheet.dgns-character .items-table .caption {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-14);
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .application.sheet.dgns-character .items-table .subcaption {
+    font-family: var(--font-serif);
+    font-size: var(--font-size-12);
+    text-transform: uppercase;
+  }
+  .application.sheet.dgns-character .items-table .field {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: var(--font-size-12);
+    min-width: 60px;
+  }
+  .application.sheet.dgns-character .items-table .field.name {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex: 1;
+  }
+  .application.sheet.dgns-character .items-table .field.image {
+    min-width: 0;
+    border: var(--dgns-line-width) solid var(--c-gold-7);
+    width: var(--font-size-32);
+    height: var(--font-size-32);
+  }
+  .application.sheet.dgns-character .items-table .field.controls {
+    min-width: 100px;
+    font-size: var(--font-size-14);
+    gap: 10px;
   }
   .application.sheet.dgns-character .character-header {
     display: flex;
@@ -1609,6 +1872,172 @@ svg path.line {
     padding-right: 0px;
   }
 }
+/* 
+    DEGENESIS@NEXT
+    -------------
+    Version  0.1
+
+    */
+/* Foundry default variables / styles override */
+@layer dgns.sheets.weapon {
+  /* -------------------------------------------------------------------------- */
+  /*                                Weapon Sheet                                */
+  /* -------------------------------------------------------------------------- */
+  .application.sheet.dgns-weapon {
+    background: var(--dgns-ui-background);
+    border: var(--dgns-line-width) solid var(--dgns-ui-secondary);
+    /* -------------------------------------------------------------------------- */
+    /*                                  Controls                                  */
+    /* -------------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------------- */
+    /*                                  Sections                                  */
+    /* -------------------------------------------------------------------------- */
+  }
+  .application.sheet.dgns-weapon:not(.minimized, .minimizing, .maximizing) {
+    min-height: 600px;
+    min-width: 600px;
+  }
+  .application.sheet.dgns-weapon:not(.minimized, .minimizing, .maximizing) .window-title {
+    visibility: visible !important;
+  }
+  .application.sheet.dgns-weapon select {
+    appearance: base-select;
+    font-family: var(--font-sans);
+    font-size: var(--font-size-13);
+    font-weight: 600;
+    color: var(--dgns-ui-primary);
+    text-transform: uppercase;
+    background-color: var(--dgns-ui-control-bg);
+    border: var(--dgns-line-width) solid rgba(from var(--dgns-ui-secondary) r g b/0.3);
+    box-sizing: border-box;
+    line-height: 1;
+    align-items: center;
+  }
+  .application.sheet.dgns-weapon select option:checked,
+  .application.sheet.dgns-weapon select option:focus,
+  .application.sheet.dgns-weapon select option:hover {
+    color: var(--dgns-ui-accent);
+    outline: 1px solid;
+  }
+  .application.sheet.dgns-weapon select::picker(select) {
+    scrollbar-width: thin;
+    scrollbar-color: var(--dgns-ui-primary) transparent;
+    appearance: base-select;
+    color: var(--dgns-ui-primary);
+    font-size: var(--font-size-12);
+    border: var(--dgns-line-width) solid var(--dgns-ui-secondary);
+    border-radius: 5px;
+    transition: opacity 225ms ease-in-out, transform 225ms ease-in-out;
+    transform-origin: top;
+    transform: translateY(0);
+  }
+  @starting-style {
+    .application.sheet.dgns-weapon select::picker(select) {
+      transform: translateY(-0.25rem) scale(0.95);
+      opacity: 0;
+    }
+  }
+  .application.sheet.dgns-weapon input {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-13);
+    font-weight: 600;
+    color: var(--dgns-ui-primary);
+    background-color: var(--dgns-ui-control-bg);
+    border: var(--dgns-line-width) solid rgba(from var(--dgns-ui-secondary) r g b/0.5);
+  }
+  .application.sheet.dgns-weapon input[type=checkbox] {
+    aspect-ratio: 1;
+    width: round(to-zero, 26px / 1.4142135624, 2px);
+    height: round(to-zero, 26px / 1.4142135624, 2px);
+    transform: rotate(45deg);
+    border: calc(26px / 10 + 1px) solid var(--dgns-ui-primary);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    place-content: center;
+  }
+  .application.sheet.dgns-weapon input[type=checkbox]::after {
+    display: none;
+  }
+  .application.sheet.dgns-weapon input[type=checkbox]::before {
+    border-radius: 0;
+    transform: scale(0);
+    background-color: var(--dgns-ui-primary);
+  }
+  .application.sheet.dgns-weapon input[type=checkbox]:checked::before {
+    content: "";
+    transform: scale(calc((26px - 18px) / 26px));
+  }
+  .application.sheet.dgns-weapon fieldset {
+    border: var(--dgns-line-width) solid rgba(from var(--dgns-ui-secondary) r g b/0.2);
+    padding: 5px;
+  }
+  .application.sheet.dgns-weapon fieldset legend {
+    font-family: var(--font-serif);
+    font-size: var(--font-size-14);
+    letter-spacing: 0.15em;
+    text-align: center;
+    text-transform: uppercase;
+  }
+  .application.sheet.dgns-weapon section.details .container {
+    display: flex;
+    align-items: start;
+    gap: 5px;
+  }
+  .application.sheet.dgns-weapon section.details .container .column {
+    flex: 1;
+    display: grid;
+    gap: 5px;
+    align-items: stretch;
+    grid-template-columns: repeat(6, 1fr);
+    grid-column: span 6;
+  }
+  .application.sheet.dgns-weapon section.details .container .full {
+    grid-column: span 6;
+  }
+  .application.sheet.dgns-weapon section.details .container .half {
+    grid-column: span 3;
+  }
+  .application.sheet.dgns-weapon section.details .container .one-third {
+    grid-column: span 2;
+  }
+  .application.sheet.dgns-weapon section.details .container .two-third {
+    grid-column: span 4;
+  }
+  .application.sheet.dgns-weapon section.details .container label {
+    font-family: var(--font-serif);
+    font-size: var(--font-size-14);
+    text-transform: uppercase;
+    height: 17.5px;
+  }
+  .application.sheet.dgns-weapon section.details .container .field {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .application.sheet.dgns-weapon section.details .container .field label {
+    padding-left: 5px;
+  }
+  .application.sheet.dgns-weapon section.details .container .field.centered {
+    align-items: center;
+  }
+  .application.sheet.dgns-weapon section.details .container .field.centered * {
+    text-align: center;
+  }
+  .application.sheet.dgns-weapon section.details .container .field.centered label {
+    padding: 0;
+  }
+  .application.sheet.dgns-weapon .checkbox-row {
+    display: flex;
+    align-items: center;
+    flex: 1;
+  }
+  .application.sheet.dgns-weapon .checkbox {
+    display: flex;
+    flex: 1;
+  }
+}
 /* @use "sheets/sheet.common" as sheetCommon; // common set of css classes for functionality like dropdowns
 @use "sheets/sheet.character" as sheetCharacter; // specific actorsheet classes
 @use "sheets/sheet.culture" as sheetCulture; // specific style for item / culture sheet */
@@ -1647,6 +2076,51 @@ svg path.line {
     flex: 1;
     padding: 5px;
     gap: 10px;
+  }
+  .application.dgns-roll select {
+    appearance: base-select;
+    font-family: var(--font-sans);
+    font-size: var(--font-size-14);
+    font-weight: 700;
+    color: var(--dgns-ui-primary);
+    background-color: rgba(255, 255, 255, 0.02);
+    text-transform: uppercase;
+    box-sizing: border-box;
+  }
+  .application.dgns-roll select button {
+    height: inherit;
+    border: none;
+    background: none;
+    flex: 1;
+  }
+  .application.dgns-roll select option {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    text-align-last: center;
+  }
+  .application.dgns-roll select option:checked,
+  .application.dgns-roll select option:focus,
+  .application.dgns-roll select option:hover {
+    color: var(--dgns-ui-accent);
+    outline: 1px solid var(--dgns-ui-accent);
+  }
+  .application.dgns-roll select::picker(select) {
+    appearance: base-select;
+    color: var(--dgns-ui-primary);
+    font-size: var(--font-size-12);
+    border: var(--dgns-line-width) solid var(--dgns-ui-secondary);
+    border-radius: 5px;
+    text-align: center;
+    transition: opacity 225ms ease-in-out, transform 225ms ease-in-out;
+    transform-origin: top;
+    transform: translateY(0);
+  }
+  @starting-style {
+    .application.dgns-roll select::picker(select) {
+      transform: translateY(-0.25rem) scale(0.95);
+      opacity: 0;
+    }
   }
   .application.dgns-roll input.field-input.difficulty {
     height: 48px;

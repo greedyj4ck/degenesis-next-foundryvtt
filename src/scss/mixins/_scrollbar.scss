@@ -1,0 +1,32 @@
+@mixin basic($w: 6px) {
+  &::-webkit-scrollbar {
+    width: $w;
+    height: $w; // Dla scrollbara poziomego
+    border: none;
+    background-color: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border: 1px solid var(--dgns-ui-primary);
+    background-color: var(--dgns-ui-secondary);
+    border-radius: 3px !important;
+
+    &:hover {
+      //border: 1px solid var(--dgns-ui-accent);
+      background-color: var(--dgns-ui-accent);
+    }
+  }
+
+  &::-webkit-scrollbar-track {
+    border: none;
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  &::-webkit-scrollbar-button,
+  &::-webkit-scrollbar-track-piece,
+  &::-webkit-scrollbar-corner,
+  &::-webkit-resizer {
+    display: none;
+  }
+}

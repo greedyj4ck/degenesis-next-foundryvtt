@@ -7,12 +7,18 @@
     "lib": "lib"
   },
   "scripts": {
+    "build": "vite build",
+    "watch": "vite build --watch",
     "test": "echo \"Error: no test specified\" && exit 1",
     "createSymlinks": "node ./tools/create-symlinks.mjs"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "js-yaml": "^4.1.0"
+    "js-yaml": "^4.1.1"
+  },
+  "devDependencies": {
+    "sass": "^1.97.2",
+    "vite": "^7.3.1"
   }
 }

@@ -1,0 +1,118 @@
+@layer dgns.sheets {
+  .application.sheet.dgns-item {
+    /* -------------------------------------------------------------------------- */
+    /*                                  Controls                                  */
+    /* -------------------------------------------------------------------------- */
+
+    .header-field {
+      grid-column: span 2;
+      display: flex;
+      flex-direction: column;
+
+      .field-input {
+        height: 26px;
+        font-family: var(--font-sans);
+        font-size: var(--font-size-14);
+        font-weight: 700;
+        color: var(--dgns-ui-primary);
+
+        text-transform: uppercase;
+      }
+
+      .field-label {
+        font-family: var(--font-serif);
+        font-size: var(--font-size-14);
+        padding-left: 5px;
+        text-transform: uppercase;
+      }
+
+      &.small {
+        grid-column: span 1;
+
+        .field-input {
+          text-align: center;
+        }
+
+        .field-label {
+          text-align: center;
+          padding: 0;
+        }
+      }
+
+      &.centered {
+        .field-input {
+          text-align: center;
+        }
+        .field-label {
+          text-align: center;
+          padding: 0;
+        }
+      }
+    }
+
+    .sheet-header {
+      .container {
+        display: flex;
+        flex-direction: row;
+        padding: 10px 0px;
+        gap: 10px;
+        align-items: start;
+
+        .column {
+          display: grid;
+          gap: 10px;
+          grid-template-columns: 1fr 1fr;
+          align-items: start;
+
+          // justify-content: flex-start;
+          // align-items: center;
+
+          &:not(.image) {
+            padding: 10px 0px;
+            flex: 1;
+          }
+        }
+      }
+      .image {
+        min-width: 150px;
+        width: 150px;
+        height: 150px;
+        position: relative;
+        .border {
+          --dgns-line-width: 0.5px; //override to thin some elements
+          pointer-events: none;
+          position: absolute;
+          z-index: 10;
+        }
+        .content {
+          width: 130px;
+          height: 130px;
+          position: relative;
+          margin: 10px auto;
+        }
+      }
+    }
+
+    /* ---------------------------- General / Section --------------------------- */
+
+    section.tab {
+      flex: 1;
+      padding-top: 5px;
+    }
+
+    /* ---------------------------- Specific Sections --------------------------- */
+
+    section.sheet-tabs {
+      display: flex;
+      flex: 0;
+      justify-content: center;
+
+      nav {
+        width: 100%;
+        a {
+          flex: 1;
+        }
+      }
+    }
+  }
+}

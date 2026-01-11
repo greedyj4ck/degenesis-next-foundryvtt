@@ -1,0 +1,111 @@
+@use "./scrollbar" as sc;
+
+@mixin input {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-13);
+  font-weight: 600;
+  color: var(--dgns-ui-primary);
+  background-color: var(--dgns-ui-control-bg);
+  border: var(--dgns-line-width) solid
+    rgba(from var(--dgns-ui-secondary) r g b / 0.5);
+}
+
+@mixin select {
+  appearance: base-select;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-13);
+  font-weight: 600;
+  color: var(--dgns-ui-primary);
+  text-transform: uppercase;
+
+  background-color: var(--dgns-ui-control-bg);
+  border: var(--dgns-line-width) solid
+    rgba(from var(--dgns-ui-secondary) r g b / 0.3);
+
+  box-sizing: border-box;
+  line-height: 1;
+  align-items: center;
+
+  option:checked,
+  option:focus,
+  option:hover {
+    color: var(--dgns-ui-accent);
+    outline: 1px solid;
+  }
+
+  &::picker(select) {
+    scrollbar-width: thin;
+    scrollbar-color: var(--dgns-ui-primary) transparent;
+
+    appearance: base-select;
+    color: var(--dgns-ui-primary);
+    font-size: var(--font-size-12);
+    border: var(--dgns-line-width) solid var(--dgns-ui-secondary);
+    border-radius: 5px;
+
+    transition: opacity 225ms ease-in-out, transform 225ms ease-in-out;
+    transform-origin: top;
+    transform: translateY(0);
+
+    @starting-style {
+      transform: translateY(-0.25rem) scale(0.95);
+      opacity: 0;
+    }
+  }
+}
+
+// Pass the maximum element height - math will autommatically calculate
+// required side-length
+
+@mixin checkbox($s: 26px) {
+  $calculated-scale: calc((#{$s} - 18px) / #{$s});
+  $calculated-border: calc(#{$s} / 10 + 1px);
+
+  $side-length: calc(#{$s} / sqrt(2));
+
+  aspect-ratio: 1;
+
+  width: round(to-zero, $side-length, 2px);
+  height: round(to-zero, $side-length, 2px);
+
+  transform: rotate(45deg);
+
+  border: $calculated-border solid var(--dgns-ui-primary);
+
+  margin: 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  place-content: center;
+
+  &::after {
+    display: none;
+  }
+
+  &::before {
+    border-radius: 0;
+    transform: scale(0);
+    background-color: var(--dgns-ui-primary);
+  }
+
+  &:checked::before {
+    content: "";
+    transform: scale($calculated-scale);
+  }
+}
+
+@mixin fieldset {
+  border: var(--dgns-line-width) solid
+    rgba(from var(--dgns-ui-secondary) r g b / 0.2);
+  padding: 5px;
+
+  legend {
+    font-family: var(--font-serif);
+    font-size: var(--font-size-14);
+    letter-spacing: 0.15em;
+    text-align: center;
+
+    text-transform: uppercase;
+  }
+}

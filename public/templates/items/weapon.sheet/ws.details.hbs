@@ -1,0 +1,116 @@
+<section class="tab details {{tab.cssClass}}" data-group="main" data-tab="details">
+    <div class="container">
+
+        <div class="column">
+
+            <fieldset class="column full">
+                <legend>Damage</legend>
+                <div class="field one-third centered">
+                    <input class="field-input" type="text" name="system.damage.value" value="{{system.damage.value}}" />
+                    <label class="field-label">Base</label>
+                </div>
+
+                <div class="field one-third centered">
+                    <select class="field-input" type="text" name="system.damage.type"
+                        value="{{system.damage.type}}"></select>
+                    <label class="field-label">Type</label>
+                </div>
+
+                <div class="field one-third centered">
+                    <select class="field-input" type="text" name="system.damage.bonus"
+                        value="{{system.damage.bonus}}"></select>
+                    <label class="field-label">Bonus</label>
+                </div>
+            </fieldset>
+
+            <fieldset class="column one-third">
+                <legend>Handling</legend>
+                <div class="field full centered">
+                    <input class="field-input" type="text" name="system.handling" value="{{system.handling}}" />
+                    <label class="field-label">±D</label>
+                </div>
+            </fieldset>
+
+            <fieldset class="column two-third">
+                <legend>Distance</legend>
+
+                {{#if document.isMelee}}
+                    <div class="field full centered">
+                        <input class="field-input" type="text" name="system.distance.melee"
+                            value="{{system.distance.melee}}" />
+                        <label class="field-label">Melee</label>
+                    </div>
+                {{else}}
+                    <div class="field half centered">
+                        <input class="field-input" type="text" name="system.distance.short"
+                            value="{{system.distance.short}}" />
+                        <label class="field-label">Short</label>
+                    </div>
+                    <div class="field half centered">
+                        <input class="field-input" type="text" name="system.distance.far"
+                            value="{{system.distance.far}}" />
+                        <label class="field-label">Far</label>
+                    </div>
+                {{/if}}
+            </fieldset>
+        </div>
+
+        <div class="column">
+
+            <fieldset class="column ">
+                <legend>Skills</legend>
+                <div class="field half centered">
+                    <select class="field-input" type="text" name="system.skills.primary"
+                        value="{{system.skills.primary}}"></select>
+                    <label class="field-label">Primary</label>
+                </div>
+                <div class="field half centered">
+                    <select class="field-input" type="text" name="system.skills.primary"
+                        value="{{system.skills.primary}}"></select>
+                    <label class="field-label">Secondary</label>
+                </div>
+            </fieldset>
+
+            {{#if document.isRanged}}
+                <fieldset class="column">
+                    <legend>Magazine</legend>
+                    <div class="field two-third">
+                        <select class="field-input" type="text" name="system.ammunition.caliber"
+                            value="{{system.ammunition.caliber}}">
+                            <option value="">None </option>
+                            {{selectOptions system.schema.fields.ammunition.fields.caliber.choices 
+                  selected=system.ammunition.caliber
+                  localize=true}}
+                        </select>
+                        <label class="field-label">Caliber</label>
+                    </div>
+
+                    <div class="field sixth centered">
+                        <input class="field-input" type="text" name="system.ammunition.magazine.size"
+                            value="{{system.ammunition.magazine.size}}" />
+                        <label class="field-label">Size</label>
+                    </div>
+                    <div class="field sixth checkbox centered">
+                        <div class="checkbox-row">
+                            <input class="field-checkbox" type="checkbox" name="system.ammunition.magazine.belt"
+                                {{checked system.ammunition.magazine.belt}} />
+                        </div>
+                        <label class="field-label">Belt</label>
+                    </div>
+                </fieldset>
+
+            {{/if}}
+
+
+
+
+
+
+
+
+        </div>
+
+
+    </div>
+
+</section>

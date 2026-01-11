@@ -1,0 +1,14 @@
+<section class="tab description {{tab.cssClass}} scrollable" data-group="main" data-tab="description">
+    {{#if isEditable}}
+        {{#if (sheetEditMode mode)}}
+            <prose-mirror name="system.description" value="{{system.description}}">
+                {{{ enriched.description }}}
+            </prose-mirror>
+        {{else}}
+            {{{ enriched.description }}}
+        {{/if}}
+
+    {{else}}
+        {{{ enriched.description }}}
+    {{/if}}
+</section>

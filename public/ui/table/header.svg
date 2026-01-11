@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="300" height="40"
+    style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <path d="M0 0h300v40H0z" style="fill:none"/>
+    <clipPath id="a">
+        <path d="M0 0h300v40H0z"/></clipPath>
+        <g clip-path="url(#a)">
+        <path d="M280 40H20L0 20 20 0h260l20 20-20 20Z" style=" stroke:#fff"/></g></svg>

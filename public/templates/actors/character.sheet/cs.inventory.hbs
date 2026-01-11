@@ -1,0 +1,63 @@
+<section class="tab inventory {{tab.cssClass}}" data-group="main" data-tab="inventory">
+  {{> "dgns.group.header" header="DGNS.Inventory" }}
+
+  <div class="items-table">
+    <div class="header">
+      <div class="name">Weapons</div>
+      <div class="transition">
+        <svg class="line">
+          <line x1="0" y1="50%" x2="75%" y2="50%"></line>
+          <line x1="75%" y1="50%" x2="100%" y2="100%"></line>
+        </svg>
+      </div>
+
+      <div class="legends">
+        <div class="field encumbrance">Enc.</div>
+        <div class="field controls">
+          <i class="fa-solid fa-arrow-down-a-z"></i>
+          <i class="fa-solid fa-plus"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="entries">
+      {{#each inventory.weapon as |item|}}
+        <div class="entry" data-item-id="{{item.id}}">
+          <div class="field image">
+            <img src="{{item.img}}">
+          </div>
+          <div class="field name">
+            <div class="caption">{{item.name}}</div>
+            <div class="subcaption">MELEE</div>
+          </div>
+
+
+          <div class="field encumbrance">
+            {{item.encumbrance}}
+          </div>
+          <div class="field controls">
+            <i class="fa-solid fa-shield-halved"></i>
+            <i class="fa-solid fa-sack-xmark" style="color: var(--dgns-ui-secondary)"></i>
+            <i class="fa-solid fa-square-caret-down"></i>
+            <i class="fa-solid fa-ellipsis-vertical"></i>
+          </div>
+
+        </div>
+      {{/each}}
+    </div>
+  </div>
+
+
+
+  {{#each inventory.shield as |item|}}
+    <div class="item-row" data-item-id="{{item.id}}">{{item.name}}</div>
+  {{/each}}
+
+  {{#each inventory.armor as |item|}}
+    <div class="item-row" data-item-id="{{item.id}}">{{item.name}}</div>
+  {{/each}}
+
+
+
+
+</section>
