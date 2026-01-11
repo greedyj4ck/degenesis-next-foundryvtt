@@ -89,6 +89,7 @@ export default class DegenesisWeaponSheet extends ItemSheetMixin(
 
       // System data
       qualities: Qualities.weapon,
+      qualities2: Qualities.agent,
 
       // Tabs
       tabGroups: this.tabGroups,

@@ -4,6 +4,8 @@ AUTHOR: GREEDYJ4CK
 OG CREW: MOOMAN, DARKHAN, CLEMEVILZZ, KRISTJANLAANE, PABRUVA
 */
 
+import "./scss/degenesis.scss"; // Ścieżka relatywna do pliku mjs
+
 import {
   registerSystemKeybindings,
   registerSystemSettings,

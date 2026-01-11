@@ -3,25 +3,29 @@ import { defineConfig } from "vite";
 import path from "path";
 
 export default defineConfig({
-  publicDir: "public",
-  root: "src",
+  publicDir: false,
+  root: "./",
   base: "/systems/degenesisnext/",
 
   build: {
     outDir: "./",
     emptyOutDir: false,
+    copyPublicDir: false,
+    cssCodeSplit: false,
     minify: false,
     lib: {
       entry: path.resolve(__dirname, "src/degenesis.mjs"),
       formats: ["es"],
-      fileName: "degenesis",
+      fileName: "degenesis-bundle",
     },
     rollupOptions: {
       output: {
-        // To sprawi, że plik będzie nazywał się dokładnie degenesis.mjs
         entryFileNames: "[name].mjs",
         assetFileNames: (assetInfo) => {
-          if (assetInfo.name === "style.css") return "styles/degenesis.css";
+          // Vite domyślnie nazywa plik stylu "style.css" w trybie lib
+          if (assetInfo.name && assetInfo.name.endsWith(".css")) {
+            return "styles/degenesis.css";
+          }
           return "assets/[name].[ext]";
         },
       },

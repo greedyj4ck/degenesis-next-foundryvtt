@@ -282,28 +282,20 @@
     --control-bg-color: var(--dgns-ui-control-bg);
     --control-border-color: var(--dgns-ui-control-border);
     --control-icon-color: var(--dgns-ui-control-content);
-    /*   
-    --control-active-border-color: var(--dgns-ui-active-control-border);
-    --color-active-icon: var(--dgns-ui-control-content);
-    color: var(--dgns-ui-control-content); */
   }
   .ui-control[aria-pressed=true] {
     --control-bg-color: var(--dgns-ui-active-control-bg);
     --control-icon-color: var(--dgns-ui-active-control-content);
     --control-border-color: var(--dgns-ui-active-control-border);
   }
+  .ui-control {
+    /*   
+    --control-active-border-color: var(--dgns-ui-active-control-border);
+    --color-active-icon: var(--dgns-ui-control-content);
+    color: var(--dgns-ui-control-content); */
+  }
   .faded-ui {
     --opacity-inactive: 0.7;
-  }
-  #tooltip {
-    background: var(--dgns-ui-control-bg);
-    border: 1px solid var(--dgns-ui-control-border);
-    color: var(--dgns-ui-control-content);
-    font-family: var(--font-sans);
-    font-size: var(--font-size-12);
-    font-weight: 900;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
   }
   #tooltip h1,
   #tooltip h2,
@@ -324,6 +316,16 @@
     background: var(--dgns-ui-active-control-bg);
     border-color: var(--dgns-ui-active-control-border);
     color: var(--dgns-ui-active-content);
+  }
+  #tooltip {
+    background: var(--dgns-ui-control-bg);
+    border: 1px solid var(--dgns-ui-control-border);
+    color: var(--dgns-ui-control-content);
+    font-family: var(--font-sans);
+    font-size: var(--font-size-12);
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
   }
   #sidebar-content {
     font-family: var(--font-serif);
@@ -367,10 +369,12 @@
   }
   #pause {
     z-index: 20 !important;
-    background: linear-gradient(to right, transparent 0%, var(--c-gold-9) 50%, var(--c-gold-9) 30%, transparent 100%);
   }
   #pause figcaption {
     font-weight: 500;
+  }
+  #pause {
+    background: linear-gradient(to right, transparent 0%, var(--c-gold-9) 50%, var(--c-gold-9) 30%, transparent 100%);
   }
   #pause svg {
     width: 100px !important;
@@ -395,10 +399,6 @@
   dialog#menu {
     border: var(--dgns-line-width) solid var(--dgns-ui-secondary);
   }
-  dialog#menu li {
-    color: var(--dgns-ui-secondary);
-    transition: color 0.1s ease-in;
-  }
   dialog#menu li h1,
   dialog#menu li h2,
   dialog#menu li h3 {
@@ -406,6 +406,10 @@
     font-family: var(--font-serif);
     font-weight: 500;
     text-transform: uppercase;
+  }
+  dialog#menu li {
+    color: var(--dgns-ui-secondary);
+    transition: color 0.1s ease-in;
   }
   dialog#menu li:hover {
     text-shadow: none;
@@ -447,7 +451,6 @@ dgns-slidetoggle {
   width: var(--slide-toggle-width);
   height: var(--slide-toggle-height);
   cursor: pointer;
-  /* Checked state */
 }
 dgns-slidetoggle .slide-toggle-track {
   width: 100%;
@@ -464,6 +467,9 @@ dgns-slidetoggle .slide-toggle-thumb {
   border: 2px solid var(--dgns-ui-primary);
   text-align: center;
   transition: margin-left var(--slide-toggle-transition-time) ease;
+}
+dgns-slidetoggle {
+  /* Checked state */
 }
 dgns-slidetoggle[checked] .slide-toggle-track {
   background: var(--slide-toggle-track-color-checked);
@@ -899,10 +905,6 @@ svg path.line {
     position: relative;
     color: var(--dgns-ui-primary);
     line-height: normal;
-    /*  &.active {
-      background-color: var(--dgns-ui-primary);
-      color: var(--dgns-ui-background);
-    } */
   }
   .application.sheet .tabs a:hover {
     color: var(--dgns-ui-accent);
@@ -924,6 +926,12 @@ svg path.line {
   }
   .application.sheet .tabs a.active::after {
     opacity: 0.5;
+  }
+  .application.sheet .tabs a {
+    /*  &.active {
+      background-color: var(--dgns-ui-primary);
+      color: var(--dgns-ui-background);
+    } */
   }
   .application.sheet .tabs.vertical {
     height: fit-content;
@@ -1060,8 +1068,6 @@ svg path.line {
     /* -------------------------------------------------------------------------- */
     /*                                  Controls                                  */
     /* -------------------------------------------------------------------------- */
-    /* ---------------------------- General / Section --------------------------- */
-    /* ---------------------------- Specific Sections --------------------------- */
   }
   .application.sheet.dgns-item .header-field {
     grid-column: span 2;
@@ -1134,9 +1140,15 @@ svg path.line {
     position: relative;
     margin: 10px auto;
   }
+  .application.sheet.dgns-item {
+    /* ---------------------------- General / Section --------------------------- */
+  }
   .application.sheet.dgns-item section.tab {
     flex: 1;
     padding-top: 5px;
+  }
+  .application.sheet.dgns-item {
+    /* ---------------------------- Specific Sections --------------------------- */
   }
   .application.sheet.dgns-item section.sheet-tabs {
     display: flex;
@@ -1165,21 +1177,16 @@ svg path.line {
     border: var(--dgns-line-width) solid var(--dgns-ui-secondary);
     background-repeat: repeat;
     background-size: 600px;
-    --dgns-table-header-height: var(--font-size-24);
-    /* -------------------------------------------------------------------------- */
-    /*                          General Inputs / Controls                         */
-    /* -------------------------------------------------------------------------- */
-    /* ------------------------------ Sheet Header ------------------------------ */
-    /* -------------------------------------------------------------------------- */
-    /*                                  Sections                                  */
-    /* -------------------------------------------------------------------------- */
-    /* ---------------------------------- Tabs ---------------------------------- */
-    /* --------------------------------- Effects -------------------------------- */
-    /* -------------------------------- Inventory ------------------------------- */
   }
   .application.sheet.dgns-character:not(.minimized, .minimizing, .maximizing) {
     min-height: 850px;
     min-width: 700px;
+  }
+  .application.sheet.dgns-character {
+    --dgns-table-header-height: var(--font-size-24);
+    /* -------------------------------------------------------------------------- */
+    /*                          General Inputs / Controls                         */
+    /* -------------------------------------------------------------------------- */
   }
   .application.sheet.dgns-character .items-table {
     --h: var(--dgns-table-header-height, var(--font-size-24));
@@ -1270,6 +1277,9 @@ svg path.line {
     min-width: 100px;
     font-size: var(--font-size-14);
     gap: 10px;
+  }
+  .application.sheet.dgns-character {
+    /* ------------------------------ Sheet Header ------------------------------ */
   }
   .application.sheet.dgns-character .character-header {
     display: flex;
@@ -1574,19 +1584,19 @@ svg path.line {
     justify-content: center;
     align-items: center;
   }
-  .application.sheet.dgns-character .attributes-skills-container .attribute-group .attribute label {
-    font-family: var(--font-body);
-    font-size: var(--font-size-18);
-    text-transform: uppercase;
-    font-weight: 800;
-    letter-spacing: 0.05em;
-  }
   .application.sheet.dgns-character .attributes-skills-container .attribute-group .attribute label.name {
     flex: 1;
   }
   .application.sheet.dgns-character .attributes-skills-container .attribute-group .attribute label.value {
     font-family: var(--font-body);
     font-weight: 600;
+  }
+  .application.sheet.dgns-character .attributes-skills-container .attribute-group .attribute label {
+    font-family: var(--font-body);
+    font-size: var(--font-size-18);
+    text-transform: uppercase;
+    font-weight: 800;
+    letter-spacing: 0.05em;
   }
   .application.sheet.dgns-character .attributes-skills-container .attribute-group .attribute input {
     width: 24px;
@@ -1616,13 +1626,6 @@ svg path.line {
     text-decoration: line-through;
     color: gray;
   }
-  .application.sheet.dgns-character .attributes-skills-container .attribute-group .skills .skill label,
-  .application.sheet.dgns-character .attributes-skills-container .attribute-group .skills .skill a {
-    font-family: var(--font-serif);
-    font-size: var(--font-size-16);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
   .application.sheet.dgns-character .attributes-skills-container .attribute-group .skills .skill label.name,
   .application.sheet.dgns-character .attributes-skills-container .attribute-group .skills .skill a.name {
     flex: 1;
@@ -1632,6 +1635,13 @@ svg path.line {
     font-family: var(--font-body);
     font-weight: 600;
   }
+  .application.sheet.dgns-character .attributes-skills-container .attribute-group .skills .skill label,
+  .application.sheet.dgns-character .attributes-skills-container .attribute-group .skills .skill a {
+    font-family: var(--font-serif);
+    font-size: var(--font-size-16);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
   .application.sheet.dgns-character .attributes-skills-container .attribute-group .skills .skill input {
     width: 24px;
     height: 24px;
@@ -1639,10 +1649,22 @@ svg path.line {
     line-height: normal;
     text-align: center;
   }
+  .application.sheet.dgns-character {
+    /* -------------------------------------------------------------------------- */
+    /*                                  Sections                                  */
+    /* -------------------------------------------------------------------------- */
+    /* ---------------------------------- Tabs ---------------------------------- */
+  }
   .application.sheet.dgns-character section.sheet-tabs {
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+  .application.sheet.dgns-character {
+    /* --------------------------------- Effects -------------------------------- */
+  }
+  .application.sheet.dgns-character {
+    /* -------------------------------- Inventory ------------------------------- */
   }
 }
 /* 
@@ -1886,12 +1908,6 @@ svg path.line {
   .application.sheet.dgns-weapon {
     background: var(--dgns-ui-background);
     border: var(--dgns-line-width) solid var(--dgns-ui-secondary);
-    /* -------------------------------------------------------------------------- */
-    /*                                  Controls                                  */
-    /* -------------------------------------------------------------------------- */
-    /* -------------------------------------------------------------------------- */
-    /*                                  Sections                                  */
-    /* -------------------------------------------------------------------------- */
   }
   .application.sheet.dgns-weapon:not(.minimized, .minimizing, .maximizing) {
     min-height: 600px;
@@ -1899,6 +1915,11 @@ svg path.line {
   }
   .application.sheet.dgns-weapon:not(.minimized, .minimizing, .maximizing) .window-title {
     visibility: visible !important;
+  }
+  .application.sheet.dgns-weapon {
+    /* -------------------------------------------------------------------------- */
+    /*                                  Controls                                  */
+    /* -------------------------------------------------------------------------- */
   }
   .application.sheet.dgns-weapon select {
     appearance: base-select;
@@ -1979,6 +2000,11 @@ svg path.line {
     letter-spacing: 0.15em;
     text-align: center;
     text-transform: uppercase;
+  }
+  .application.sheet.dgns-weapon {
+    /* -------------------------------------------------------------------------- */
+    /*                                  Sections                                  */
+    /* -------------------------------------------------------------------------- */
   }
   .application.sheet.dgns-weapon section.details .container {
     display: flex;
