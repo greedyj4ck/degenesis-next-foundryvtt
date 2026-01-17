@@ -1166,6 +1166,12 @@ svg path.line {
   .application.sheet.dgns-item section.sheet-tabs nav a {
     flex: 1;
   }
+  .application.sheet.dgns-item section.effects {
+    margin-top: 5px;
+  }
+  .application.sheet.dgns-item section.mods {
+    margin-top: 5px;
+  }
 }
 /* 
     DEGENESIS@NEXT
@@ -1173,6 +1179,97 @@ svg path.line {
     Version  0.1
 
     */
+.document-table {
+  --h: var(--dgns-table-header-height, var(--font-size-24));
+}
+.document-table .header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  height: var(--h);
+  font-size: var(--font-size-12);
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+.document-table .header .name {
+  corner-shape: bevel;
+  border: var(--dgns-line-width) solid var(--dgns-ui-secondary);
+  border-radius: var(--h);
+  display: flex;
+  align-items: center;
+  padding: 0 25px;
+  height: 100%;
+  min-width: 200px;
+}
+.document-table .header .transition {
+  width: calc(4 * var(--h));
+  height: var(--h);
+}
+.document-table .header .transition svg.line line {
+  stroke: var(--dgns-ui-secondary);
+  stroke-width: var(--dgns-line-width);
+}
+.document-table .header .legends {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  width: 100%;
+  height: var(--h);
+  border-bottom: var(--dgns-line-width) solid var(--dgns-ui-secondary);
+}
+.document-table .entries {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 10px 0px;
+  gap: 10px;
+}
+.document-table .entries .entry {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  width: 100%;
+  gap: 10px;
+}
+.document-table .caption {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-14);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.document-table .subcaption {
+  font-family: var(--font-serif);
+  font-size: var(--font-size-12);
+  text-transform: uppercase;
+}
+.document-table .field {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: var(--font-size-12);
+  min-width: 60px;
+}
+.document-table .field.name {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+}
+.document-table .field.image {
+  min-width: 0;
+  border: var(--dgns-line-width) solid var(--dgns-ui-secondary);
+  width: var(--font-size-32);
+  height: var(--font-size-32);
+}
+.document-table .field.controls {
+  min-width: 100px;
+  font-size: var(--font-size-14);
+  gap: 10px;
+}
+
 @layer dgns.sheets.character {
   /* -------------------------------------------------------------------------- */
   /*                             Character sheet                                */
@@ -1192,98 +1289,6 @@ svg path.line {
     /* -------------------------------------------------------------------------- */
     /*                          General Inputs / Controls                         */
     /* -------------------------------------------------------------------------- */
-  }
-  .application.sheet.dgns-character .items-table {
-    --h: var(--dgns-table-header-height, var(--font-size-24));
-  }
-  .application.sheet.dgns-character .items-table .header {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    height: var(--h);
-    font-size: var(--font-size-12);
-    font-family: var(--font-sans);
-    text-transform: uppercase;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-  }
-  .application.sheet.dgns-character .items-table .header .name {
-    corner-shape: bevel;
-    border: var(--dgns-line-width) solid var(--c-gold-7);
-    border-radius: var(--h);
-    display: flex;
-    align-items: center;
-    padding: 0 25px;
-    height: 100%;
-    min-width: 200px;
-  }
-  .application.sheet.dgns-character .items-table .header .transition {
-    width: calc(4 * var(--h));
-    height: var(--h);
-  }
-  .application.sheet.dgns-character .items-table .header .transition svg.line line {
-    stroke: var(--c-gold-7);
-    stroke-width: var(--dgns-line-width);
-  }
-  .application.sheet.dgns-character .items-table .header .legends {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 10px;
-    width: 100%;
-    height: var(--h);
-    border-bottom: var(--dgns-line-width) solid var(--c-gold-7);
-  }
-  .application.sheet.dgns-character .items-table .entries {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    padding: 10px 0px;
-    gap: 10px;
-  }
-  .application.sheet.dgns-character .items-table .entries .entry {
-    display: flex;
-    flex-direction: row;
-    flex: 1;
-    width: 100%;
-    gap: 10px;
-  }
-  .application.sheet.dgns-character .items-table .caption {
-    font-family: var(--font-sans);
-    font-size: var(--font-size-14);
-    font-weight: 700;
-    text-transform: uppercase;
-  }
-  .application.sheet.dgns-character .items-table .subcaption {
-    font-family: var(--font-serif);
-    font-size: var(--font-size-12);
-    text-transform: uppercase;
-  }
-  .application.sheet.dgns-character .items-table .field {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: var(--font-size-12);
-    min-width: 60px;
-  }
-  .application.sheet.dgns-character .items-table .field.name {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    flex: 1;
-  }
-  .application.sheet.dgns-character .items-table .field.image {
-    min-width: 0;
-    border: var(--dgns-line-width) solid var(--c-gold-7);
-    width: var(--font-size-32);
-    height: var(--font-size-32);
-  }
-  .application.sheet.dgns-character .items-table .field.controls {
-    min-width: 100px;
-    font-size: var(--font-size-14);
-    gap: 10px;
-  }
-  .application.sheet.dgns-character {
     /* ------------------------------ Sheet Header ------------------------------ */
   }
   .application.sheet.dgns-character .character-header {

@@ -1,0 +1,108 @@
+.document-table {
+  --h: var(--dgns-table-header-height, var(--font-size-24));
+
+  .header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+
+    height: var(--h);
+    font-size: var(--font-size-12);
+    font-family: var(--font-sans);
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+
+    .name {
+      corner-shape: bevel;
+      border: var(--dgns-line-width) solid var(--dgns-ui-secondary);
+      border-radius: var(--h);
+      display: flex;
+      align-items: center;
+      padding: 0 25px;
+      height: 100%;
+      min-width: 200px;
+    }
+
+    .transition {
+      width: calc(4 * var(--h));
+      height: var(--h);
+
+      svg.line {
+        line {
+          stroke: var(--dgns-ui-secondary);
+          stroke-width: var(--dgns-line-width);
+        }
+      }
+    }
+
+    .legends {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+
+      gap: 10px;
+      width: 100%;
+
+      height: var(--h);
+      border-bottom: var(--dgns-line-width) solid var(--dgns-ui-secondary);
+    }
+  }
+
+  .entries {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 10px 0px;
+    gap: 10px;
+
+    .entry {
+      display: flex;
+      flex-direction: row;
+      flex: 1;
+      width: 100%;
+      gap: 10px;
+    }
+  }
+
+  .caption {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-14);
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .subcaption {
+    font-family: var(--font-serif);
+    font-size: var(--font-size-12);
+    text-transform: uppercase;
+  }
+
+  .field {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: var(--font-size-12);
+    min-width: 60px;
+
+    &.name {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      flex: 1;
+    }
+
+    &.image {
+      min-width: 0;
+      border: var(--dgns-line-width) solid var(--dgns-ui-secondary);
+      width: var(--font-size-32);
+      height: var(--font-size-32);
+    }
+
+    &.controls {
+      min-width: 100px;
+      font-size: var(--font-size-14);
+      gap: 10px;
+    }
+  }
+}

@@ -12,24 +12,24 @@
 
 
   <section class="tab group {{subtabs.group.cssClass}} section-scrollable" data-group="history" data-tab="group">
-    {{> "systems/degenesisnext/templates/actors/character.sheet/history.partials/group.hbs" }}
+    {{> "systems/degenesisnext/templates/actor/character/group.hbs" }}
   </section>
 
   <section class="tab biography {{subtabs.biography.cssClass}} section-scrollable" data-group="history"
     data-tab="biography">
-    {{> "systems/degenesisnext/templates/actors/character.sheet/history.partials/biography.hbs" }}
+    {{> "systems/degenesisnext/templates/actor/character/biography.hbs" }}
   </section>
 
   {{#if document.isOwner}}
     <section class="tab notes {{subtabs.notes.cssClass}} section-scrollable" data-group="history" data-tab="notes">
-      {{> "systems/degenesisnext/templates/actors/character.sheet/history.partials/notes.hbs" }}
+      {{> "systems/degenesisnext/templates/actor/character/notes.hbs" }}
     </section>
   {{/if}}
 
   {{#if (isGM)}}
     <section class="tab gmnotes {{subtabs.gmnotes.cssClass}} section-scrollable" data-group="history"
       data-tab="gmnotes">
-      {{> "systems/degenesisnext/templates/actors/character.sheet/history.partials/gmnotes.hbs" }}
+      {{> "systems/degenesisnext/templates/actor/character/gmnotes.hbs" }}
     </section>
   {{/if}}
 

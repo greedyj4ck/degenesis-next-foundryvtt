@@ -36,7 +36,7 @@ export default class GeneralFields {
           required: false,
           blank: true,
           label: "DGNS.TextSection",
-        })
+        }),
       ),
     };
   }
@@ -77,7 +77,7 @@ export default class GeneralFields {
 
   static get effect() {
     return {
-      effect: new StringField({ label: "DGNS.Effect" }),
+      effect: new HTMLField({ label: "DGNS.Effect" }),
     };
   }
 
@@ -99,6 +99,7 @@ export default class GeneralFields {
     };
   }
 
+  /** Deprected - do not use.  */
   static get slots() {
     return {
       slots: new SchemaField({
@@ -115,7 +116,7 @@ export default class GeneralFields {
           key: new StringField({ required: true }), //quality object key
           enabled: new BooleanField({ initial: true }), // toggling state
           values: new ObjectField({ initial: {} }),
-        })
+        }),
       ),
     };
   }
@@ -190,6 +191,22 @@ export default class GeneralFields {
         required: false,
         nullable: true,
         initial: null,
+      }),
+    };
+  }
+
+  static get modifications() {
+    return {
+      modifications: new SchemaField({
+        slots: new NumberField({ min: 0, integer: true, initial: 0 }), // amount of slots for an object
+        installed: new ArrayField(
+          new ForeignDocumentField(BaseItem, {
+            idOnly: false,
+            required: false,
+            nullable: true,
+          }),
+          { initial: [] },
+        ),
       }),
     };
   }

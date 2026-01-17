@@ -7,7 +7,7 @@ import ItemSheetMixin from "./mixins/item.sheet.mixin.mjs";
 import BackgroundSheetMixin from "./mixins/background.sheet.mixin.mjs";
 
 export default class DegenesisConceptSheet extends BackgroundSheetMixin(
-  ItemSheetMixin(sheets.ItemSheetV2)
+  ItemSheetMixin(sheets.ItemSheetV2),
 ) {
   static DEFAULT_OPTIONS = {
     actions: {},
@@ -28,18 +28,17 @@ export default class DegenesisConceptSheet extends BackgroundSheetMixin(
 
   static PARTS = {
     sheetHeader: {
-      template: "systems/degenesisnext/templates/partials/sheet.title.hbs",
+      template: "systems/degenesisnext/templates/shared/sheet/title.hbs",
     },
     conceptHeader: {
-      template:
-        "systems/degenesisnext/templates/items/concept.sheet/header.hbs",
+      template: "systems/degenesisnext/templates/item/concept/header.hbs",
     },
 
     conceptData: {
-      template: "systems/degenesisnext/templates/items/concept.sheet/data.hbs",
+      template: "systems/degenesisnext/templates/item/concept/data.hbs",
     },
     conceptLore: {
-      template: "systems/degenesisnext/templates/items/concept.sheet/lore.hbs",
+      template: "systems/degenesisnext/templates/item/concept/lore.hbs",
     },
   };
 
@@ -56,7 +55,7 @@ export default class DegenesisConceptSheet extends BackgroundSheetMixin(
 
     context.enriched = {
       description: await TextEditor.enrichHTML(
-        this.document.system.description
+        this.document.system.description,
       ),
     };
 

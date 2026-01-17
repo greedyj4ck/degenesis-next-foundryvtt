@@ -11,7 +11,7 @@ import ItemSheetMixin from "./mixins/item.sheet.mixin.mjs";
 import BackgroundSheetMixin from "./mixins/background.sheet.mixin.mjs";
 
 export default class DegenesisCultureSheet extends BackgroundSheetMixin(
-  ItemSheetMixin(sheets.ItemSheetV2)
+  ItemSheetMixin(sheets.ItemSheetV2),
 ) {
   static DEFAULT_OPTIONS = {
     actions: {
@@ -43,20 +43,19 @@ export default class DegenesisCultureSheet extends BackgroundSheetMixin(
 
   static PARTS = {
     sheetHeader: {
-      template: "systems/degenesisnext/templates/partials/sheet.title.hbs",
+      template: "systems/degenesisnext/templates/shared/sheet/title.hbs",
     },
 
     cultureHeader: {
-      template:
-        "systems/degenesisnext/templates/items/culture.sheet/header.hbs",
+      template: "systems/degenesisnext/templates/item/culture/header.hbs",
     },
 
     cultureData: {
-      template: "systems/degenesisnext/templates/items/culture.sheet/data.hbs",
+      template: "systems/degenesisnext/templates/item/culture/data.hbs",
     },
 
     cultureLore: {
-      template: "systems/degenesisnext/templates/items/culture.sheet/lore.hbs",
+      template: "systems/degenesisnext/templates/item/culture/lore.hbs",
     },
 
     /* actorHeader: {
@@ -124,7 +123,7 @@ export default class DegenesisCultureSheet extends BackgroundSheetMixin(
 
     context.enriched = {
       description: await TextEditor.enrichHTML(
-        this.document.system.description
+        this.document.system.description,
       ),
 
       /*  biography: await TextEditor.enrichHTML(this.document.system.biography, {

@@ -398,6 +398,14 @@
         "name": "Sealed",
         "description": "Desc"
       }
+    },
+
+    "MOD": {
+      "melee": "Melee weapons",
+      "archaicProjectiles": "Melee weapons",
+      "modernEnergyWeapons": "Melee weapons",
+      "modernGuns": "Melee weapons",
+      "armor": "Melee weapons"
     }
   },
 

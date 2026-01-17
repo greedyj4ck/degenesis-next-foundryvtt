@@ -11,8 +11,8 @@ export default class WeaponData extends BaseItemData {
       ...super.defineSchema(), // all base items fields
       ...GeneralFields.equipped,
       ...GeneralFields.qualities,
-
-      ...GeneralFields.slots,
+      ...GeneralFields.modifications,
+      //...GeneralFields.slots, // moved to modifications structure
       ...GeneralFields.resources,
       ...GeneralFields.cult,
       ...GeneralFields.weaponGroup, // group field with weaponOptions

@@ -11,7 +11,7 @@ const { TextEditor } = foundry.applications.ux;
 import ActorSheetMixin from "./actor.sheet.mixin.mjs";
 
 export default class DGNSCharacterSheet extends ActorSheetMixin(
-  sheets.ActorSheetV2
+  sheets.ActorSheetV2,
 ) {
   static DEFAULT_OPTIONS = {
     actions: {
@@ -43,62 +43,54 @@ export default class DGNSCharacterSheet extends ActorSheetMixin(
 
   static PARTS = {
     sheetHeader: {
-      template: "systems/degenesisnext/templates/partials/sheet.title.hbs",
+      template: "systems/degenesisnext/templates/shared/sheet/title.hbs",
     },
     actorHeader: {
-      template:
-        "systems/degenesisnext/templates/actors/character.sheet/cs.header.hbs",
+      template: "systems/degenesisnext/templates/actor/character/header.hbs",
       templates: [
-        "systems/degenesisnext/templates/actors/character.sheet/header.partials/details.hbs",
-        "systems/degenesisnext/templates/actors/character.sheet/header.partials/modes.hbs",
-        "systems/degenesisnext/templates/actors/character.sheet/header.partials/currency.hbs",
-        "systems/degenesisnext/templates/actors/character.sheet/header.partials/xp.hbs",
+        "systems/degenesisnext/templates/actor/character/details.hbs",
+        "systems/degenesisnext/templates/actor/character/modes.hbs",
+        "systems/degenesisnext/templates/actor/character/currency.hbs",
+        "systems/degenesisnext/templates/actor/character/xp.hbs",
       ],
     },
     tabs: {
-      template:
-        "systems/degenesisnext/templates/actors/character.sheet/cs.tabs.hbs",
+      template: "systems/degenesisnext/templates/actor/character/tabs.hbs",
       scrollable: [""],
     },
     general: {
-      template:
-        "systems/degenesisnext/templates/actors/character.sheet/cs.general.hbs",
+      template: "systems/degenesisnext/templates/actor/character/general.hbs",
       scrollable: [""],
     },
     stats: {
-      template:
-        "systems/degenesisnext/templates/actors/character.sheet/cs.stats.hbs",
+      template: "systems/degenesisnext/templates/actor/character/stats.hbs",
       scrollable: [""],
     },
     effects: {
-      template:
-        "systems/degenesisnext/templates/actors/character.sheet/cs.effects.hbs",
+      template: "systems/degenesisnext/templates/actor/character/effects.hbs",
       scrollable: [".container-scrollable"],
     },
     combat: {
-      template:
-        "systems/degenesisnext/templates/actors/character.sheet/cs.combat.hbs",
+      template: "systems/degenesisnext/templates/actor/character/combat.hbs",
       scrollable: [""],
     },
     inventory: {
-      template:
-        "systems/degenesisnext/templates/actors/character.sheet/cs.inventory.hbs",
+      template: "systems/degenesisnext/templates/actor/character/inventory.hbs",
       scrollable: [""],
     },
     history: {
-      template:
-        "systems/degenesisnext/templates/actors/character.sheet/cs.history.hbs",
+      template: "systems/degenesisnext/templates/actor/character/history.hbs",
       templates: [
-        "systems/degenesisnext/templates/actors/character.sheet/history.partials/group.hbs",
-        "systems/degenesisnext/templates/actors/character.sheet/history.partials/biography.hbs",
-        "systems/degenesisnext/templates/actors/character.sheet/history.partials/notes.hbs",
-        "systems/degenesisnext/templates/actors/character.sheet/history.partials/gmnotes.hbs",
+        "systems/degenesisnext/templates/actor/character/group.hbs",
+        "systems/degenesisnext/templates/actor/character/biography.hbs",
+        "systems/degenesisnext/templates/actor/character/notes.hbs",
+        "systems/degenesisnext/templates/actor/character/gmnotes.hbs",
       ],
       scrollable: [".container-scrollable"],
     },
 
     sheetFooter: {
-      template: "systems/degenesisnext/templates/partials/sheet.footer.hbs",
+      template: "systems/degenesisnext/templates/shared/sheet/footer.hbs",
     },
   };
 
@@ -173,7 +165,7 @@ export default class DGNSCharacterSheet extends ActorSheetMixin(
           this.document.system.ownerNotes,
           {
             secrets: this.document.isOwner,
-          }
+          },
         ),
         gmNotes: await TextEditor.enrichHTML(this.document.system.gmNotes, {
           secrets: this.document.isOwner,
@@ -235,7 +227,7 @@ export default class DGNSCharacterSheet extends ActorSheetMixin(
         hookName: "getActionRollContextOptions",
         fixed: true,
         parentClassHooks: false,
-      }
+      },
     );
   }
 

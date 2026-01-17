@@ -1,11 +1,14 @@
 async function preloadHandlebarsTemplates() {
   const partials = [
     // Shared partials
-    "systems/degenesisnext/templates/partials/group.header.hbs"
+    "systems/degenesisnext/templates/shared/group/header.hbs"
   ];
   const paths = {};
   for (const path of partials) {
-    paths[`dgns.${path.split("/").pop().replace(".hbs", "")}`] = path;
+    const parts = path.split("/");
+    const fileName = parts.pop().replace(".hbs", "");
+    const folderName = parts.pop();
+    paths[`dgns.${folderName}.${fileName}`] = path;
   }
   return await foundry.applications.handlebars.loadTemplates(paths);
 }
@@ -312,7 +315,7 @@ const QUALITY_DEFINITIONS = {
     label: "DGNS.QUALITY.blunt.name",
     description: "DGNS.QUALITY.blunt.description",
     category: "passive",
-    itemTypes: ["weapon"],
+    itemTypes: ["weapon", "modification"],
     inputs: [],
     chatButtons: null,
     onItemUse: null,
@@ -333,7 +336,7 @@ const QUALITY_DEFINITIONS = {
     label: "DGNS.QUALITY.camo.name",
     description: "DGNS.QUALITY.camo.description",
     category: "passive",
-    itemTypes: ["weapon", "armor"],
+    itemTypes: ["weapon", "armor", "modification"],
     inputs: [InputDifficulty],
     chatButtons: null,
     onItemUse: null,
@@ -388,7 +391,7 @@ const QUALITY_DEFINITIONS = {
     label: "DGNS.QUALITY.doubleBarreled.name",
     description: "DGNS.QUALITY.doubleBarreled.description",
     category: "passive",
-    itemTypes: ["weapon"],
+    itemTypes: ["weapon", "modification"],
     inputs: []
   },
   entangled: {
@@ -486,7 +489,7 @@ const QUALITY_DEFINITIONS = {
     label: "DGNS.QUALITY.smoothRunning.name",
     description: "DGNS.QUALITY.smoothRunning.description",
     category: "passive",
-    itemTypes: ["weapon"],
+    itemTypes: ["weapon", "modification"],
     inputs: [InputTrigger]
   },
   special: {
@@ -521,7 +524,7 @@ const QUALITY_DEFINITIONS = {
     label: "DGNS.QUALITY.terrifying.name",
     description: "DGNS.QUALITY.terrifying.description",
     category: "passive",
-    itemTypes: ["weapon", "armor"],
+    itemTypes: ["weapon", "armor", "modification"],
     inputs: [InputDifficulty]
   },
   thunderStrike: {
@@ -614,7 +617,7 @@ const QUALITY_DEFINITIONS = {
     label: "DGNS.QUALITY.fireResistant.name",
     description: "DGNS.QUALITY.fireResistant.description",
     category: "passive",
-    itemTypes: ["armor"],
+    itemTypes: ["armor", "modification"],
     inputs: [InputArmor]
   },
   unstable: {
@@ -628,21 +631,21 @@ const QUALITY_DEFINITIONS = {
     label: "DGNS.QUALITY.insulated.name",
     description: "DGNS.QUALITY.insulated.description",
     category: "passive",
-    itemTypes: ["armor"],
+    itemTypes: ["armor", "modification"],
     inputs: []
   },
   bulletproof: {
     label: "DGNS.QUALITY.bulletproof.name",
     description: "DGNS.QUALITY.bulletproof.description",
     category: "passive",
-    itemTypes: ["armor"],
+    itemTypes: ["armor", "modification"],
     inputs: [InputArmor]
   },
   massive: {
     label: "DGNS.QUALITY.massive.name",
     description: "DGNS.QUALITY.massive.description",
     category: "passive",
-    itemTypes: ["armor"],
+    itemTypes: ["armor", "modification"],
     inputs: [InputArmor]
   },
   brittle: {
@@ -656,7 +659,7 @@ const QUALITY_DEFINITIONS = {
     label: "DGNS.QUALITY.sealed.name",
     description: "DGNS.QUALITY.sealed.description",
     category: "passive",
-    itemTypes: ["armor"],
+    itemTypes: ["armor", "modification"],
     inputs: [InputBonusSuccesses]
   }
 };
@@ -672,6 +675,9 @@ const Qualities = {
   },
   get agent() {
     return Object.entries(QUALITY_DEFINITIONS).filter(([key, def]) => def.itemTypes.includes("agent")).map(([key, def]) => ({ key, ...def })).sort((a, b) => a.key.localeCompare(b.key));
+  },
+  get modification() {
+    return Object.entries(QUALITY_DEFINITIONS).filter(([key, def]) => def.itemTypes.includes("modification")).map(([key, def]) => ({ key, ...def })).sort((a, b) => a.key.localeCompare(b.key));
   },
   get all() {
     return Object.entries(QUALITY_DEFINITIONS).map(([key, def]) => ({
@@ -692,10 +698,20 @@ const Condition = {
   calculateMovement: (actor) => {
   }
 };
+const Modification = {
+  type: {
+    melee: "DGNS.MOD.melee",
+    archaicProjectiles: "DGNS.MOD.archaicProjectiles",
+    modernEnergyWeapons: "DGNS.MOD.modernEnergyWeapons",
+    modernGuns: "DGNS.MOD.modernGuns",
+    armor: "DGNS.MOD.armor"
+  }
+};
 const DEGENESIS = {};
 DEGENESIS.Damage = Damage;
-DEGENESIS.Qualities = Qualities;
 DEGENESIS.Condition = Condition;
+DEGENESIS.Qualities = Qualities;
+DEGENESIS.Modification = Modification;
 DEGENESIS.alignments = {
   ambition: {
     label: "DGNS.Ambition",
@@ -1582,53 +1598,53 @@ class DGNSCharacterSheet extends ActorSheetMixin(
   };
   static PARTS = {
     sheetHeader: {
-      template: "systems/degenesisnext/templates/partials/sheet.title.hbs"
+      template: "systems/degenesisnext/templates/shared/sheet/title.hbs"
     },
     actorHeader: {
-      template: "systems/degenesisnext/templates/actors/character.sheet/cs.header.hbs",
+      template: "systems/degenesisnext/templates/actor/character/header.hbs",
       templates: [
-        "systems/degenesisnext/templates/actors/character.sheet/header.partials/details.hbs",
-        "systems/degenesisnext/templates/actors/character.sheet/header.partials/modes.hbs",
-        "systems/degenesisnext/templates/actors/character.sheet/header.partials/currency.hbs",
-        "systems/degenesisnext/templates/actors/character.sheet/header.partials/xp.hbs"
+        "systems/degenesisnext/templates/actor/character/details.hbs",
+        "systems/degenesisnext/templates/actor/character/modes.hbs",
+        "systems/degenesisnext/templates/actor/character/currency.hbs",
+        "systems/degenesisnext/templates/actor/character/xp.hbs"
       ]
     },
     tabs: {
-      template: "systems/degenesisnext/templates/actors/character.sheet/cs.tabs.hbs",
+      template: "systems/degenesisnext/templates/actor/character/tabs.hbs",
       scrollable: [""]
     },
     general: {
-      template: "systems/degenesisnext/templates/actors/character.sheet/cs.general.hbs",
+      template: "systems/degenesisnext/templates/actor/character/general.hbs",
       scrollable: [""]
     },
     stats: {
-      template: "systems/degenesisnext/templates/actors/character.sheet/cs.stats.hbs",
+      template: "systems/degenesisnext/templates/actor/character/stats.hbs",
       scrollable: [""]
     },
     effects: {
-      template: "systems/degenesisnext/templates/actors/character.sheet/cs.effects.hbs",
+      template: "systems/degenesisnext/templates/actor/character/effects.hbs",
       scrollable: [".container-scrollable"]
     },
     combat: {
-      template: "systems/degenesisnext/templates/actors/character.sheet/cs.combat.hbs",
+      template: "systems/degenesisnext/templates/actor/character/combat.hbs",
       scrollable: [""]
     },
     inventory: {
-      template: "systems/degenesisnext/templates/actors/character.sheet/cs.inventory.hbs",
+      template: "systems/degenesisnext/templates/actor/character/inventory.hbs",
       scrollable: [""]
     },
     history: {
-      template: "systems/degenesisnext/templates/actors/character.sheet/cs.history.hbs",
+      template: "systems/degenesisnext/templates/actor/character/history.hbs",
       templates: [
-        "systems/degenesisnext/templates/actors/character.sheet/history.partials/group.hbs",
-        "systems/degenesisnext/templates/actors/character.sheet/history.partials/biography.hbs",
-        "systems/degenesisnext/templates/actors/character.sheet/history.partials/notes.hbs",
-        "systems/degenesisnext/templates/actors/character.sheet/history.partials/gmnotes.hbs"
+        "systems/degenesisnext/templates/actor/character/group.hbs",
+        "systems/degenesisnext/templates/actor/character/biography.hbs",
+        "systems/degenesisnext/templates/actor/character/notes.hbs",
+        "systems/degenesisnext/templates/actor/character/gmnotes.hbs"
       ],
       scrollable: [".container-scrollable"]
     },
     sheetFooter: {
-      template: "systems/degenesisnext/templates/partials/sheet.footer.hbs"
+      template: "systems/degenesisnext/templates/shared/sheet/footer.hbs"
     }
   };
   /** @type {Record<string, foundry.applications.types.ApplicationTabsConfiguration>} */
@@ -1887,10 +1903,10 @@ class DGNSGroupSheet extends ActorSheetMixin(
   };
   static PARTS = {
     sheetHeader: {
-      template: "systems/degenesisnext/templates/partials/sheet.title.hbs"
+      template: "systems/degenesisnext/templates/shared/sheet/title.hbs"
     },
     groupHeader: {
-      template: "systems/degenesisnext/templates/actors/group.sheet/header.hbs"
+      template: "systems/degenesisnext/templates/actor/group/header.hbs"
     },
     /*  tabs: {
          template:
@@ -1904,7 +1920,7 @@ class DGNSGroupSheet extends ActorSheetMixin(
        },
     */
     sheetFooter: {
-      template: "systems/degenesisnext/templates/partials/sheet.footer.hbs"
+      template: "systems/degenesisnext/templates/shared/sheet/footer.hbs"
     }
   };
   static TABS = [];
@@ -2178,30 +2194,34 @@ class DegenesisWeaponSheet extends ItemSheetMixin(
   };
   static PARTS = {
     sheetTitle: {
-      template: "systems/degenesisnext/templates/partials/sheet.title.bar.hbs"
+      template: "systems/degenesisnext/templates/shared/sheet/title.bar.hbs"
       // without input field
     },
     itemHeader: {
-      template: "systems/degenesisnext/templates/partials/item.header.hbs"
+      template: "systems/degenesisnext/templates/shared/item/header.hbs"
     },
     tabs: {
-      template: "systems/degenesisnext/templates/partials/item.tabs.hbs",
+      template: "systems/degenesisnext/templates/shared/item/tabs.hbs",
       scrollable: [""]
     },
     description: {
-      template: "systems/degenesisnext/templates/partials/item.tab.description.hbs",
+      template: "systems/degenesisnext/templates/shared/item/tab.description.hbs",
       scrollable: [""]
     },
     details: {
-      template: "systems/degenesisnext/templates/items/weapon.sheet/ws.details.hbs",
+      template: "systems/degenesisnext/templates/item/weapon/details.hbs",
       scrollable: [""]
     },
     qualities: {
-      template: "systems/degenesisnext/templates/items/weapon.sheet/ws.qualities.hbs",
+      template: "systems/degenesisnext/templates/item/weapon/qualities.hbs",
+      scrollable: [""]
+    },
+    effects: {
+      template: "systems/degenesisnext/templates/shared/item/tab.effects.hbs",
       scrollable: [""]
     },
     sheetFooter: {
-      template: "systems/degenesisnext/templates/partials/sheet.footer.hbs"
+      template: "systems/degenesisnext/templates/shared/sheet/footer.hbs"
     }
   };
   static TABS = {
@@ -2211,9 +2231,9 @@ class DegenesisWeaponSheet extends ItemSheetMixin(
       tabs: [
         { id: "description", label: "DGNS.Description" },
         { id: "details", label: "DGNS.Details" },
+        { id: "effects", label: "DGNS.Effects" },
         { id: "qualities", label: "DGNS.Qualities" },
-        { id: "mods", label: "DGNS.Mods" },
-        { id: "effects", label: "DGNS.Effects" }
+        { id: "mods", label: "DGNS.Mods" }
       ]
     }
   };
@@ -2248,6 +2268,7 @@ class DegenesisWeaponSheet extends ItemSheetMixin(
           }))
         };
       }),
+      effects: await this.item._prepareEffects(),
       // Tabs
       tabGroups: this.tabGroups,
       mainTabs: this._prepareTabs("main"),
@@ -2345,16 +2366,16 @@ class DegenesisCultureSheet extends BackgroundSheetMixin(
   };
   static PARTS = {
     sheetHeader: {
-      template: "systems/degenesisnext/templates/partials/sheet.title.hbs"
+      template: "systems/degenesisnext/templates/shared/sheet/title.hbs"
     },
     cultureHeader: {
-      template: "systems/degenesisnext/templates/items/culture.sheet/header.hbs"
+      template: "systems/degenesisnext/templates/item/culture/header.hbs"
     },
     cultureData: {
-      template: "systems/degenesisnext/templates/items/culture.sheet/data.hbs"
+      template: "systems/degenesisnext/templates/item/culture/data.hbs"
     },
     cultureLore: {
-      template: "systems/degenesisnext/templates/items/culture.sheet/lore.hbs"
+      template: "systems/degenesisnext/templates/item/culture/lore.hbs"
     }
     /* actorHeader: {
           template:
@@ -2577,16 +2598,16 @@ class DegenesisConceptSheet extends BackgroundSheetMixin(
   };
   static PARTS = {
     sheetHeader: {
-      template: "systems/degenesisnext/templates/partials/sheet.title.hbs"
+      template: "systems/degenesisnext/templates/shared/sheet/title.hbs"
     },
     conceptHeader: {
-      template: "systems/degenesisnext/templates/items/concept.sheet/header.hbs"
+      template: "systems/degenesisnext/templates/item/concept/header.hbs"
     },
     conceptData: {
-      template: "systems/degenesisnext/templates/items/concept.sheet/data.hbs"
+      template: "systems/degenesisnext/templates/item/concept/data.hbs"
     },
     conceptLore: {
-      template: "systems/degenesisnext/templates/items/concept.sheet/lore.hbs"
+      template: "systems/degenesisnext/templates/item/concept/lore.hbs"
     }
   };
   static TABS = [];
@@ -2649,16 +2670,16 @@ class DegenesisCultSheet extends BackgroundSheetMixin(
   };
   static PARTS = {
     sheetHeader: {
-      template: "systems/degenesisnext/templates/partials/sheet.title.hbs"
+      template: "systems/degenesisnext/templates/shared/sheet/title.hbs"
     },
     conceptHeader: {
-      template: "systems/degenesisnext/templates/items/cult.sheet/header.hbs"
+      template: "systems/degenesisnext/templates/item/cult/header.hbs"
     },
     conceptData: {
-      template: "systems/degenesisnext/templates/items/cult.sheet/data.hbs"
+      template: "systems/degenesisnext/templates/item/cult/data.hbs"
     },
     conceptLore: {
-      template: "systems/degenesisnext/templates/items/cult.sheet/lore.hbs"
+      template: "systems/degenesisnext/templates/item/cult/lore.hbs"
     }
   };
   static TABS = [];
@@ -3549,7 +3570,7 @@ class LocalDocumentField extends foundry.data.fields.DocumentIdField {
     return value?._id ?? value;
   }
 }
-const { SchemaField: SchemaField$s, ForeignDocumentField: ForeignDocumentField$5 } = foundry.data.fields;
+const { SchemaField: SchemaField$s, ForeignDocumentField: ForeignDocumentField$6 } = foundry.data.fields;
 class CachedReferenceField extends SchemaField$s {
   /**
    *
@@ -3562,7 +3583,7 @@ class CachedReferenceField extends SchemaField$s {
     }
     super(
       {
-        linked: new ForeignDocumentField$5(model, {
+        linked: new ForeignDocumentField$6(model, {
           nullable: true,
           idOnly: false
         }),
@@ -3757,8 +3778,7 @@ class DGNSRoll extends Roll$1 {
   get result() {
     return this._outcome;
   }
-  static buildFormula() {
-  }
+  //static buildFormula() {}
 }
 const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$1, ApplicationV2: ApplicationV2$1 } = foundry.applications.api;
 const { FormDataExtended: FormDataExtended$1 } = foundry.applications.ux;
@@ -4167,6 +4187,74 @@ class DGNSCombinationRollDialog extends HandlebarsApplicationMixin(
     this.preformRoll(this.roll);
   }
 }
+const EffectHelper = {
+  async _prepareEffects(doc) {
+    const effects = doc.effects;
+    const categories = {
+      temporary: { label: "Temporary", effects: [] },
+      passive: { label: "Active", effects: [] },
+      inactive: { label: "Disabled", effects: [] }
+    };
+    const localSourceCache = /* @__PURE__ */ new Map();
+    for (let effect of effects) {
+      const origin = effect.origin;
+      if (origin && localSourceCache.has(origin)) {
+        effect.source = localSourceCache.get(origin);
+      } else {
+        effect.source = await this._getEffectSource(doc, effect);
+        if (origin) localSourceCache.set(origin, effect.source);
+      }
+      if (effect.disabled) categories.inactive.effects.push(effect);
+      else if (effect.isTemporary) categories.temporary.effects.push(effect);
+      else categories.passive.effects.push(effect);
+    }
+    for (const category of Object.values(categories)) {
+      category.effects.sort((a, b) => {
+        const sourceSort = (a.source || "").localeCompare(b.source || "", "pl");
+        if (sourceSort !== 0) return sourceSort;
+        return (a.name || "").localeCompare(b.name || "", "pl");
+      });
+    }
+    return categories;
+  },
+  /**
+   * Handling effects for actor.
+   * @param {*} action
+   * @param {*} effectId
+   * @returns
+   */
+  async _manageEffect(doc, action, effectId = null) {
+    const effect = doc.effects.get(effectId);
+    switch (action) {
+      case "create":
+        return this._onCreateEffect(doc);
+      case "edit":
+        return effect?.sheet.render(true);
+      case "delete":
+        return effect?.delete();
+      case "toggle":
+        return effect?.update({ disabled: !effect.disabled });
+    }
+  },
+  async _getEffectSource(doc, effect) {
+    if (!effect.origin) return doc.name || doc.documentName;
+    if (effect.origin === doc.uuid) return doc.name;
+    const source = await fromUuid(effect.origin);
+    if (!source) return "unknown";
+    if (source.type === "potential") return `${source.name} (potential)`;
+    if (source.type === "legacy") return `${source.name} (legacy)`;
+    return source.name;
+  },
+  async _onCreateEffect(doc) {
+    const effectData = {
+      name: "New Effect",
+      img: "icons/svg/aura.svg",
+      origin: this.uuid,
+      disabled: false
+    };
+    return doc.createEmbeddedDocuments("ActiveEffect", [effectData]);
+  }
+};
 class DGNSActor extends Actor {
   static DEFAULT_ICON = "systems/degenesisnext/assets/tokens/default.png";
   /* -------------------------------------------------------------------------- */
@@ -4322,26 +4410,7 @@ class DGNSActor extends Actor {
    * @returns
    */
   async _prepareEffects() {
-    const effects = this.effects;
-    const categories = {
-      temporary: { label: "Temporary", effects: [] },
-      passive: { label: "Active", effects: [] },
-      inactive: { label: "Disabled", effects: [] }
-    };
-    for (let effect of effects) {
-      effect.source = await this._getEffectSource(effect);
-      if (effect.disabled) categories.inactive.effects.push(effect);
-      else if (effect.isTemporary) categories.temporary.effects.push(effect);
-      else categories.passive.effects.push(effect);
-    }
-    for (const category of Object.values(categories)) {
-      category.effects.sort((a, b) => {
-        const sourceSort = (a.source || "").localeCompare(b.source || "", "pl");
-        if (sourceSort !== 0) return sourceSort;
-        return (a.name || "").localeCompare(b.name || "", "pl");
-      });
-    }
-    return categories;
+    return await EffectHelper._prepareEffects(this);
   }
   /* -------------------------------------------------------------------------- */
   /**
@@ -4351,31 +4420,7 @@ class DGNSActor extends Actor {
    * @returns
    */
   async _manageEffect(action, effectId = null) {
-    switch (action) {
-      case "create":
-        return this._onCreateEffect();
-      case "edit":
-        return this.effects.get(effectId)?.sheet.render(true);
-      case "delete":
-        return this.effects.get(effectId)?.delete();
-      case "toggle":
-        const effect = this.effects.get(effectId);
-        return effect?.update({ disabled: !effect.disabled });
-    }
-  }
-  /* -------------------------------------------------------------------------- */
-  /**
-   * Helper function for mapping source of effect.
-   * @param {*} effect
-   * @returns
-   */
-  async _getEffectSource(effect) {
-    if (!effect.origin) return "Własny (Actor)";
-    const source = await fromUuid(effect.origin);
-    if (!source) return "Nieznane źródło";
-    if (source.type === "potential") return `Potencjał: ${source.name}`;
-    if (source.type === "legacy") return `Legenda: ${source.name}`;
-    return source.name;
+    return await EffectHelper._manageEffect(this, action, effectId);
   }
   /* -------------------------------------------------------------------------- */
   /**
@@ -4383,13 +4428,7 @@ class DGNSActor extends Actor {
    * @returns
    */
   async _onCreateEffect() {
-    const effectData = {
-      name: "New Effect",
-      img: "icons/svg/aura.svg",
-      origin: this.uuid,
-      disabled: false
-    };
-    return this.createEmbeddedDocuments("ActiveEffect", [effectData]);
+    return await EffectHelper._onCreateEffect(this);
   }
   /* -------------------------------- Inventory ------------------------------- */
   /**
@@ -4535,6 +4574,32 @@ class DGNSItem extends Item {
       };
     });
     return this.update({ "system.qualities": qualities });
+  }
+  /* ------------------------------ ActiveEffects ----------------------------- */
+  /**
+   * Preparing ActiveEffects for sheet.
+   * @returns
+   */
+  async _prepareEffects() {
+    return await EffectHelper._prepareEffects(this);
+  }
+  /* -------------------------------------------------------------------------- */
+  /**
+   * Handling effects for Item.
+   * @param {*} action
+   * @param {*} effectId
+   * @returns
+   */
+  async _manageEffect(action, effectId = null) {
+    return await EffectHelper._manageEffect(this, action, effectId);
+  }
+  /* -------------------------------------------------------------------------- */
+  /**
+   * Helper function for creating new effect.
+   * @returns
+   */
+  async _onCreateEffect() {
+    return await EffectHelper._onCreateEffect(this);
   }
   /* -------------------------------------------------------------------------- */
   /*                                   Getters                                  */
@@ -4974,16 +5039,16 @@ class DetailsFields {
     };
   }
 }
-const { StringField: StringField$n, ForeignDocumentField: ForeignDocumentField$4 } = foundry.data.fields;
-const { BaseItem: BaseItem$3, BaseActor: BaseActor$2 } = foundry.documents;
+const { StringField: StringField$n, ForeignDocumentField: ForeignDocumentField$5 } = foundry.data.fields;
+const { BaseItem: BaseItem$4, BaseActor: BaseActor$2 } = foundry.documents;
 class IdentityFields {
   static get identity() {
     return {
       // CachedReferenceFields for storing information about linked items
-      cultureItem: new CachedReferenceField(BaseItem$3),
-      conceptItem: new CachedReferenceField(BaseItem$3),
-      cultItem: new CachedReferenceField(BaseItem$3),
-      group: new ForeignDocumentField$4(BaseActor$2),
+      cultureItem: new CachedReferenceField(BaseItem$4),
+      conceptItem: new CachedReferenceField(BaseItem$4),
+      cultItem: new CachedReferenceField(BaseItem$4),
+      group: new ForeignDocumentField$5(BaseActor$2),
       rank: new StringField$n({ label: "DGNS.Rank" })
     };
   }
@@ -5241,10 +5306,10 @@ const {
   BooleanField: BooleanField$e,
   ArrayField: ArrayField$e,
   SetField,
-  ForeignDocumentField: ForeignDocumentField$3,
+  ForeignDocumentField: ForeignDocumentField$4,
   IntegerSortField: IntegerSortField$e
 } = foundry.data.fields;
-const { BaseItem: BaseItem$2, BaseActor: BaseActor$1 } = foundry.documents;
+const { BaseItem: BaseItem$3, BaseActor: BaseActor$1 } = foundry.documents;
 class GroupData extends foundry.abstract.TypeDataModel {
   /** @inheritdoc */
   static _systemType = "group";
@@ -5253,7 +5318,7 @@ class GroupData extends foundry.abstract.TypeDataModel {
       name: new StringField$f({}),
       members: new ArrayField$e(
         new SchemaField$e({
-          actor: new ForeignDocumentField$3(BaseActor$1, {
+          actor: new ForeignDocumentField$4(BaseActor$1, {
             nullable: true,
             idOnly: false
             // Returns full Item document
@@ -5283,12 +5348,12 @@ const {
   BooleanField: BooleanField$d,
   ObjectField,
   ArrayField: ArrayField$d,
-  ForeignDocumentField: ForeignDocumentField$2,
+  ForeignDocumentField: ForeignDocumentField$3,
   IntegerSortField: IntegerSortField$d,
   DocumentIdField: DocumentIdField$8,
   FilePathField
 } = foundry.data.fields;
-const { BaseItem: BaseItem$1 } = foundry.documents;
+const { BaseItem: BaseItem$2 } = foundry.documents;
 class GeneralFields2 {
   static get subtitle() {
     return {
@@ -5343,7 +5408,7 @@ class GeneralFields2 {
   }
   static get effect() {
     return {
-      effect: new StringField$e({ label: "DGNS.Effect" })
+      effect: new HTMLField$8({ label: "DGNS.Effect" })
     };
   }
   static get equipped() {
@@ -5361,6 +5426,7 @@ class GeneralFields2 {
       prerequisite: new StringField$e({ label: "DGNS.Prerequisite" })
     };
   }
+  /** Deprected - do not use.  */
   static get slots() {
     return {
       slots: new SchemaField$d({
@@ -5441,11 +5507,27 @@ class GeneralFields2 {
   /** Containers / location reference  */
   static get location() {
     return {
-      location: new ForeignDocumentField$2(BaseItem$1, {
+      location: new ForeignDocumentField$3(BaseItem$2, {
         idOnly: true,
         required: false,
         nullable: true,
         initial: null
+      })
+    };
+  }
+  static get modifications() {
+    return {
+      modifications: new SchemaField$d({
+        slots: new NumberField$e({ min: 0, integer: true, initial: 0 }),
+        // amount of slots for an object
+        installed: new ArrayField$d(
+          new ForeignDocumentField$3(BaseItem$2, {
+            idOnly: false,
+            required: false,
+            nullable: true
+          }),
+          { initial: [] }
+        )
       })
     };
   }
@@ -5621,11 +5703,11 @@ const {
   HTMLField: HTMLField$6,
   BooleanField: BooleanField$6,
   ArrayField: ArrayField$6,
-  ForeignDocumentField: ForeignDocumentField$1,
+  ForeignDocumentField: ForeignDocumentField$2,
   IntegerSortField: IntegerSortField$6,
   DocumentIdField: DocumentIdField$6
 } = foundry.data.fields;
-const { BaseItem, BaseActor } = foundry.documents;
+const { BaseItem: BaseItem$1, BaseActor } = foundry.documents;
 class CombatFields {
   static get damage() {
     return {
@@ -5718,7 +5800,7 @@ class CombatFields {
           belt: new BooleanField$6({ default: false })
         }),
         // Ammo item link.
-        loaded: new ForeignDocumentField$1(BaseItem, {
+        loaded: new ForeignDocumentField$2(BaseItem$1, {
           nullable: true,
           idOnly: false
         }),
@@ -5843,10 +5925,12 @@ const {
   BooleanField: BooleanField$4,
   ArrayField: ArrayField$4,
   IntegerSortField: IntegerSortField$4,
-  DocumentIdField: DocumentIdField$4
+  DocumentIdField: DocumentIdField$4,
+  ForeignDocumentField: ForeignDocumentField$1
 } = foundry.data.fields;
+const { BaseItem } = foundry.documents;
 class ModData extends foundry.abstract.TypeDataModel {
-  static _systemType = "mod";
+  static _systemType = "modification";
   static defineSchema() {
     return {
       ...GeneralFields2.description,
@@ -5856,8 +5940,14 @@ class ModData extends foundry.abstract.TypeDataModel {
         label: "DGNS.ModType",
         initial: "weapon"
       }),
-      slotCost: new NumberField$4({
-        label: "DGNS.Slot",
+      // ItemId of document where mod is beeing used.
+      mounted: new ForeignDocumentField$1(BaseItem, {
+        idOnly: false,
+        required: false,
+        nullable: true
+      }),
+      cost: new NumberField$4({
+        label: "DGNS.SlotCost",
         initial: 1,
         min: 0,
         integer: true
@@ -6031,7 +6121,8 @@ class WeaponData extends BaseItemData {
       // all base items fields
       ...GeneralFields2.equipped,
       ...GeneralFields2.qualities,
-      ...GeneralFields2.slots,
+      ...GeneralFields2.modifications,
+      //...GeneralFields.slots, // moved to modifications structure
       ...GeneralFields2.resources,
       ...GeneralFields2.cult,
       ...GeneralFields2.weaponGroup,
@@ -6067,7 +6158,7 @@ globalThis.degenesis = {
   applications
 };
 CONFIG.DEGENESIS = DEGENESIS;
-CONFIG.Dice.rolls = [DGNSRoll];
+CONFIG.Dice.rolls = [Roll, DGNSRoll];
 CONFIG.Dice.DGNSRoll = DGNSRoll;
 CONFIG.Actor.documentClass = DGNSActor;
 CONFIG.Item.documentClass = DGNSItem;

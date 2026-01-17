@@ -1,0 +1,52 @@
+<section class="tab effects {{tab.cssClass}}" data-group="main" data-tab="effects">
+    <div clas="effects-container">
+        {{#each effects as |category id|}}
+            <div class="document-table" data-category-id="{{id}}">
+                <div class="header">
+                    <div class="name">{{category.label}}</div>
+                    <div class="transition">
+                        <svg class="line">
+                            <line x1="0" y1="50%" x2="75%" y2="50%"></line>
+                            <line x1="75%" y1="50%" x2="100%" y2="100%"></line>
+                        </svg>
+                    </div>
+                    <div class="legends">
+                        <div class="field source">{{localize "DGNS.EFFECT.source"}}</div>
+                        <div class="field controls">
+                            <i class="fa-solid fa-arrow-down-a-z"></i>
+                            <a class="effect-control" data-action="manageEffect" data-type="create"> <i
+                                    class="fas fa-plus"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="entries">
+                    {{#each category.effects as |effect|}}
+                        <div class="entry effect" data-effect-id="{{effect.id}}">
+                            <div class="field image">
+                                <img src="{{effect.img}}" />
+                            </div>
+                            <div class="field name">
+                                <div class="caption">{{effect.name}}</div>
+                                <div class="subcaption">{{effect.name}}</div>
+                            </div>
+                            <div class="field source">{{effect.source}}</div>
+                            <div class="field controls">
+                                <a class="effect-control" data-action="manageEffect" data-type="toggle"
+                                    title="Przełącz">
+                                    <i class="fas {{#if effect.disabled}}fa-toggle-off{{else}}fa-toggle-on{{/if}}"></i>
+                                </a>
+                                <a class="effect-control" data-action="manageEffect" data-type="edit" title="Edytuj">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a class="effect-control" data-action="manageEffect" data-type="delete" title="Usuń">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                    {{/each}}
+                </div>
+            </div>
+        {{/each}}
+    </div>
+</section>

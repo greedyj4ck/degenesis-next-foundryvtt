@@ -9,6 +9,8 @@ import DGNSCombinationRollDialog from "../applications/roll/combination.dialog.m
 
 /** Roll logic and helper functions  */
 
+import { EffectHelper } from "../utils/effect.helper.mjs";
+
 /**
  *
  * Custom Actor class for Degenesis system.
@@ -211,32 +213,8 @@ export default class DGNSActor extends Actor {
    * @returns
    */
   async _prepareEffects() {
-    const effects = this.effects;
-    const categories = {
-      temporary: { label: "Temporary", effects: [] },
-      passive: { label: "Active", effects: [] },
-      inactive: { label: "Disabled", effects: [] },
-    };
-
-    // creating
-    for (let effect of effects) {
-      effect.source = await this._getEffectSource(effect);
-      if (effect.disabled) categories.inactive.effects.push(effect);
-      else if (effect.isTemporary) categories.temporary.effects.push(effect);
-      else categories.passive.effects.push(effect);
-    }
-
-    // sorting
-    for (const category of Object.values(categories)) {
-      category.effects.sort((a, b) => {
-        const sourceSort = (a.source || "").localeCompare(b.source || "", "pl");
-        if (sourceSort !== 0) return sourceSort;
-        return (a.name || "").localeCompare(b.name || "", "pl");
-      });
-    }
-    return categories;
+    return await EffectHelper._prepareEffects(this);
   }
-
   /* -------------------------------------------------------------------------- */
 
   /**
@@ -245,56 +223,18 @@ export default class DGNSActor extends Actor {
    * @param {*} effectId
    * @returns
    */
+
   async _manageEffect(action, effectId = null) {
-    switch (action) {
-      case "create":
-        return this._onCreateEffect();
-      case "edit":
-        return this.effects.get(effectId)?.sheet.render(true);
-      case "delete":
-        //todo: wrap in prompt
-        return this.effects.get(effectId)?.delete();
-      case "toggle":
-        //todo: verify effect structure
-        const effect = this.effects.get(effectId);
-        return effect?.update({ disabled: !effect.disabled });
-    }
+    return await EffectHelper._manageEffect(this, action, effectId);
   }
 
   /* -------------------------------------------------------------------------- */
-
-  /**
-   * Helper function for mapping source of effect.
-   * @param {*} effect
-   * @returns
-   */
-  async _getEffectSource(effect) {
-    if (!effect.origin) return "Własny (Actor)";
-
-    // Próba odnalezienia dokumentu źródłowego po UUID
-    const source = await fromUuid(effect.origin);
-    if (!source) return "Nieznane źródło";
-
-    // Degenesis-specific logic: sprawdź typ przedmiotu
-    if (source.type === "potential") return `Potencjał: ${source.name}`;
-    if (source.type === "legacy") return `Legenda: ${source.name}`;
-    return source.name; // Np. nazwa pancerza lub broni
-  }
-
-  /* -------------------------------------------------------------------------- */
-
   /**
    * Helper function for creating new effect.
    * @returns
    */
   async _onCreateEffect() {
-    const effectData = {
-      name: "New Effect",
-      img: "icons/svg/aura.svg",
-      origin: this.uuid,
-      disabled: false,
-    };
-    return this.createEmbeddedDocuments("ActiveEffect", [effectData]);
+    return await EffectHelper._onCreateEffect(this);
   }
 
   /* -------------------------------- Inventory ------------------------------- */

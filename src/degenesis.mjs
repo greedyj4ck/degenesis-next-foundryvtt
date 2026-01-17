@@ -46,7 +46,7 @@ globalThis.degenesis = {
 
 CONFIG.DEGENESIS = DEGENESIS;
 
-CONFIG.Dice.rolls = [DGNSRoll];
+CONFIG.Dice.rolls = [Roll, DGNSRoll];
 CONFIG.Dice.DGNSRoll = DGNSRoll;
 
 // Configuring document class
@@ -69,13 +69,13 @@ CONFIG.ActiveEffect.phases = {
 Hooks.once("init", async function () {
   globalThis.degenesis = game.degenesis = Object.assign(
     game.system,
-    globalThis.degenesis
+    globalThis.degenesis,
   );
 
   console.log(
     `%cDEGENESIS` + `%c | Initializing`,
     "color: #ed1d27",
-    "color: unset"
+    "color: unset",
   );
 
   document.onkeydown = function (e) {
@@ -83,7 +83,7 @@ Hooks.once("init", async function () {
       console.log(
         `%cDEGENESIS` + `%c | Welcome, Chronicler`,
         "color: #ed1d27",
-        "color: unset"
+        "color: unset",
       );
   };
 

@@ -3,12 +3,15 @@
 export async function preloadHandlebarsTemplates() {
   const partials = [
     // Shared partials
-    "systems/degenesisnext/templates/partials/group.header.hbs",
+    "systems/degenesisnext/templates/shared/group/header.hbs",
   ];
 
   const paths = {};
   for (const path of partials) {
-    paths[`dgns.${path.split("/").pop().replace(".hbs", "")}`] = path;
+    const parts = path.split("/");
+    const fileName = parts.pop().replace(".hbs", "");
+    const folderName = parts.pop();
+    paths[`dgns.${folderName}.${fileName}`] = path;
   }
 
   return await foundry.applications.handlebars.loadTemplates(paths);

@@ -1,9 +1,10 @@
 <section class="tab effects {{tab.cssClass}} section-scrollable" data-group="main" data-tab="effects">
   {{> "dgns.group.header" header="DGNS.Effects" }}
-  <div clas="container-scrollable">
+
+  <div clas="effects-container">
 
     {{#each effects as |category id|}}
-      <div class="items-table" data-category-id="{{id}}">
+      <div class="document-table" data-category-id="{{id}}">
         <div class="header">
           <div class="name">{{category.label}}</div>
           <div class="transition">
@@ -48,14 +49,6 @@
         </div>
       </div>
     {{/each}}
-
-
-
-
-
-
-
-
   </div>
 
 

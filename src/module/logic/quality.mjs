@@ -1,8 +1,7 @@
 import * as Inputs from "./config/inputs.mjs";
 
 /**
- * List of all qualities.
- * @type {Object<string, QUALITY>}
+ * List of all qualities
  */
 export const QUALITY_DEFINITIONS = {
   // Weapon Qualities
@@ -55,7 +54,7 @@ export const QUALITY_DEFINITIONS = {
     label: "DGNS.QUALITY.blunt.name",
     description: "DGNS.QUALITY.blunt.description",
     category: "passive",
-    itemTypes: ["weapon"],
+    itemTypes: ["weapon", "modification"],
     inputs: [],
     chatButtons: null,
     onItemUse: null,
@@ -76,7 +75,7 @@ export const QUALITY_DEFINITIONS = {
     label: "DGNS.QUALITY.camo.name",
     description: "DGNS.QUALITY.camo.description",
     category: "passive",
-    itemTypes: ["weapon", "armor"],
+    itemTypes: ["weapon", "armor", "modification"],
     inputs: [Inputs.InputDifficulty],
     chatButtons: null,
     onItemUse: null,
@@ -133,7 +132,7 @@ export const QUALITY_DEFINITIONS = {
     label: "DGNS.QUALITY.doubleBarreled.name",
     description: "DGNS.QUALITY.doubleBarreled.description",
     category: "passive",
-    itemTypes: ["weapon"],
+    itemTypes: ["weapon", "modification"],
     inputs: [],
   },
   entangled: {
@@ -231,7 +230,7 @@ export const QUALITY_DEFINITIONS = {
     label: "DGNS.QUALITY.smoothRunning.name",
     description: "DGNS.QUALITY.smoothRunning.description",
     category: "passive",
-    itemTypes: ["weapon"],
+    itemTypes: ["weapon", "modification"],
     inputs: [Inputs.InputTrigger],
   },
   special: {
@@ -266,7 +265,7 @@ export const QUALITY_DEFINITIONS = {
     label: "DGNS.QUALITY.terrifying.name",
     description: "DGNS.QUALITY.terrifying.description",
     category: "passive",
-    itemTypes: ["weapon", "armor"],
+    itemTypes: ["weapon", "armor", "modification"],
     inputs: [Inputs.InputDifficulty],
   },
   thunderStrike: {
@@ -362,7 +361,7 @@ export const QUALITY_DEFINITIONS = {
     label: "DGNS.QUALITY.fireResistant.name",
     description: "DGNS.QUALITY.fireResistant.description",
     category: "passive",
-    itemTypes: ["armor"],
+    itemTypes: ["armor", "modification"],
     inputs: [Inputs.InputArmor],
   },
 
@@ -377,21 +376,21 @@ export const QUALITY_DEFINITIONS = {
     label: "DGNS.QUALITY.insulated.name",
     description: "DGNS.QUALITY.insulated.description",
     category: "passive",
-    itemTypes: ["armor"],
+    itemTypes: ["armor", "modification"],
     inputs: [],
   },
   bulletproof: {
     label: "DGNS.QUALITY.bulletproof.name",
     description: "DGNS.QUALITY.bulletproof.description",
     category: "passive",
-    itemTypes: ["armor"],
+    itemTypes: ["armor", "modification"],
     inputs: [Inputs.InputArmor],
   },
   massive: {
     label: "DGNS.QUALITY.massive.name",
     description: "DGNS.QUALITY.massive.description",
     category: "passive",
-    itemTypes: ["armor"],
+    itemTypes: ["armor", "modification"],
     inputs: [Inputs.InputArmor],
   },
   brittle: {
@@ -405,7 +404,7 @@ export const QUALITY_DEFINITIONS = {
     label: "DGNS.QUALITY.sealed.name",
     description: "DGNS.QUALITY.sealed.description",
     category: "passive",
-    itemTypes: ["armor"],
+    itemTypes: ["armor", "modification"],
     inputs: [Inputs.InputBonusSuccesses],
   },
 };
@@ -434,6 +433,13 @@ export const Qualities = {
   get agent() {
     return Object.entries(QUALITY_DEFINITIONS)
       .filter(([key, def]) => def.itemTypes.includes("agent"))
+      .map(([key, def]) => ({ key, ...def }))
+      .sort((a, b) => a.key.localeCompare(b.key));
+  },
+
+  get modification() {
+    return Object.entries(QUALITY_DEFINITIONS)
+      .filter(([key, def]) => def.itemTypes.includes("modification"))
       .map(([key, def]) => ({ key, ...def }))
       .sort((a, b) => a.key.localeCompare(b.key));
   },

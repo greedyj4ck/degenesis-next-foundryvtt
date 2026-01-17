@@ -8,7 +8,7 @@ const { FilePicker } = foundry.applications.apps;
 import ItemSheetMixin from "./mixins/item.sheet.mixin.mjs";
 
 export default class DegenesisWeaponSheet extends ItemSheetMixin(
-  sheets.ItemSheetV2
+  sheets.ItemSheetV2,
 ) {
   static DEFAULT_OPTIONS = {
     actions: {
@@ -31,33 +31,34 @@ export default class DegenesisWeaponSheet extends ItemSheetMixin(
 
   static PARTS = {
     sheetTitle: {
-      template: "systems/degenesisnext/templates/partials/sheet.title.bar.hbs", // without input field
+      template: "systems/degenesisnext/templates/shared/sheet/title.bar.hbs", // without input field
     },
     itemHeader: {
-      template: "systems/degenesisnext/templates/partials/item.header.hbs",
+      template: "systems/degenesisnext/templates/shared/item/header.hbs",
     },
     tabs: {
-      template: "systems/degenesisnext/templates/partials/item.tabs.hbs",
+      template: "systems/degenesisnext/templates/shared/item/tabs.hbs",
       scrollable: [""],
     },
     description: {
       template:
-        "systems/degenesisnext/templates/partials/item.tab.description.hbs",
+        "systems/degenesisnext/templates/shared/item/tab.description.hbs",
       scrollable: [""],
     },
     details: {
-      template:
-        "systems/degenesisnext/templates/items/weapon.sheet/ws.details.hbs",
+      template: "systems/degenesisnext/templates/item/weapon/details.hbs",
       scrollable: [""],
     },
     qualities: {
-      template:
-        "systems/degenesisnext/templates/items/weapon.sheet/ws.qualities.hbs",
+      template: "systems/degenesisnext/templates/item/weapon/qualities.hbs",
       scrollable: [""],
     },
-
+    effects: {
+      template: "systems/degenesisnext/templates/shared/item/tab.effects.hbs",
+      scrollable: [""],
+    },
     sheetFooter: {
-      template: "systems/degenesisnext/templates/partials/sheet.footer.hbs",
+      template: "systems/degenesisnext/templates/shared/sheet/footer.hbs",
     },
   };
 
@@ -67,9 +68,9 @@ export default class DegenesisWeaponSheet extends ItemSheetMixin(
       tabs: [
         { id: "description", label: "DGNS.Description" },
         { id: "details", label: "DGNS.Details" },
+        { id: "effects", label: "DGNS.Effects" },
         { id: "qualities", label: "DGNS.Qualities" },
         { id: "mods", label: "DGNS.Mods" },
-        { id: "effects", label: "DGNS.Effects" },
       ],
     },
   };
@@ -94,7 +95,7 @@ export default class DegenesisWeaponSheet extends ItemSheetMixin(
       // System data
       qualities: availableQualities.map((def) => {
         const data = this.document.system.qualities.find(
-          (q) => q.key === def.key
+          (q) => q.key === def.key,
         );
         return {
           key: def.key,
@@ -110,13 +111,15 @@ export default class DegenesisWeaponSheet extends ItemSheetMixin(
         };
       }),
 
+      effects: await this.item._prepareEffects(),
+
       // Tabs
       tabGroups: this.tabGroups,
       mainTabs: this._prepareTabs("main"), // main navigation groups
 
       enriched: {
         description: await TextEditor.enrichHTML(
-          this.document.system.description
+          this.document.system.description,
         ),
       },
     });
@@ -186,7 +189,7 @@ export default class DegenesisWeaponSheet extends ItemSheetMixin(
       action,
       qualityKey,
       field,
-      value
+      value,
     );
   }
 }

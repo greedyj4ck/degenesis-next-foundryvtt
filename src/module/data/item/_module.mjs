@@ -9,7 +9,7 @@ import BurnData from "./burn.mjs";
 
 import ComplicationData from "./complication.mjs";
 import EquipmentData from "./equipment.mjs";
-import ModData from "./mod.mjs";
+import ModificationData from "./modification.mjs";
 import PhenomenonData from "./phenomenon.mjs";
 import PotentialData from "./potential.mjs";
 import ShieldData from "./shield.mjs";
@@ -26,7 +26,7 @@ export {
   BurnData,
   ComplicationData,
   EquipmentData,
-  ModData,
+  ModificationData,
   PhenomenonData,
   PotentialData,
   ShieldData,
@@ -44,7 +44,7 @@ export const config = {
   burn: BurnData,
   complication: ComplicationData,
   equipment: EquipmentData,
-  mod: ModData,
+  mod: ModificationData,
   phenomenon: PhenomenonData,
   potential: PotentialData,
   shield: ShieldData,

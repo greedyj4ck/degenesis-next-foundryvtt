@@ -9,7 +9,7 @@ const { TextEditor } = foundry.applications.ux;
 import ActorSheetMixin from "./actor.sheet.mixin.mjs";
 
 export default class DGNSGroupSheet extends ActorSheetMixin(
-  sheets.ActorSheetV2
+  sheets.ActorSheetV2,
 ) {
   static DEFAULT_OPTIONS = {
     actions: {},
@@ -29,10 +29,10 @@ export default class DGNSGroupSheet extends ActorSheetMixin(
 
   static PARTS = {
     sheetHeader: {
-      template: "systems/degenesisnext/templates/partials/sheet.title.hbs",
+      template: "systems/degenesisnext/templates/shared/sheet/title.hbs",
     },
     groupHeader: {
-      template: "systems/degenesisnext/templates/actors/group.sheet/header.hbs",
+      template: "systems/degenesisnext/templates/actor/group/header.hbs",
     },
     /*  tabs: {
       template:
@@ -46,7 +46,7 @@ export default class DGNSGroupSheet extends ActorSheetMixin(
     },
  */
     sheetFooter: {
-      template: "systems/degenesisnext/templates/partials/sheet.footer.hbs",
+      template: "systems/degenesisnext/templates/shared/sheet/footer.hbs",
     },
   };
 

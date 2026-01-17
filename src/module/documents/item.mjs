@@ -1,6 +1,8 @@
 import { WEAPON_GROUPS_SKILLS } from "../logic/config/items.mjs";
 import { Qualities, QUALITY_DEFINITIONS } from "../logic/quality.mjs";
 
+import { EffectHelper } from "../utils/effect.helper.mjs";
+
 export default class DGNSItem extends Item {
   /* -------------------------------------------------------------------------- */
   /*                                  Qualities                                 */
@@ -76,6 +78,37 @@ export default class DGNSItem extends Item {
     });
 
     return this.update({ "system.qualities": qualities });
+  }
+
+  /* ------------------------------ ActiveEffects ----------------------------- */
+
+  /**
+   * Preparing ActiveEffects for sheet.
+   * @returns
+   */
+  async _prepareEffects() {
+    return await EffectHelper._prepareEffects(this);
+  }
+  /* -------------------------------------------------------------------------- */
+
+  /**
+   * Handling effects for Item.
+   * @param {*} action
+   * @param {*} effectId
+   * @returns
+   */
+
+  async _manageEffect(action, effectId = null) {
+    return await EffectHelper._manageEffect(this, action, effectId);
+  }
+
+  /* -------------------------------------------------------------------------- */
+  /**
+   * Helper function for creating new effect.
+   * @returns
+   */
+  async _onCreateEffect() {
+    return await EffectHelper._onCreateEffect(this);
   }
 
   /* -------------------------------------------------------------------------- */

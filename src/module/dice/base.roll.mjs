@@ -121,7 +121,7 @@ export default class DGNSRoll extends Roll {
     const chatData = {
       title: game.i18n.localize(`DGNS.ROLL.actionRoll`),
       attribute: game.i18n.localize(
-        `DGNS.ATTRIBUTE.${this.definition.attribute}`
+        `DGNS.ATTRIBUTE.${this.definition.attribute}`,
       ),
       skill: game.i18n.localize(`DGNS.SKILL.${this.definition.skill}`),
       difficulty: this.difficulty,
@@ -149,7 +149,7 @@ export default class DGNSRoll extends Roll {
           "core.rollMode": rollMode,
         },
       },
-      messageData
+      messageData,
     );
 
     ChatMessage.applyRollMode(messageOptions, rollMode);
@@ -160,5 +160,5 @@ export default class DGNSRoll extends Roll {
     return this._outcome;
   }
 
-  static buildFormula() {}
+  //static buildFormula() {}
 }

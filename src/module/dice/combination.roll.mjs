@@ -1,6 +1,9 @@
 import DGNSRoll from "./base.roll.mjs";
 const { renderTemplate } = foundry.applications.handlebars;
 
+/**
+ * Combination roll class - using two instances of basic rolls.
+ */
 export default class DGNSCombinationRoll {
   constructor(data) {
     this.primary = new DGNSRoll(data.primary);

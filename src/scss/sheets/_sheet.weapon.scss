@@ -1,6 +1,10 @@
 @use "partials";
 @use "../colors";
 
+// Import Components
+@use "../components/document.table";
+
+// Mixins
 @use "../mixins/controls" as controls;
 
 @layer dgns.sheets.weapon {

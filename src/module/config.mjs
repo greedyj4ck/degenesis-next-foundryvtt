@@ -3,6 +3,7 @@ import { WEAPON_GROUPS, WEAPON_GROUPS_SKILLS } from "./logic/config/items.mjs";
 import { Damage } from "./logic/damage.mjs";
 import { Qualities } from "./logic/quality.mjs";
 import { Condition } from "./logic/condition.mjs";
+import { Modification } from "./logic/modification.mjs";
 
 // Namespace configuration
 const DEGENESIS = {};
@@ -10,8 +11,9 @@ const DEGENESIS = {};
 // Ported logic:
 
 DEGENESIS.Damage = Damage;
-DEGENESIS.Qualities = Qualities;
 DEGENESIS.Condition = Condition;
+DEGENESIS.Qualities = Qualities;
+DEGENESIS.Modification = Modification;
 
 // To be ported:
 
