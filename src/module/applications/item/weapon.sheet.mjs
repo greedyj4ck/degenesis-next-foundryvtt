@@ -53,6 +53,10 @@ export default class DegenesisWeaponSheet extends ItemSheetMixin(
       template: "systems/degenesisnext/templates/item/weapon/qualities.hbs",
       scrollable: [""],
     },
+    modifications: {
+      template: "systems/degenesisnext/templates/item/weapon/modifications.hbs",
+      scrollable: [""],
+    },
     effects: {
       template: "systems/degenesisnext/templates/shared/item/tab.effects.hbs",
       scrollable: [""],
@@ -70,7 +74,7 @@ export default class DegenesisWeaponSheet extends ItemSheetMixin(
         { id: "details", label: "DGNS.Details" },
         { id: "effects", label: "DGNS.Effects" },
         { id: "qualities", label: "DGNS.Qualities" },
-        { id: "mods", label: "DGNS.Mods" },
+        { id: "modifications", label: "DGNS.Mods" },
       ],
     },
   };
@@ -112,6 +116,7 @@ export default class DegenesisWeaponSheet extends ItemSheetMixin(
       }),
 
       effects: await this.item._prepareEffects(),
+      modifications: this.document.system.modifications,
 
       // Tabs
       tabGroups: this.tabGroups,

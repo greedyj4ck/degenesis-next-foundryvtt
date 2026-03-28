@@ -8,6 +8,7 @@
 .vscode/launch.json
 .zed
 .dev
+.res
 debug.log
 degenesis.lock
 packs/ammunitions.db

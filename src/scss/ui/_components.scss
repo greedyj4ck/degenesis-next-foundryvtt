@@ -81,7 +81,9 @@ dgns-vision {
     transform: translateY(-8px);
     position: fixed;
     z-index: 10;
-    transition: opacity 200ms ease, transform 200ms ease;
+    transition:
+      opacity 200ms ease,
+      transform 200ms ease;
     &.active {
       visibility: visible;
       opacity: 1;
@@ -107,6 +109,18 @@ dgns-vision {
       font-size: var(--font-size-14);
       font-family: var(--font-sans);
       font-weight: 700;
+
+      background: var(--dgns-ui-background);
+      padding: 2px;
+      border-radius: 40%;
+    }
+
+    i {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
     }
 
     &::after {
@@ -129,15 +143,21 @@ dgns-vision {
       opacity: 0.4;
     }
   }
+
+  i {
+    font-size: 20px;
+    line-height: 0;
+  }
 }
 
 dgns-discomfort {
   button {
+    background: rgb(0, 0, 0);
     display: flex;
     justify-content: center;
     align-items: center;
 
-    border: var(--dgns-line-width) solid var(--dgns-ui-primary);
+    border: var(--dgns-line-width) solid var(--dgns-ui-secondary);
 
     width: 48px;
     height: 32px;
@@ -151,12 +171,78 @@ dgns-discomfort {
   }
 
   .discomfort-dropdown {
-    display: none;
+    max-width: 48px;
+    display: block;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
     position: fixed;
     z-index: 10;
+    transition:
+      opacity 200ms ease,
+      transform 200ms ease;
+    &.active {
+      visibility: visible;
+      opacity: 1;
+      transform: translateY(24px);
+    }
   }
 
   .discomfort-dropdown-item {
-    background: aliceblue;
+    max-height: 48px;
+    outline: var(--dgns-line-width) solid var(--dgns-ui-secondary);
+    background: var(--dgns-ui-background);
+    position: relative;
+    overflow: hidden;
+
+    label {
+      position: absolute;
+      text-align: right;
+
+      bottom: 3px;
+      right: 3px;
+
+      color: var(--dgns-ui-primary);
+      font-size: var(--font-size-14);
+      font-family: var(--font-sans);
+      font-weight: 700;
+
+      background: var(--dgns-ui-background);
+      padding: 2px;
+      border-radius: 40%;
+    }
+
+    i {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+    }
+
+    &::after {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 48px;
+      height: 24px;
+      top: 24px;
+      transition: opacity 300ms;
+      content: "&nbsp";
+      background: var(--dgns-ui-secondary);
+      filter: blur(10px);
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    &:hover::after {
+      opacity: 0.4;
+    }
+  }
+
+  i {
+    font-size: 32px;
+    line-height: 0;
   }
 }

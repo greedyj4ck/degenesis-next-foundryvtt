@@ -1,149 +1,91 @@
-<section class="tab general {{tab.cssClass}}" data-group="main" data-tab="general">
-
-
-
-  {{> "dgns.group.header" header="DGNS.Archetype" }}
-
+<section class="sheet-section tab general {{tab.cssClass}}" data-group="main" data-tab="general">
   <div class="ccc-container">
-    <div class="culture">
-      {{#if culture}}
-        <div class="controls">
-          <label class="header">{{localize "DGNS.Culture"}}</label>
-          {{#if (sheetEditMode mode) }}
-            <!-- todo: add proper styilng -->
-            <button type="button" data-action="removeLinkedItem" data-item-type="culture" class="">
-              <i class="fas fa-eraser"></i>
-            </button>
-          {{/if}}
-        </div>
-        <div class="icon">
-          <img src="{{culture.img}}" />
-        </div>
-        <div class="label">
-          <label class="value">{{ culture.name }}</label>
-        </div>
-      {{else}}
-        <div class="controls">
-          <label class="header">{{localize "DGNS.Culture"}}</label>
-        </div>
-        <div class="icon">
-          <div class="drop-placeholder"></div>
-        </div>
-        <div class="label">
-          DROP ITEM
-        </div>
-      {{/if}}
-    </div>
-    <div class="concept">
-      {{#if concept}}
-        <div class="controls">
-          <label class="header">{{localize "DGNS.Concept"}}</label>
-          {{#if (sheetEditMode mode) }}
-            <!-- todo: add proper styilng -->
-            <button type="button" data-action="removeLinkedItem" data-item-type="concept" class="remove-cult">
-              <i class="fas fa-eraser"></i>
-            </button>
-          {{/if}}
-        </div>
-        <div class="icon">
-          <img src="{{concept.img}}" />
-        </div>
-        <div class="label">
-          <label class="value">{{ concept.name }}</label>
-        </div>
-      {{else}}
-        <div class="controls">
-          <label class="header">{{localize "DGNS.Concept"}}</label>
-        </div>
-        <div class="icon">
-          <div class="drop-placeholder"></div>
-        </div>
-        <div class="label">
-          DROP ITEM
-        </div>
-      {{/if}}
-    </div>
-    <div class="cult">
-      {{#if cult}}
-        <div class="controls">
-          <label class="header">
-            {{#if (cult.isClan)}}{{localize "DGNS.Clan"}}{{else}}{{localize "DGNS.Cult"}}{{/if}}</label>
-          {{#if (sheetEditMode mode) }}
-            <!-- todo: add proper styilng -->
-            <button type="button" data-action="removeLinkedItem" data-item-type="cult" class="remove-cult">
-              <i class="fas fa-eraser"></i>
-            </button>
-          {{/if}}
-        </div>
-        <div class="icon">
-          <img src="{{cult.img}}" data-action="showLinkedItem" data-item-type="cult" />
-        </div>
-        <div class="label">
-          <label class="value">{{ cult.name }}</label>
-        </div>
-      {{else}}
-        <div class="controls">
-          <label class="header">{{localize "DGNS.Cult"}}</label>
-        </div>
-        <div class="icon">
-          <div class="drop-placeholder"></div>
-        </div>
-        <div class="label">
-          DROP ITEM
-        </div>
-      {{/if}}
 
-    </div>
-  </div>
+    {{> "dgns.actor.culture" }}
+    {{> "dgns.actor.concept" }}
+    {{> "dgns.actor.cult" }}
 
 
+    <hr>
+    <div class="document-table potential-group">
+      <div class="header">
+        <div class="name">{{localize "DGNS.Potentials"}}</div>
+        <div class="transition">
+          <svg class="line">
+            <line x1="0" y1="50%" x2="75%" y2="50%"></line>
+            <line x1="75%" y1="50%" x2="100%" y2="100%"></line>
+          </svg>
+        </div>
 
-  <!-- LEGACIES / POTENTIALS -->
+        <div class="legends">
+          <div class="field oriigin ">{{localize "DGNS.Origin"}}</div>
+          <div class="field level ">LVL</div>
+          <div class="field controls" style="min-width:50px">
 
-  <div class="lp-container">
+            <!-- todo: proper sorting -->
 
-    <div class="legacies-container">
-      <div class="legacies-toolbar">
-        <label>{{localize "DGNS.Legacies"}}</label>
-        <button>+</button>
+            <a data-action="toggleSort" data-group="{{group.id}}">
+              <i class="fa-solid {{group.sortIcon}}"></i>
+            </a>
+            <a data-action="createItem" data-item-type="potential">
+              <i class="fa-solid fa-plus"></i></a>
+          </div>
+        </div>
       </div>
 
-      <div class="legacies"></div>
+      <div class="entries">
+        {{#each potentials  as |item|}}
+          <div class="entry item" data-drag data-item-id="{{item.id}}" data-action="openItemContextMenu">
+            <div class="field image">
+              <img src="{{item.img}}">
+            </div>
+            <div class="field name">
+              <a class="caption" data-action="editItem">{{item.name}}</a>
+              <div class="subcaption">{{item.system.group}}</div>
+            </div>
 
+            <div class="field origin">
+              {{item.system.origin}}
+            </div>
+
+
+            <div class="field level">
+              {{item.system.level}}
+            </div>
+            <div class="field controls">
+
+
+              <a data-action="toggleDescription"><i class="fa-solid fa-square-caret-down"></i></a>
+              <a data-action="openItemMenu"> <i class="fa-solid fa-ellipsis-vertical"></i></a>
+
+            </div>
+
+          </div>
+        {{/each}}
+      </div>
     </div>
 
-    <div class="potentials-container">
-      <div class="potentials-toolbar">
-        <label>{{localize "DGNS.Potentials"}}</label>
-        <button>+</button>
+
+    <!-- BACKGROUNDS -->
+
+
+
+    <div class="backgrounds-container">
+      <div class="header">
+        {{> "dgns.group.header" header="DGNS.Backgrounds" }}
       </div>
 
-      <div class="potentials"></div>
+      <div class="backgrounds">
+
+        {{#each system.backgrounds}}
+          <div class="field-under">
+            <input class="field-input" type="number" name="system.backgrounds.{{@key}}" value="{{@this}}" />
+            <label>{{localize @key}}</label>
+          </div>
+        {{/each}}
+      </div>
+
     </div>
-
-  </div>
-
-
-  <!-- BACKGROUNDS -->
-
-
-
-  <div class="backgrounds-container">
-    <div class="header">
-      {{> "dgns.group.header" header="DGNS.Backgrounds" }}
-    </div>
-
-    <div class="backgrounds">
-
-      {{#each system.backgrounds}}
-        <div class="field-under">
-          <input class="field-input" type="number" name="system.backgrounds.{{@key}}" value="{{@this}}" />
-          <label>{{localize @key}}</label>
-        </div>
-      {{/each}}
-    </div>
-
-  </div>
 
 
 

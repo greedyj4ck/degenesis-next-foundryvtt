@@ -89,7 +89,7 @@ export default class GeneralFields {
 
   static get dropped() {
     return {
-      equipped: new BooleanField({ default: false }),
+      dropped: new BooleanField({ default: false }),
     };
   }
 
@@ -117,6 +117,7 @@ export default class GeneralFields {
           enabled: new BooleanField({ initial: true }), // toggling state
           values: new ObjectField({ initial: {} }),
         }),
+        { initial: [] },
       ),
     };
   }

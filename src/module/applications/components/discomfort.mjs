@@ -1,6 +1,6 @@
 import StyleSheetMixin from "./stylesheet-mixin.mjs";
 
-const icons = {
+/* const icons = {
   0: `<svg width="48" height="48" viewBox="0 0 512 512">
     <g style="display:inline">
         <path style="display:inline;fill:#000;fill-opacity:1;stroke:#fff;stroke-width:6.36819;stroke-opacity:1" d="M94.244 262.83s-7.901 7.176 0 15.219c0 0 64 60.292 130.927 76.878 0 0 49.212 15.117 104.78-13.073 0 0 45.464-17.952 93.659-61.074 0 0 12.292-8.585.39-19.902 0 0-48.39-48-105.17-67.707 0 0-56.976-21.073-111.22-2.147 0 0-50.537 13.464-113.366 71.805z"/>
@@ -69,17 +69,26 @@ const icons = {
 </svg>
 `,
 };
+ */
+
+const icons = {
+  0: "di di-discomfort0",
+  1: "di di-discomfort1",
+  2: "di di-discomfort2",
+  3: "di di-discomfort3",
+  4: "di di-discomfort4",
+};
 
 const discomfort = [
-  { value: 0, icon: icons[0] },
-  { value: 1, icon: icons[1] },
-  { value: 2, icon: icons[2] },
-  { value: 3, icon: icons[3] },
-  { value: 4, icon: icons[4] },
+  { value: 0, icon: icons[0], tooltip: "0" },
+  { value: 1, icon: icons[1], tooltip: "-1" },
+  { value: 2, icon: icons[2], tooltip: "-2" },
+  { value: 3, icon: icons[3], tooltip: "-3" },
+  { value: 4, icon: icons[4], tooltip: "-4" },
 ];
 
 export default class DiscomfortElement extends StyleSheetMixin(
-  foundry.applications.elements.AbstractFormInputElement
+  foundry.applications.elements.AbstractFormInputElement,
 ) {
   constructor(...args) {
     super(...args);
@@ -190,7 +199,7 @@ export default class DiscomfortElement extends StyleSheetMixin(
     const button = document.createElement("button");
 
     button.setAttribute("id", "discomfortButton");
-    button.innerHTML = icons[this.value];
+    button.innerHTML = `<i class="${icons[this.value]}"></i>`;
 
     const dropdown = document.createElement("div");
     dropdown.setAttribute("id", "discomfortDropdown");
@@ -200,7 +209,13 @@ export default class DiscomfortElement extends StyleSheetMixin(
       const item = document.createElement("div");
       item.className = "discomfort-dropdown-item";
       item.setAttribute("data-value", discomfort.value);
-      item.innerHTML = discomfort.icon;
+
+      const malus = document.createElement("label");
+      malus.className = "discomfort-malus";
+      malus.textContent = discomfort.tooltip;
+
+      item.innerHTML = `<i class="${discomfort.icon}"></i>`;
+      item.appendChild(malus);
 
       item.addEventListener("click", (ev) => {
         let selection = ev.target.closest("div");
@@ -209,7 +224,7 @@ export default class DiscomfortElement extends StyleSheetMixin(
         this.value = newValue;
 
         this.dispatchEvent(
-          new Event("change", { bubbles: true, cancelable: true })
+          new Event("change", { bubbles: true, cancelable: true }),
         );
       });
 
@@ -231,7 +246,7 @@ export default class DiscomfortElement extends StyleSheetMixin(
     this.addEventListener(
       "keydown",
       (event) => (event.key === " " ? this._onClick(event) : null),
-      { signal }
+      { signal },
     );
   }
 
@@ -256,7 +271,6 @@ export default class DiscomfortElement extends StyleSheetMixin(
       dropdown = this.firstChild.lastChild;
     }
 
-    dropdown.style.display =
-      dropdown.style.display === "block" ? "none" : "block";
+    dropdown.classList.toggle("active");
   }
 }

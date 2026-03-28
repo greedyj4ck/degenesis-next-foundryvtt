@@ -296,56 +296,9 @@
       }
     }
 
-    .lp-container {
-      display: flex;
-      width: 100%;
-      margin-top: 5px;
-      flex-direction: row;
-
-      gap: 5px;
-      > * {
-        flex: 1;
-      }
-
-      button {
-        max-width: 24px;
-        max-height: 24px;
-      }
-
-      label {
-        text-transform: uppercase;
-        font-size: var(--font-size-14);
-        font-weight: 600;
-      }
-    }
-
-    .legacies-container {
-      display: flex;
-      flex-direction: column;
-
-      .legacies-toolbar {
-        display: flex;
-        gap: 10px;
-        flex-direction: row-reverse;
-        justify-content: flex-end;
-        align-items: center;
-      }
-    }
-
-    .potentials-container {
-      display: flex;
-      flex-direction: column;
-
-      .potentials-toolbar {
-        display: flex;
-        gap: 10px;
-        flex-direction: row;
-        justify-content: flex-end;
-        align-items: center;
-      }
-    }
-
     .attributes-skills-container {
+      --h: var(--dgns-table-header-height, var(--font-size-24));
+
       display: grid;
       padding: 0;
       margin: 0;
@@ -357,7 +310,69 @@
       column-gap: 20px;
       row-gap: 5px;
 
-      margin-bottom: 10px;
+      margin-bottom: 5px;
+
+      .attribute-header {
+        corner-shape: bevel;
+        border: var(--dgns-line-width) solid var(--dgns-ui-secondary);
+        border-radius: var(--h);
+        display: flex;
+        align-items: center;
+        padding: 0 0 0 15px;
+        height: var(--h);
+        width: 100%;
+
+        font-family: var(--font-body);
+        font-size: var(--font-size-12);
+
+        text-transform: uppercase;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+      }
+
+      .attribute-value {
+        border: calc(var(--dgns-line-width) + 1px) solid
+          var(--dgns-ui-secondary);
+        background: #000;
+        position: absolute;
+        width: calc(var(--h) + 2px);
+        height: calc(var(--h) + 2px);
+        right: calc(var(--h) / 2);
+        transform: rotate(45deg);
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        &:hover {
+          border-color: purple;
+        }
+        &:focus-within {
+          border-color: red;
+        }
+
+        font-weight: 700;
+        color: var(--dgns-ui-primary);
+
+        .diamond-value,
+        input {
+          transform: rotate(315deg);
+          line-height: 1;
+        }
+
+        input {
+          color: var(--dgns-ui-primary);
+          text-align: center;
+          padding: 0;
+          outline: none;
+          background: none;
+
+          &::selection {
+            background: transparent;
+            color: inherit;
+          }
+        }
+      }
 
       .attribute-group {
         display: flex;
@@ -373,106 +388,110 @@
           width: 100%;
           justify-content: center;
           align-items: center;
+          position: relative;
+        }
+      }
 
+      .skills {
+        flex: 1;
+        height: 100%;
+        margin-bottom: 5px;
+        margin-top: 15px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 0 5px;
+
+        .skill {
+          display: flex;
+          flex-direction: row;
+          height: var(--h);
+          align-items: center;
+        }
+
+        .skill-header {
+          height: var(--h);
+          width: 100%;
+
+          font-family: var(--font-serif);
+          font-size: var(--font-size-15);
+
+          text-transform: uppercase;
+          font-weight: 400;
+          letter-spacing: 0.1em;
+        }
+
+        .skill-value {
+          aspect-ratio: 1;
+          display: flex;
+          // border: var(--dgns-line-width) solid var(--dgns-ui-secondary);
+          justify-content: center;
+          align-items: center;
+          width: calc(var(--h) - 2px);
+          height: calc(var(--h) - 2px);
+
+          input,
           label {
-            &.name {
-              flex: 1;
-            }
+            font-size: var(--font-size-14);
+            color: var(--dgns-ui-primary);
+            font-weight: 700;
 
-            &.value {
-              font-family: var(--font-body);
-              font-weight: 600;
-            }
-
-            font-family: var(--font-body);
-            font-size: var(--font-size-18);
-            text-transform: uppercase;
-            font-weight: 800;
-            letter-spacing: 0.05em;
+            line-height: 1;
           }
 
           input {
-            width: 24px;
-            height: 24px;
-            padding: 0;
-            line-height: normal;
             text-align: center;
-            font-weight: 700;
-          }
-        }
-
-        .skills {
-          flex: 1;
-          height: 100%;
-          margin-top: 5px;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-around;
-
-          gap: 5px;
-
-          .skill {
-            display: flex;
-            flex-direction: row;
-            width: 100%;
-            justify-content: center;
-            align-items: center;
-
-            //todo: maybe move it to utility class or something
-            .disabled {
-              text-decoration: line-through;
-              color: gray;
-            }
-
-            label,
-            a {
-              &.name {
-                flex: 1;
-              }
-
-              &.value {
-                font-family: var(--font-body);
-                font-weight: 600;
-              }
-
-              font-family: var(--font-serif);
-              font-size: var(--font-size-16);
-              text-transform: uppercase;
-              letter-spacing: 0.05em;
-            }
-
-            input {
-              width: 24px;
-              height: 24px;
-              padding: 0;
-              line-height: normal;
-              text-align: center;
-            }
+            padding: 0;
+            width: var(--h);
+            height: var(--h);
           }
         }
       }
     }
+  }
 
-    /* -------------------------------------------------------------------------- */
-    /*                                  Sections                                  */
-    /* -------------------------------------------------------------------------- */
+  hr {
+    margin: 10px 0px;
+    height: var(--dgns-line-width);
+  }
 
-    /* ---------------------------------- Tabs ---------------------------------- */
+  /* -------------------------------------------------------------------------- */
+  /*                                  Sections                                  */
+  /* -------------------------------------------------------------------------- */
 
-    section.sheet-tabs {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+  /* ---------------------------------- Tabs ---------------------------------- */
+
+  section.sheet-tabs {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ----------- Potentials ----------- */
+
+  //todo: fix this
+  .potential-group {
+    display: flex;
+    flex-direction: column;
+    flex: 0 1 auto;
+    min-height: 0;
+    .controls {
+      min-width: 50px !important;
     }
-
-    /* --------------------------------- Effects -------------------------------- */
-
-    section.effects {
+    .entries {
+      flex: 1 1 auto;
+      min-height: 0; /* KLUCZOWE */
+      overflow: auto;
     }
+  }
 
-    /* -------------------------------- Inventory ------------------------------- */
+  /* --------------------------------- Effects -------------------------------- */
 
-    section.inventory {
-    }
+  section.effects {
+  }
+
+  /* -------------------------------- Inventory ------------------------------- */
+
+  section.inventory {
   }
 }

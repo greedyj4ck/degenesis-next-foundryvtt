@@ -9,6 +9,8 @@
   },
   "exclude": ["node_modules", "**/node_modules/*"],
   "include": [
+    "**/*.mjs",
+    "**/*.js",
     "degenesis.mjs",
     "foundry/client/client.mjs",
     "foundry/client/global.d.mts",

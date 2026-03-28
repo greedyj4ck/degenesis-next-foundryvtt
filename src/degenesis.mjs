@@ -181,6 +181,45 @@ Hooks.once("init", async function () {
     },
   });
 
+  Items.registerSheet("degenesis", applications.item.DGNSModificationSheet, {
+    types: ["modification"],
+    makeDefault: true,
+    label: "TYPES.Item.TypeModificationSheet",
+    themes: {
+      dark: "SETTINGS.UI.FIELDS.colorScheme.dark",
+      light: "SETTINGS.UI.FIELDS.colorScheme.light",
+      //artifacts: "SETTINGS.UI.FIELDS.colorScheme.artifacts",
+      // darkBlood: "SETTINGS.UI.FIELDS.colorScheme.darkBlood",
+      // lightBlood: "SETTINGS.UI.FIELDS.colorScheme.lightBlood",
+    },
+  });
+
+  Items.registerSheet("degenesis", applications.item.DGNSPotentialSheet, {
+    types: ["potential"],
+    makeDefault: true,
+    label: "TYPES.Item.TypePotentialSheet",
+    themes: {
+      dark: "SETTINGS.UI.FIELDS.colorScheme.dark",
+      light: "SETTINGS.UI.FIELDS.colorScheme.light",
+      //artifacts: "SETTINGS.UI.FIELDS.colorScheme.artifacts",
+      // darkBlood: "SETTINGS.UI.FIELDS.colorScheme.darkBlood",
+      // lightBlood: "SETTINGS.UI.FIELDS.colorScheme.lightBlood",
+    },
+  });
+
+  Items.registerSheet("degenesis", applications.item.DGNSLegacySheet, {
+    types: ["legacy"],
+    makeDefault: true,
+    label: "TYPES.Item.TypeLegacySheet",
+    themes: {
+      dark: "SETTINGS.UI.FIELDS.colorScheme.dark",
+      light: "SETTINGS.UI.FIELDS.colorScheme.light",
+      //artifacts: "SETTINGS.UI.FIELDS.colorScheme.artifacts",
+      // darkBlood: "SETTINGS.UI.FIELDS.colorScheme.darkBlood",
+      // lightBlood: "SETTINGS.UI.FIELDS.colorScheme.lightBlood",
+    },
+  });
+
   hooks();
 
   // SETTING FONTS FOR USAGE (COULD BE REPLACED WITH CSS?)

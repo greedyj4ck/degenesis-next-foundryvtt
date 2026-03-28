@@ -7,6 +7,11 @@ export async function registerHandlebarsHelpers() {
     return game.user.isGM;
   });
 
+  Handlebars.registerHelper("titleCase", (str) => {
+    if (!str) return "";
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  });
+
   /**
    * Checking if skill should be disabled based on primal / focus and
    * fait / willpower choices.

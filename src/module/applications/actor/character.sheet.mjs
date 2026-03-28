@@ -4,9 +4,12 @@
  * Extend the basic ActorSheet class to suppose system-specific logic and functionality.
  * @abstract
  */
+const { renderTemplate } = foundry.applications.handlebars;
 const { api, sheets } = foundry.applications;
 const { DialogV2 } = foundry.applications.api;
 const { TextEditor } = foundry.applications.ux;
+
+const { performIntegerSort } = foundry.utils;
 
 import ActorSheetMixin from "./actor.sheet.mixin.mjs";
 
@@ -15,16 +18,27 @@ export default class DGNSCharacterSheet extends ActorSheetMixin(
 ) {
   static DEFAULT_OPTIONS = {
     actions: {
-      // data actions
-      showLinkedItem: this.showLinkedItem,
-      removeLinkedItem: this.removeLinkedItem,
-      //
-      unsetGroup: this.unsetGroup,
-      // roll actions
-      rollAction: this.#onActionRoll,
-      rollCombination: this.#onCombinationRoll,
-      // effects
-      manageEffect: this.#onManageEffect,
+      /** Linked items methods  */
+      showLinkedItem: DGNSCharacterSheet.prototype.showLinkedItem,
+      removeLinkedItem: DGNSCharacterSheet.prototype.removeLinkedItem,
+
+      /** Inventory */
+      toggleEquipped:
+        DGNSCharacterSheet.prototype.toggleItemProp("system.equipped"),
+      toggleDropped:
+        DGNSCharacterSheet.prototype.toggleItemProp("system.dropped"),
+      toggleDescription: DGNSCharacterSheet.prototype.toggleDescription,
+
+      createItem: DGNSCharacterSheet.prototype.createItem,
+      editItem: DGNSCharacterSheet.prototype.onEditItem,
+      toggleSort: DGNSCharacterSheet.prototype.toggleSort,
+
+      unsetGroup: DGNSCharacterSheet.prototype.unsetGroup,
+      /** Rolls & Combat */
+      rollAction: DGNSCharacterSheet.prototype.onActionRoll,
+      rollCombination: DGNSCharacterSheet.prototype.onCombinationRoll,
+      /** Handling Effects */
+      manageEffect: DGNSCharacterSheet.prototype.onManageEffect,
     },
 
     form: {
@@ -66,8 +80,13 @@ export default class DGNSCharacterSheet extends ActorSheetMixin(
       template: "systems/degenesisnext/templates/actor/character/stats.hbs",
       scrollable: [""],
     },
-    effects: {
+    /*  effects: {
       template: "systems/degenesisnext/templates/actor/character/effects.hbs",
+      scrollable: [".container-scrollable"],
+    }, */
+
+    effects: {
+      template: "systems/degenesisnext/templates/shared/general/effects.hbs",
       scrollable: [".container-scrollable"],
     },
     combat: {
@@ -81,8 +100,9 @@ export default class DGNSCharacterSheet extends ActorSheetMixin(
     history: {
       template: "systems/degenesisnext/templates/actor/character/history.hbs",
       templates: [
-        "systems/degenesisnext/templates/actor/character/group.hbs",
+        "systems/degenesisnext/templates/actor/character/legacies.hbs",
         "systems/degenesisnext/templates/actor/character/biography.hbs",
+        "systems/degenesisnext/templates/actor/character/group.hbs",
         "systems/degenesisnext/templates/actor/character/notes.hbs",
         "systems/degenesisnext/templates/actor/character/gmnotes.hbs",
       ],
@@ -100,30 +120,39 @@ export default class DGNSCharacterSheet extends ActorSheetMixin(
     main: {
       initial: "general", // Set the initial tab
       tabs: [
-        { id: "general", label: "DGNS.General" },
-        { id: "stats", label: "DGNS.Stats" },
-        { id: "effects", label: "DGNS.Effects" },
-        { id: "combat", label: "DGNS.Combat" },
-        { id: "inventory", label: "DGNS.Inventory" },
-        { id: "history", label: "DGNS.History" },
+        { id: "general", label: "UI.TABS.general" },
+        { id: "stats", label: "UI.TABS.stats" },
+        { id: "effects", label: "UI.TABS.effects" },
+        { id: "combat", label: "UI.TABS.combat" },
+        { id: "inventory", label: "UI.TABS.inventory" },
+        { id: "history", label: "UI.TABS.history" },
       ],
     },
     header: {
       initial: "details",
       tabs: [
-        { id: "details", label: "DGNS.Details", icon: "" },
-        { id: "modes", label: "DGNS.Modes", icon: "" },
-        { id: "currency", label: "DGNS.Currency", icon: "" },
-        { id: "xp", label: "DGNS.Experience", icon: "" },
+        {
+          id: "details",
+          label: "UI.TABS.details",
+          icon: "fa-solid fa-circle-info",
+        },
+        { id: "modes", label: "UI.TABS.modes", icon: "fa-solid fa-brain" },
+        {
+          id: "currency",
+          label: "UI.TABS.currency",
+          icon: "fa-solid fa-coins",
+        },
+        { id: "xp", label: "UI.TABS.xp", icon: "fa-solid fa-timeline" },
       ],
     },
     history: {
       initial: "group",
       tabs: [
-        { id: "group", label: "DGNS.Group" },
-        { id: "biography", label: "DGNS.Biography" },
-        { id: "notes", label: "DGNS.Notes" },
-        { id: "gmnotes", label: "DGNS.Gmnotes" },
+        { id: "biography", label: "UI.TABS.biography" },
+        { id: "legacies", label: "UI.TABS.legacies" },
+        { id: "group", label: "UI.TABS.group" },
+        { id: "notes", label: "UI.TABS.notes" },
+        { id: "gmnotes", label: "UI.TABS.gmnotes" },
       ],
     },
   };
@@ -140,6 +169,8 @@ export default class DGNSCharacterSheet extends ActorSheetMixin(
       actor: this.actor,
       system: this.actor.system,
       flags: this.actor.flags,
+      sortMode:
+        this.actor.getFlag("degenesisnext", "inventorySortMode") || "manual",
       actorFields: this.actor.schema.fields,
 
       // Simplified Data Access
@@ -147,6 +178,8 @@ export default class DGNSCharacterSheet extends ActorSheetMixin(
       concept: this.actor.system.concept,
       cult: this.actor.system.cult,
       group: this.actor.system.group,
+      potentials: this.actor._preparePotentials(),
+      legacies: this.actor._prepareLegacies(),
       inventory: this.actor._prepareInventory(),
       effects: await this.actor._prepareEffects(),
 
@@ -199,6 +232,8 @@ export default class DGNSCharacterSheet extends ActorSheetMixin(
   /**
    * Creating initial context menus for permanent objects
    */
+
+  /* ---------- Context Menus --------- */
   createContextMenus() {
     // menus needs to be defined as function
 
@@ -207,13 +242,32 @@ export default class DGNSCharacterSheet extends ActorSheetMixin(
         {
           name: "Action roll",
           callback: async (target) => {
-            await this._onActionRoll(null, target);
+            await this.onActionRoll(null, target);
           },
         },
         {
           name: "Combination roll",
           callback: async (target) => {
-            await this._onCombinationRoll(null, target);
+            await this.onCombinationRoll(null, target);
+          },
+        },
+      ];
+    }
+
+    function _itemContextOptions() {
+      return [
+        {
+          name: "Edit",
+          icon: '<i class="fas fa-edit"></i>',
+          callback: async (target) => {
+            await this.onEditItem(null, target);
+          },
+        },
+        {
+          name: "Delete",
+          icon: '<i class="fas fa-trash"></i>',
+          callback: async (target) => {
+            await this.onDeleteItem(null, target);
           },
         },
       ];
@@ -225,6 +279,17 @@ export default class DGNSCharacterSheet extends ActorSheetMixin(
       `[data-action=rollAction]`,
       {
         hookName: "getActionRollContextOptions",
+        fixed: true,
+        parentClassHooks: false,
+      },
+    );
+
+    this._createContextMenu(
+      _itemContextOptions.bind(this),
+      `[data-action=openItemMenu]`,
+      {
+        eventName: "click",
+        hookName: "getItemContextOptions",
         fixed: true,
         parentClassHooks: false,
       },
@@ -260,48 +325,87 @@ export default class DGNSCharacterSheet extends ActorSheetMixin(
     super._onResize(event);
   }
 
-  async _onDrop(event) {
-    event.preventDefault();
+  async _onDropActor(data) {
+    const actor = await Actor.implementation.fromDropData(data);
+    if (actor.type === "group") {
+      await this.actor.setGroup(actor);
+    }
+  }
 
-    // Get the dropped data
-    const data = TextEditor.getDragEventData(event);
+  async _onDropItem(event, data) {
+    const item = await Item.implementation.fromDropData(data);
+    if (!item) return false;
 
-    if (data.type === "Actor") {
-      const actor = await Actor.implementation.fromDropData(data);
-      if (actor.type === "group") {
-        await this.actor.setGroup(actor);
+    const targetElement = event.target.closest(".entry");
+    const targetId = targetElement?.dataset.itemId;
+    const targetItem = targetId ? this.actor.items.get(targetId) : null;
+
+    // Handling Culture / Concept / Cult
+    if (item.type === "culture" && !item.actor) {
+      await this.actor.system.setCulture(item.id);
+      return false;
+    }
+    if (item.type === "cult" && !item.actor) {
+      await this.actor.system.setCult(item.id);
+      return false;
+    }
+    if (item.type === "concept" && !item.actor) {
+      await this.actor.system.setConcept(item.id);
+      return false;
+    }
+
+    const isSameActor = item.actor?.id === this.actor.id;
+    const isFromSidebar = !item.actor;
+    const isFromOtherActor = item.actor && item.actor.id !== this.actor.id;
+
+    if (isSameActor) {
+      if (targetItem) {
+        if (item.id === targetItem.id) return false;
+
+        const sortModes =
+          this.actor.getFlag("degenesisnext", "inventorySortModes") || {};
+        const sortMode = sortModes[targetItem.type] || "manual";
+
+        console.log(sortMode);
+        if (sortMode === "manual") {
+          return this._handleSort(item, targetItem);
+        } else {
+          ui.notifications.warn("Disable alphabetical sorting first. ");
+          return false;
+        }
       }
     }
 
-    if (data.type === "Item") {
-      // Get the item being dropped
-      const item = await Item.implementation.fromDropData(data);
-
-      // Handling Culture / Concept / Cult
-      if (item.type === "culture" && !item.actor) {
-        await this.actor.system.setCulture(item.id);
-        return false;
-      }
-      if (item.type === "cult" && !item.actor) {
-        await this.actor.system.setCult(item.id);
-        return false;
-      }
-      if (item.type === "concept" && !item.actor) {
-        await this.actor.system.setConcept(item.id);
-        return false;
-      }
+    if (isFromSidebar) {
+      return super._onDropItem(event, item);
     }
+  }
 
-    // Allow the default drop behavior for non-cult items or if no cult exists
-    return super._onDrop(event);
+  /* ------- Sorting & DragNDrop ------ */
+
+  async _handleSort(source, target) {
+    const siblings = this.actor.items.filter(
+      (i) => i.type === target.type && i.id !== source.id,
+    );
+
+    const sortUpdates = performIntegerSort(source, {
+      target: target,
+      siblings: siblings,
+    });
+
+    const updates = sortUpdates.map((u) => ({
+      _id: u.target.id,
+      sort: u.update.sort,
+    }));
+
+    return this.actor.updateEmbeddedDocuments("Item", updates);
   }
 
   //#region Effects
 
-  /** Static wrapper for logic. */
-  static async #onManageEffect(event, target) {
-    await this._onManageEffect(event, target);
-  }
+  /* ---------------------------------- */
+  /*               Effects              */
+  /* ---------------------------------- */
 
   /**
    * Manage effect on Actor's side.
@@ -309,41 +413,43 @@ export default class DGNSCharacterSheet extends ActorSheetMixin(
    * @param {*} target
    * @returns
    */
-  async _onManageEffect(event, target) {
+  async onManageEffect(event, target) {
     if (event) event.preventDefault();
     const action = target.dataset.type;
     const effectId = target.closest(".effect")?.dataset.effectId;
     return await this.actor._manageEffect(action, effectId);
   }
 
-  //#endregion
+  /* ---------------------------------- */
+  /*                Rolls               */
+  /* ---------------------------------- */
 
-  //#region Rolls
-  // static wrappers
-  static async #onActionRoll(event, target) {
-    await this._onActionRoll(event, target);
-  }
-
-  static async #onCombinationRoll(event, target) {
-    await this._onCombinationRoll(event, target);
-  }
-
-  async _onCombinationRoll(event, target) {
+  async onCombinationRoll(event, target) {
     if (event) event.preventDefault();
     const skill = target.dataset.skill;
     const attribute = target.dataset.attribute;
     await this.actor.combinationRoll(attribute, skill);
   }
 
-  // Main method to be used by click and context menu
-  async _onActionRoll(event, target) {
+  /* ---------------------------------- */
+
+  async onActionRoll(event, target) {
     if (event) event.preventDefault();
     const skill = target.dataset.skill;
     const attribute = target.dataset.attribute;
     await this.actor.actionRoll(attribute, skill);
   }
 
-  //#endregion
+  /* ---------------------------------- */
+
+  /* ---------------------------------- */
+  /*          Items / Inventory         */
+  /* ---------------------------------- */
+
+  async createItem(event, target) {
+    const itemType = target.closest("[data-item-type")?.dataset.itemType;
+    await this.actor._createItem(itemType);
+  }
 
   /**
    * Display linked Item, and fallback to cached one if main do not exist anymore.
@@ -352,7 +458,7 @@ export default class DGNSCharacterSheet extends ActorSheetMixin(
    * @param {*} target
    */
 
-  static async showLinkedItem(event, target) {
+  async showLinkedItem(event, target) {
     const itemType = target.dataset.itemType;
     const itemId = this.actor.system[itemType].id;
     const item =
@@ -364,13 +470,82 @@ export default class DGNSCharacterSheet extends ActorSheetMixin(
     }
   }
 
-  static async removeLinkedItem(event, target) {
+  async onCreateItem() {}
+
+  async onEditItem(event, target) {
+    const itemId = target.closest("[data-item-id]")?.dataset.itemId;
+    const item = this.actor.items.get(itemId);
+    if (item) item.sheet.render(true);
+  }
+
+  async onDeleteItem(event, target) {
+    const itemId = target.closest("[data-item-id]")?.dataset.itemId;
+    const item = this.actor.items.get(itemId);
+    if (item) item.delete();
+  }
+
+  async removeLinkedItem(event, target) {
     const itemType = target.dataset.itemType;
     await this.actor.system.removeLinkedItem(itemType);
   }
 
-  static async unsetGroup() {
+  async unsetGroup() {
     await this.actor.unsetGroup();
+  }
+
+  async toggleSort(event, target) {
+    const group = target.dataset.group;
+    const currentMode =
+      this.actor.getFlag("degenesisnext", `inventorySortModes.${group}`) ||
+      "manual";
+    const newMode = currentMode === "manual" ? "alpha" : "manual";
+    await this.actor.setFlag(
+      "degenesisnext",
+      `inventorySortModes.${group}`,
+      newMode,
+    );
+  }
+
+  toggleItemProp(propPath) {
+    return async function (event, target) {
+      const itemId = target.closest("[data-item-id]").dataset.itemId;
+      const item = this.document.items.get(itemId);
+      console.log(`Toggle item prop`);
+      console.log(item);
+      console.log(propPath);
+      const currentValue = foundry.utils.getProperty(item, propPath);
+      console.log(currentValue);
+      await item.update({ [propPath]: !currentValue });
+    };
+  }
+
+  async toggleDescription(event, target) {
+    const entry = target.closest(".entry.item");
+    const itemId = entry.dataset.itemId;
+    const item = this.document.items.get(itemId);
+
+    let existingDesc = entry.nextElementSibling;
+    if (existingDesc?.classList.contains("entry-description-dropdown")) {
+      existingDesc.remove();
+      return;
+    }
+
+    const templateData = {
+      description: await TextEditor.enrichHTML(item.system.description, {
+        async: true,
+      }),
+      item: item,
+    };
+
+    const html = await renderTemplate(
+      "systems/degenesisnext/templates/shared/item/dropdown.hbs",
+      templateData,
+    );
+
+    entry.insertAdjacentHTML(
+      "afterend",
+      `<div class="entry entry-description-dropdown" data-item-id="${itemId}">${html}</div>`,
+    );
   }
 
   /*  changeTab(tab, group, options) {

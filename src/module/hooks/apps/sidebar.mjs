@@ -41,7 +41,7 @@ export default function () {
     const badge = document.createElement("section");
     badge.classList.add("dgns", "flexcol");
 
-    badge.innerHTML = `<img src="systems/degenesisnext/ui/degenesis-logo-${theme}.svg" data-tooltip="${game.system.title}" alt="${game.system.title}"> `;
+    badge.innerHTML = `<img src="systems/degenesisnext/ui/logotypes/degenesis-logo-${theme}.svg" data-tooltip="${game.system.title}" alt="${game.system.title}"> `;
 
     if (info) {
       info.insertAdjacentElement("beforeBegin", badge);

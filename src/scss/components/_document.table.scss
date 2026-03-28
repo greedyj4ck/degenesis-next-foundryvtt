@@ -62,6 +62,14 @@
       flex: 1;
       width: 100%;
       gap: 10px;
+
+      &.entry-description-dropdown {
+        padding: 15px;
+        background: rgba(0, 0, 0, 0.05); /* Przykładowe tło dla odróżnienia */
+        border: 1px solid var(--dgns-ui-secondary);
+        border-radius: 5px;
+        animation: slideDown 0.2s ease-out;
+      }
     }
   }
 
@@ -102,7 +110,46 @@
     &.controls {
       min-width: 100px;
       font-size: var(--font-size-14);
-      gap: 10px;
+      gap: 5px;
+      padding-right: 5px;
+      justify-content: flex-end;
+
+      a {
+        aspect-ratio: 1;
+        display: flex;
+        width: 20px;
+        height: 20px;
+        justify-content: center;
+        align-items: center;
+
+        i {
+          color: var(--dgns-ui-secondary); /* Twój kolor systemowy */
+
+          &.active {
+            color: var(--dgns-ui-primary); /* Twój kolor systemowy */
+          }
+        }
+
+        &:hover {
+          text-shadow: none;
+          box-shadow: none;
+
+          i {
+            color: var(--dgns-ui-primary);
+          }
+        }
+      }
+    }
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 }

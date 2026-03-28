@@ -1,6 +1,6 @@
 import StyleSheetMixin from "./stylesheet-mixin.mjs";
 
-const icons = {
+/* const icons = {
   0: `<svg width="48" height="48" viewBox="0 0 512 512">
     <g style="display:inline">
         <path style="display:inline;fill:#000;fill-opacity:1;stroke:#fff;stroke-width:6.36819;stroke-opacity:1" d="M94.244 262.83s-7.901 7.176 0 15.219c0 0 64 60.292 130.927 76.878 0 0 49.212 15.117 104.78-13.073 0 0 45.464-17.952 93.659-61.074 0 0 12.292-8.585.39-19.902 0 0-48.39-48-105.17-67.707 0 0-56.976-21.073-111.22-2.147 0 0-50.537 13.464-113.366 71.805z"/>
@@ -68,6 +68,14 @@ const icons = {
     </g>
 </svg>
 `,
+}; */
+
+const icons = {
+  0: "di di-vision0",
+  1: "di di-vision1",
+  2: "di di-vision2",
+  3: "di di-vision3",
+  4: "di di-vision4",
 };
 
 const vision = [
@@ -79,7 +87,7 @@ const vision = [
 ];
 
 export default class VisionElement extends StyleSheetMixin(
-  foundry.applications.elements.AbstractFormInputElement
+  foundry.applications.elements.AbstractFormInputElement,
 ) {
   constructor(...args) {
     super(...args);
@@ -190,7 +198,7 @@ export default class VisionElement extends StyleSheetMixin(
     const button = document.createElement("button");
 
     button.setAttribute("id", "visionButton");
-    button.innerHTML = icons[this.value];
+    button.innerHTML = `<i class="${icons[this.value]}"></i>`;
 
     const dropdown = document.createElement("div");
     dropdown.setAttribute("id", "visionDropdown");
@@ -205,7 +213,7 @@ export default class VisionElement extends StyleSheetMixin(
       malus.className = "vision-malus";
       malus.textContent = vision.tooltip;
 
-      item.innerHTML = vision.icon;
+      item.innerHTML = `<i class="${vision.icon}"></i>`;
       item.appendChild(malus);
 
       item.addEventListener("click", (ev) => {
@@ -215,7 +223,7 @@ export default class VisionElement extends StyleSheetMixin(
         this.value = newValue;
 
         this.dispatchEvent(
-          new Event("change", { bubbles: true, cancelable: true })
+          new Event("change", { bubbles: true, cancelable: true }),
         );
       });
 
@@ -237,7 +245,7 @@ export default class VisionElement extends StyleSheetMixin(
     this.addEventListener(
       "keydown",
       (event) => (event.key === " " ? this._onClick(event) : null),
-      { signal }
+      { signal },
     );
   }
 

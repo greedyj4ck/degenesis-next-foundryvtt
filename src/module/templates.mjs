@@ -4,6 +4,11 @@ export async function preloadHandlebarsTemplates() {
   const partials = [
     // Shared partials
     "systems/degenesisnext/templates/shared/group/header.hbs",
+
+    // Actor Partials
+    "systems/degenesisnext/templates/shared/actor/culture.hbs",
+    "systems/degenesisnext/templates/shared/actor/concept.hbs",
+    "systems/degenesisnext/templates/shared/actor/cult.hbs",
   ];
 
   const paths = {};

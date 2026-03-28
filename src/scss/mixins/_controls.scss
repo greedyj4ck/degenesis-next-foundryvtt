@@ -43,7 +43,9 @@
     border: var(--dgns-line-width) solid var(--dgns-ui-secondary);
     border-radius: 5px;
 
-    transition: opacity 225ms ease-in-out, transform 225ms ease-in-out;
+    transition:
+      opacity 225ms ease-in-out,
+      transform 225ms ease-in-out;
     transform-origin: top;
     transform: translateY(0);
 

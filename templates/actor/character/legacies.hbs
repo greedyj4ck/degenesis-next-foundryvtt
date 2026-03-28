@@ -1,0 +1,50 @@
+<div class="legacies-container">
+  <div class="document-table inventory-group">
+    <div class="header">
+      <div class="name">{{localize "DGNS.Legacies"}}</div>
+      <div class="transition">
+        <svg class="line">
+          <line x1="0" y1="50%" x2="75%" y2="50%"></line>
+          <line x1="75%" y1="50%" x2="100%" y2="100%"></line>
+        </svg>
+      </div>
+
+      <div class="legends">
+        <div class="field encumbrance">Enc.</div>
+        <div class="field controls">
+          <a data-action="toggleSort" data-group="{{group.id}}">
+            <i class="fa-solid {{group.sortIcon}}"></i>
+          </a>
+          <a>
+            <i class="fa-solid fa-plus"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="entries">
+      {{#each legacies  as |item|}}
+        <div class="entry item" data-drag data-item-id="{{item.id}}" data-action="openItemContextMenu">
+          <div class="field image">
+            <img src="{{item.img}}">
+          </div>
+          <div class="field name">
+            <a class="caption" data-action="editItem">{{item.name}}</a>
+            <div class="subcaption">{{item.system.group}}</div>
+          </div>
+
+
+          <div class="field encumbrance">
+            {{item.system}}
+          </div>
+          <div class="field controls">
+
+            <a data-action="toggleDescription"><i class="fa-solid fa-square-caret-down"></i></a>
+            <a data-action="openItemMenu"> <i class="fa-solid fa-ellipsis-vertical"></i></a>
+
+          </div>
+
+        </div>
+      {{/each}}
+    </div>
+  </div>
+</div>

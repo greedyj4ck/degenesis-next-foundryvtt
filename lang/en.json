@@ -53,7 +53,25 @@
   "UI": {
     "d": "D",
     "s": "S",
-    "t": "T"
+    "t": "T",
+
+    "TABS": {
+      "general": "General",
+      "stats": "Stats",
+      "effects": "Effects",
+      "combat": "Combat",
+      "inventory": "Inventory",
+      "history": "History",
+      "details": "Details",
+      "modes": "Modes",
+      "currency": "Currency",
+      "xp": "Experience",
+      "biography": "Biography",
+      "legacies": "Legacies",
+      "group": "Group",
+      "notes": "Notes",
+      "gmnotes": "GM Notes"
+    }
   },
 
   "UI.SlotCost": "Slot Cost",
@@ -402,10 +420,10 @@
 
     "MOD": {
       "melee": "Melee weapons",
-      "archaicProjectiles": "Melee weapons",
-      "modernEnergyWeapons": "Melee weapons",
-      "modernGuns": "Melee weapons",
-      "armor": "Melee weapons"
+      "archaicProjectiles": "Archaic projectiles",
+      "modernEnergyWeapons": "Modern energy weapons",
+      "modernGuns": "Modern guns",
+      "armor": "Armor"
     }
   },
 

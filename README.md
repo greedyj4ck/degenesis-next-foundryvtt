@@ -9,45 +9,41 @@ An unoffical, community-supported system for playing [Degenesis](https://degenes
 
 Degenesis® is ™ SIXMOREVODKA Studio GmbH. All rights reserved. This module contains information and graphics from Katharsys that have been used with permission from the publisher. All used content from the handbook belong to the respective authors.
 
+## Work in progress disclaimer
+
+This release represents an extremely early alpha version, in which approximately 80% of features are either not yet implemented or do not function correctly. It is intended solely for preliminary testing and gathering feedback.
+
 ## About NEXT
 
 Although the system is based on the original foundry implementation, a lot of things related to the data structures of actors or objects have changed, so the systems are not compatible. Writing migration scripts with such large changes, requires a lot of work (including testing all critical cases) and spare time.
 
-The original repository will remain active, but its installation will be limited to Foundry up to version V12 only, and it will not get updated for V13.
+## Supporters
 
-## Work in progress disclaimer
+**Cameron**
 
-The system module represented is not in its final version. Functionality and content will be subject to change.
+## Special Thanks
 
-## System.json manifest
+WIP
 
-    https://github.com/greedyj4ck/DEGENESIS-FoundryVTT/releases/latest/download/system.json
+## System.json manifest (not working yet)
+
+    https://github.com/greedyj4ck/degenesis-next-foundryvtt/releases/latest/download/system.json
 
 ## Developer Installation
 
-- Git clone the repo. Use `--recurse-submodules` flag to get the packs.
-- Rename the directory to "degenesis" under your Foundry _Data/systems_ directory.
+- Git clone the repo.
+- Run inside terminal in main folder:
 
-### Live SASS Compiler settings
+```bash
+npm install
+```
 
-The new version of the system uses SCSS to compile the resulting CSS file. We recommend using VSCode with the Live SASS Compiler extension installed and the following settings.
+Project is beeing bundled by Vite.
 
-    Insert settings inside .vscode/settings.json
+- Run:
 
-```json
-{
-  "liveSassCompile.settings.formats": [
-    {
-      "format": "expanded",
-      "extensionName": ".css",
-      "savePath": "/styles"
-    }
-  ],
-  "liveSassCompile.settings.excludeList": ["**/node_modules/**", ".vscode/**"],
-  "liveSassCompile.settings.generateMap": false,
-  //autoprefix, will auto add perfix like -webkit- -moz-..
-  "liveSassCompile.settings.autoprefix": ["> 1%", "last 2 versions"]
-}
+```bash
+npm run watch
 ```
 
 ## Credits

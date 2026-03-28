@@ -1,0 +1,53 @@
+<section class="tab modifications {{tab.cssClass}} scrollable" data-group="main" data-tab="modifications">
+    <div class="modifications-container">
+        <fieldset class="slots-grid">
+            <legend>{{localize "DGNS.Slots"}} </legend>
+            <div class="field">
+                <div class="field-value">{{system.modifications.used}}</div>
+                <label>{{localize "DGNS.Current"}}</label>
+            </div>
+            <div class="field">
+                <input class="field-input" type="number" name="system.modifications.slots"
+                    value="{{system.modifications.slots}}" />
+                <label>{{localize "DGNS.Maximum"}}</label>
+            </div>
+
+        </fieldset>
+
+        <fieldset class="modifications-grid">
+            <legend>{{localize "DGNS.Modifications"}} </legend>
+
+            {{#each modifications.installed as |mod|}}
+
+                <div class="mod">
+
+                    <div class="mod-image">
+                        <img src="{{mod.image}}" />
+                    </div>
+
+                    <div class="mod-label">
+                        <label>{{mod.namme}}</label>
+                    </div>
+
+                </div>
+
+            {{/each}}
+
+            <div class="mod mod-add">
+                <i class="fa fa-plus"></i>
+
+            </div>
+
+        </fieldset>
+
+    </div>
+
+
+
+
+
+
+
+
+
+</section>

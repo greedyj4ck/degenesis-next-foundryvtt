@@ -1,8 +1,26 @@
 .drop-placeholder {
-  opacity: 0.2;
   aspect-ratio: 1;
-  display: block;
+  display: flex;
   height: 85%;
-  border: 2px dashed var(--dgns-ui-primary);
+  border: var(--dgns-line-width) solid var(--dgns-ui-secondary);
   border-radius: 10px;
+
+  justify-content: center;
+  align-items: center;
+
+  font-size: var(--font-size-32);
+
+  i {
+    opacity: 0.2;
+    transition: opacity 300ms ease-in-out;
+  }
+
+  &:hover {
+    color: var(--dgns-ui-accent);
+    border-color: var(--dgns-ui-accent);
+
+    i {
+      opacity: 0.9;
+    }
+  }
 }

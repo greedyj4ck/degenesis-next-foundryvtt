@@ -1,0 +1,211 @@
+@font-face {
+  font-display: block;
+  font-family: "dgns-icons";
+  src: url("./dgns-icons.woff2?36eb71100b6c700bc921fe0071d2abbe") format("woff2"),
+url("./dgns-icons.woff?36eb71100b6c700bc921fe0071d2abbe") format("woff"),
+url("./dgns-icons.ttf?36eb71100b6c700bc921fe0071d2abbe") format("truetype");
+}
+
+.di::before {
+  font-family: dgns-icons !important;
+  font-style: normal;
+  font-weight: normal !important;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.di.di-concept-the-abomination::before {
+  content: "\f101";
+}
+.di.di-concept-the-adventurer::before {
+  content: "\f102";
+}
+.di.di-concept-the-chosen::before {
+  content: "\f103";
+}
+.di.di-concept-the-conqueror::before {
+  content: "\f104";
+}
+.di.di-concept-the-creator::before {
+  content: "\f105";
+}
+.di.di-concept-the-defiler::before {
+  content: "\f106";
+}
+.di.di-concept-the-destroyer::before {
+  content: "\f107";
+}
+.di.di-concept-the-disciple::before {
+  content: "\f108";
+}
+.di.di-concept-the-healer::before {
+  content: "\f109";
+}
+.di.di-concept-the-heretic::before {
+  content: "\f10a";
+}
+.di.di-concept-the-hermit::before {
+  content: "\f10b";
+}
+.di.di-concept-the-martyr::before {
+  content: "\f10c";
+}
+.di.di-concept-the-mediator::before {
+  content: "\f10d";
+}
+.di.di-concept-the-mentor::before {
+  content: "\f10e";
+}
+.di.di-concept-the-protector::before {
+  content: "\f10f";
+}
+.di.di-concept-the-righteous::before {
+  content: "\f110";
+}
+.di.di-concept-the-ruler::before {
+  content: "\f111";
+}
+.di.di-concept-the-seeker::before {
+  content: "\f112";
+}
+.di.di-concept-the-traditionalist::before {
+  content: "\f113";
+}
+.di.di-concept-the-traveler::before {
+  content: "\f114";
+}
+.di.di-concept-the-visionary::before {
+  content: "\f115";
+}
+.di.di-concept-the-zealot::before {
+  content: "\f116";
+}
+.di.di-cult-anabaptists::before {
+  content: "\f117";
+}
+.di.di-cult-anubians::before {
+  content: "\f118";
+}
+.di.di-cult-apocalyptics::before {
+  content: "\f119";
+}
+.di.di-cult-chroniclers::before {
+  content: "\f11a";
+}
+.di.di-cult-clanners::before {
+  content: "\f11b";
+}
+.di.di-cult-hellvetics::before {
+  content: "\f11c";
+}
+.di.di-cult-jehammedans::before {
+  content: "\f11d";
+}
+.di.di-cult-judges::before {
+  content: "\f11e";
+}
+.di.di-cult-neolibyans::before {
+  content: "\f11f";
+}
+.di.di-cult-palers::before {
+  content: "\f120";
+}
+.di.di-cult-scourgers::before {
+  content: "\f121";
+}
+.di.di-cult-scrappers::before {
+  content: "\f122";
+}
+.di.di-cult-spitalians::before {
+  content: "\f123";
+}
+.di.di-culture-africa::before {
+  content: "\f124";
+}
+.di.di-culture-balkhan::before {
+  content: "\f125";
+}
+.di.di-culture-borca::before {
+  content: "\f126";
+}
+.di.di-culture-franka::before {
+  content: "\f127";
+}
+.di.di-culture-hybrispania::before {
+  content: "\f128";
+}
+.di.di-culture-pollen::before {
+  content: "\f129";
+}
+.di.di-culture-purgare::before {
+  content: "\f12a";
+}
+.di.di-dinar::before {
+  content: "\f12b";
+}
+.di.di-discomfort0::before {
+  content: "\f12c";
+}
+.di.di-discomfort1::before {
+  content: "\f12d";
+}
+.di.di-discomfort2::before {
+  content: "\f12e";
+}
+.di.di-discomfort3::before {
+  content: "\f12f";
+}
+.di.di-discomfort4::before {
+  content: "\f130";
+}
+.di.di-draft::before {
+  content: "\f131";
+}
+.di.di-dropped::before {
+  content: "\f132";
+}
+.di.di-equipped-marauder::before {
+  content: "\f133";
+}
+.di.di-equipped::before {
+  content: "\f134";
+}
+.di.di-faith::before {
+  content: "\f135";
+}
+.di.di-focus::before {
+  content: "\f136";
+}
+.di.di-frame-equipped-marauder::before {
+  content: "\f137";
+}
+.di.di-frame-equipped::before {
+  content: "\f138";
+}
+.di.di-inposession::before {
+  content: "\f139";
+}
+.di.di-primal::before {
+  content: "\f13a";
+}
+.di.di-vision0::before {
+  content: "\f13b";
+}
+.di.di-vision1::before {
+  content: "\f13c";
+}
+.di.di-vision2::before {
+  content: "\f13d";
+}
+.di.di-vision3::before {
+  content: "\f13e";
+}
+.di.di-vision4::before {
+  content: "\f13f";
+}
+.di.di-willpower::before {
+  content: "\f140";
+}

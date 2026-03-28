@@ -1,18 +1,65 @@
-<section class="tab stats {{tab.cssClass}}" data-group="main" data-tab="stats">
-  {{> "dgns.group.header" header="DGNS.AttributesSkills" }}
+<section class="sheet-section tab stats {{tab.cssClass}}" data-group="main" data-tab="stats">
+
   <div class="attributes-skills-container">
+
+    {{#each system.attributes}}
+
+      <div class="attribute-group">
+        <div class="attribute {{@key}}">
+          <div class="attribute-header">{{localize @key}}</div>
+          <div class="attribute-value">
+            {{#if (sheetEditMode ../mode) }}
+              <input class="diamond-input" type="number" name="system.attributes.{{@key}}.value"
+                value="{{this.value}}" />
+            {{else}}
+              <div class="diamond-value">{{this.value}}</div>
+            {{/if}}
+          </div>
+        </div>
+
+
+        <div class="skills">
+          {{! Loop for displaying Skills }}
+          {{#each this.skills}}
+            <div class="skill {{@key}}">
+              <div class="skill-header">
+                <a class="name" data-action="rollAction" data-attribute="{{@../key}}"
+                  data-skill="{{@key}}">{{localize @key}}</a>
+              </div>
+              <div class="skill-value">
+                {{#if (sheetEditMode ../../mode) }}
+                  {{#if (isSkillDisabled @key ../../system.modes)}}
+                    <label class="value">{{this.value}}</label>
+                  {{else}}
+                    <input class="field-input" type="number" name="system.attributes.{{@../key}}.skills.{{@key}}.value"
+                      value="{{this.value}}" />
+                  {{/if}}
+                {{else}}
+                  <label class="value">{{this.value}}</label>
+                {{/if}}
+              </div>
+            </div>
+          {{/each}}
+        </div>
+      </div>
+    {{/each}}
+  </div>
+
+
+
+
+
+
+
+
+  {{!--  <div class="attributes-skills-container">
 
     {{! Loop for displaying Attributes }}
     {{#each system.attributes}}
       <div class="attribute-group">
         <div class="attribute {{@key}}" data-tooltip="<div>Test</div><div style='font-size: 8px'>Test2</div>">
-
           <label class="name">{{localize @key}}</label>
-          {{#if (sheetEditMode ../mode) }}
-            <input class="field-input" type="number" name="system.attributes.{{@key}}.value" value="{{this.value}}" />
-          {{else}}
-            <label class="value">{{this.value}}</label>
-          {{/if}}
+        
         </div>
 
         <div class="skills">
@@ -37,5 +84,5 @@
         </div>
       </div>
     {{/each}}
-  </div>
+  </div> --}}
 </section>

@@ -1,63 +1,61 @@
-<section class="tab inventory {{tab.cssClass}}" data-group="main" data-tab="inventory">
-  {{> "dgns.group.header" header="DGNS.Inventory" }}
+<section class="sheet-section tab inventory  {{tab.cssClass}} scrollable" data-group="main" data-tab="inventory">
 
-  <div class="document-table">
-    <div class="header">
-      <div class="name">Weapons</div>
-      <div class="transition">
-        <svg class="line">
-          <line x1="0" y1="50%" x2="75%" y2="50%"></line>
-          <line x1="75%" y1="50%" x2="100%" y2="100%"></line>
-        </svg>
-      </div>
 
-      <div class="legends">
-        <div class="field encumbrance">Enc.</div>
-        <div class="field controls">
-          <i class="fa-solid fa-arrow-down-a-z"></i>
-          <i class="fa-solid fa-plus"></i>
+  {{#each inventory as |group|}}
+    <div class="document-table inventory-group" data-group="{{group.id}}">
+      <div class="header">
+        <div class="name">{{group.label}}</div>
+        <div class="transition">
+          <svg class="line">
+            <line x1="0" y1="50%" x2="75%" y2="50%"></line>
+            <line x1="75%" y1="50%" x2="100%" y2="100%"></line>
+          </svg>
         </div>
-      </div>
-    </div>
 
-    <div class="entries">
-      {{#each inventory.weapon as |item|}}
-        <div class="entry" data-item-id="{{item.id}}">
-          <div class="field image">
-            <img src="{{item.img}}">
-          </div>
-          <div class="field name">
-            <div class="caption">{{item.name}}</div>
-            <div class="subcaption">MELEE</div>
-          </div>
-
-
-          <div class="field encumbrance">
-            {{item.encumbrance}}
-          </div>
+        <div class="legends">
+          <div class="field encumbrance">Enc.</div>
           <div class="field controls">
-            <i class="fa-solid fa-shield-halved"></i>
-            <i class="fa-solid fa-sack-xmark" style="color: var(--dgns-ui-secondary)"></i>
-            <i class="fa-solid fa-square-caret-down"></i>
-            <i class="fa-solid fa-ellipsis-vertical"></i>
+            <a data-action="toggleSort" data-group="{{group.id}}">
+              <i class="fa-solid {{group.sortIcon}}"></i>
+
+            </a>
+            <a data-action="createItem" data-item-type="{{group.id}}">
+              <i class="fa-solid fa-plus"></i></a>
           </div>
-
         </div>
-      {{/each}}
+      </div>
+
+      <div class="entries">
+        {{#each items  as |item|}}
+          <div class="entry item" data-drag data-item-id="{{item.id}}" data-action="openItemContextMenu">
+            <div class="field image">
+              <img src="{{item.img}}">
+            </div>
+            <div class="field name">
+              <a class="caption" data-action="editItem">{{item.name}}</a>
+              <div class="subcaption">{{item.system.group}}</div>
+            </div>
+
+
+            <div class="field encumbrance">
+              {{item.system.encumbrance}}
+            </div>
+            <div class="field controls">
+
+              <a data-action="toggleEquipped">
+                <i class="fa-solid fa-shield-halved {{#if item.system.equipped}}active{{/if}}"></i>
+              </a>
+              <a data-action="toggleDropped">
+                <i class="fa-solid fa-sack-xmark {{#if item.system.dropped}}active{{/if}}"></i></a>
+              <a data-action="toggleDescription"><i class="fa-solid fa-square-caret-down"></i></a>
+              <a data-action="openItemMenu"> <i class="fa-solid fa-ellipsis-vertical"></i></a>
+
+            </div>
+
+          </div>
+        {{/each}}
+      </div>
     </div>
-  </div>
-
-
-
-  {{#each inventory.shield as |item|}}
-    <div class="item-row" data-item-id="{{item.id}}">{{item.name}}</div>
   {{/each}}
-
-  {{#each inventory.armor as |item|}}
-    <div class="item-row" data-item-id="{{item.id}}">{{item.name}}</div>
-  {{/each}}
-
-
-
 
 </section>

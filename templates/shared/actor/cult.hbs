@@ -1,0 +1,32 @@
+<div class="cult" data-action="showCult">
+    {{#if cult}}
+        <div class="controls">
+            <label class="header">
+                {{#if (cult.isClan)}}{{localize "DGNS.Clan"}}{{else}}{{localize "DGNS.Cult"}}{{/if}}</label>
+            {{#if (sheetEditMode mode) }}
+                <!-- todo: add proper styilng -->
+                <button type="button" data-action="removeLinkedItem" data-item-type="cult" class="remove-cult">
+                    <i class="fas fa-eraser"></i>
+                </button>
+            {{/if}}
+        </div>
+        <div class="icon">
+            <img src="{{cult.img}}" data-action="showLinkedItem" data-item-type="cult" />
+        </div>
+        <div class="label">
+            <label class="value">{{ cult.name }}</label>
+        </div>
+    {{else}}
+        <div class="controls">
+            <label class="header">{{localize "DGNS.Cult"}}</label>
+        </div>
+        <div class="icon">
+            <div class="drop-placeholder"></div>
+        </div>
+        <div class="label">
+            {{localize "DGNS.None"}}
+        </div>
+    {{/if}}
+
+</div>
+</div>

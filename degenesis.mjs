@@ -1,7 +1,11 @@
 async function preloadHandlebarsTemplates() {
   const partials = [
     // Shared partials
-    "systems/degenesisnext/templates/shared/group/header.hbs"
+    "systems/degenesisnext/templates/shared/group/header.hbs",
+    // Actor Partials
+    "systems/degenesisnext/templates/shared/actor/culture.hbs",
+    "systems/degenesisnext/templates/shared/actor/concept.hbs",
+    "systems/degenesisnext/templates/shared/actor/cult.hbs"
   ];
   const paths = {};
   for (const path of partials) {
@@ -18,6 +22,10 @@ async function registerHandlebarsHelpers() {
   });
   Handlebars.registerHelper("isGM", function(options) {
     return game.user.isGM;
+  });
+  Handlebars.registerHelper("titleCase", (str) => {
+    if (!str) return "";
+    return str.charAt(0).toUpperCase() + str.slice(1);
   });
   Handlebars.registerHelper("isSkillDisabled", function(skill, modes) {
     if (skill === "primal" && modes.primalFocus === "focus") {
@@ -1365,7 +1373,7 @@ function sidebarApp() {
     const info = html.querySelector(".info");
     const badge = document.createElement("section");
     badge.classList.add("dgns", "flexcol");
-    badge.innerHTML = `<img src="systems/degenesisnext/ui/degenesis-logo-${theme}.svg" data-tooltip="${game.system.title}" alt="${game.system.title}"> `;
+    badge.innerHTML = `<img src="systems/degenesisnext/ui/logotypes/degenesis-logo-${theme}.svg" data-tooltip="${game.system.title}" alt="${game.system.title}"> `;
     if (info) {
       info.insertAdjacentElement("beforeBegin", badge);
     }
@@ -1435,9 +1443,14 @@ function hooks() {
   RegisterItemHooks();
   RegisterActorHooks();
 }
-const { api: api$7, sheets: sheets$7 } = foundry.applications;
+const { api: api$a, sheets: sheets$a } = foundry.applications;
+const { DragDrop, TextEditor: TextEditor$9 } = foundry.applications.ux;
+const getSheetPrefs = (doc) => {
+  const key = `${doc.type}${doc.limited ? ":limited" : ""}`;
+  return game.user.getFlag("degenesisnext", `actorSheetPrefs.${key}`) ?? {};
+};
 function ActorSheetMixin(Base) {
-  return class DegenesisActorSheet extends api$7.HandlebarsApplicationMixin(
+  return class DegenesisActorSheet extends api$a.HandlebarsApplicationMixin(
     Base
   ) {
     static TABS = [];
@@ -1445,16 +1458,123 @@ function ActorSheetMixin(Base) {
       PLAY: 1,
       EDIT: 2
     };
+    static DEFAULT_OPTIONS = {
+      dragDrop: [{ dragSelector: "[data-drag]", dropSelector: null }]
+    };
     _mode = this.constructor.MODES.PLAY;
     _dropdownState = {};
-    /** Constructor  */
+    /* ---------------------------------- */
+    /*             Constructor            */
+    /* ---------------------------------- */
     constructor(object, options = {}) {
-      const key = `${object.type}${object.limited ? ":limited" : ""}`;
-      const { width, height } = game.user.getFlag("degenesisnext", `actorSheetPrefs.${key}`) ?? {};
-      if (width && !("width" in options)) options.width = width;
-      if (height && !("height" in options)) options.height = height;
+      const { width, height } = getSheetPrefs(object);
+      options.width ??= width;
+      options.height ??= height;
       super(object, options);
+      this.#dragDrop = this.#createDragDropHandlers();
     }
+    /* ---------------------------------- */
+    /*             DragAndDrop            */
+    /* ---------------------------------- */
+    /* Based on community Wiki example. */
+    /* Private property. */
+    #dragDrop;
+    /**
+     * Returns an array of DragDrop instances
+     * @type {DragDrop[]}
+     */
+    get dragDrop() {
+      return this.#dragDrop;
+    }
+    /**
+     * Create drag-and-drop workflow handlers for this Application
+     * @returns {DragDrop[]}     An array of DragDrop handlers
+     * @private
+     */
+    #createDragDropHandlers() {
+      return this.options.dragDrop.map((d) => {
+        d.permissions = {
+          dragstart: this._canDragStart.bind(this),
+          drop: this._canDragDrop.bind(this)
+        };
+        d.callbacks = {
+          dragstart: this._onDragStart.bind(this),
+          dragover: this._onDragOver.bind(this),
+          drop: this._onDrop.bind(this)
+        };
+        return new DragDrop(d);
+      });
+    }
+    /**
+     * Returns an array of DragDrop instances
+     * @type {DragDrop[]}
+     */
+    /**
+     * Define whether a user is able to begin a dragstart workflow for a given drag selector
+     * @param {string} selector       The candidate HTML selector for dragging
+     * @returns {boolean}             Can the current user drag this selector?
+     * @protected
+     */
+    _canDragStart(selector) {
+      console.log(`canDragStart`);
+      return this.isEditable;
+    }
+    /**
+     * Define whether a user is able to conclude a drag-and-drop workflow for a given drop selector
+     * @param {string} selector       The candidate HTML selector for the drop target
+     * @returns {boolean}             Can the current user drop on this selector?
+     * @protected
+     */
+    _canDragDrop(selector) {
+      console.log(`canDragDrop`);
+      return this.isEditable;
+    }
+    /**
+     * Callback actions which occur at the beginning of a drag start workflow.
+     * @param {DragEvent} event       The originating DragEvent
+     * @protected
+     */
+    _onDragStart(event) {
+      const el = event.currentTarget;
+      console.log(`Element`);
+      console.log(el);
+      if ("link" in event.target.dataset) return;
+      const itemId = el.dataset.itemId;
+      const item = this.actor.items.get(itemId);
+      if (!item) return;
+      const dragData = item.toDragData();
+      event.dataTransfer.setData("text/plain", JSON.stringify(dragData));
+    }
+    /* ---------------------------------- */
+    /**
+     * Callback actions which occur when a dragged element is over a drop target.
+     * @param {DragEvent} event       The originating DragEvent
+     * @protected
+     */
+    _onDragOver(event) {
+    }
+    /* ---------------------------------- */
+    /**
+     * Callback actions which occur when a dragged element is dropped on a target.
+     * It will call different method based on data type beeing dragged onto sheet.
+     * @param {DragEvent} event       The originating DragEvent
+     * @protected
+     */
+    async _onDrop(event) {
+      event.preventDefault();
+      const data = TextEditor$9.getDragEventData(event);
+      console.log(`onDropData`);
+      console.log(data);
+      if (!data.type) return super._onDrop(event);
+      const handlerName = `_onDrop${data.type}`;
+      if (typeof this[handlerName] === "function") {
+        return this[handlerName](event, data);
+      }
+      return super._onDrop(event);
+    }
+    /* ---------------------------------- */
+    /*    Rendering and Window Controls   */
+    /* ---------------------------------- */
     /** @inheritdoc */
     async close(options) {
       options = { animate: false };
@@ -1492,10 +1612,6 @@ function ActorSheetMixin(Base) {
       resizeHandle.innerHTML = `<svg><path d="M0,11L11,0L11,11L0,11Z"/></svg>`;
       return html;
     }
-    /** Data preparation */
-    /** DEPRECATED  */
-    async getData(options) {
-    }
     async _prepareContext(options) {
       const context = await super._prepareContext(options);
       if (!this._dropdownState) {
@@ -1505,7 +1621,6 @@ function ActorSheetMixin(Base) {
       context.cssClass = context.editable ? "editable" : this.isEditable ? "interactable" : "locked";
       return context;
     }
-    /** Event listeners and handlers */
     activateListeners(html) {
       html.querySelectorAll(".section-dropdown").forEach((sectionEl) => {
         const sectionId = sectionEl.dataset.section;
@@ -1523,6 +1638,20 @@ function ActorSheetMixin(Base) {
           this._dropdownState[sectionId] = !isCollapsed;
         });
       });
+      this.#dragDrop.forEach((d) => d.bind(this.element));
+    }
+    _onRender(context, options) {
+      super._onRender(context, options);
+      this.activateListeners(this.element);
+    }
+    _onResize(event) {
+      super._onResize(event);
+      const { width, height } = this.position;
+      const key = `${this.actor.type}${this.actor.limited ? ":limited" : ""}`;
+      game.user.setFlag("degenesis", `actorSheetPrefs.${key}`, {
+        width,
+        height
+      });
     }
     async _onChangeSheetMode(event) {
       const { MODES } = this.constructor;
@@ -1538,20 +1667,10 @@ function ActorSheetMixin(Base) {
     _disableFields(form) {
       super._disableFields(form);
     }
+    /* ---------------------------------- */
+    /*               Events               */
+    /* ---------------------------------- */
     /** Events handling */
-    _onRender(context, options) {
-      super._onRender(context, options);
-      this.activateListeners(this.element);
-    }
-    _onResize(event) {
-      super._onResize(event);
-      const { width, height } = this.position;
-      const key = `${this.actor.type}${this.actor.limited ? ":limited" : ""}`;
-      game.user.setFlag("degenesis", `actorSheetPrefs.${key}`, {
-        width,
-        height
-      });
-    }
     /** Dropdown sections handling  */
     _onDropdownToggle(event) {
       try {
@@ -1564,24 +1683,32 @@ function ActorSheetMixin(Base) {
     }
   };
 }
-const { api: api$6, sheets: sheets$6 } = foundry.applications;
+const { renderTemplate: renderTemplate$2 } = foundry.applications.handlebars;
+const { api: api$9, sheets: sheets$9 } = foundry.applications;
 const { DialogV2: DialogV2$1 } = foundry.applications.api;
-const { TextEditor: TextEditor$5 } = foundry.applications.ux;
+const { TextEditor: TextEditor$8 } = foundry.applications.ux;
+const { performIntegerSort } = foundry.utils;
 class DGNSCharacterSheet extends ActorSheetMixin(
-  sheets$6.ActorSheetV2
+  sheets$9.ActorSheetV2
 ) {
   static DEFAULT_OPTIONS = {
     actions: {
-      // data actions
-      showLinkedItem: this.showLinkedItem,
-      removeLinkedItem: this.removeLinkedItem,
-      //
-      unsetGroup: this.unsetGroup,
-      // roll actions
-      rollAction: this.#onActionRoll,
-      rollCombination: this.#onCombinationRoll,
-      // effects
-      manageEffect: this.#onManageEffect
+      /** Linked items methods  */
+      showLinkedItem: DGNSCharacterSheet.prototype.showLinkedItem,
+      removeLinkedItem: DGNSCharacterSheet.prototype.removeLinkedItem,
+      /** Inventory */
+      toggleEquipped: DGNSCharacterSheet.prototype.toggleItemProp("system.equipped"),
+      toggleDropped: DGNSCharacterSheet.prototype.toggleItemProp("system.dropped"),
+      toggleDescription: DGNSCharacterSheet.prototype.toggleDescription,
+      createItem: DGNSCharacterSheet.prototype.createItem,
+      editItem: DGNSCharacterSheet.prototype.onEditItem,
+      toggleSort: DGNSCharacterSheet.prototype.toggleSort,
+      unsetGroup: DGNSCharacterSheet.prototype.unsetGroup,
+      /** Rolls & Combat */
+      rollAction: DGNSCharacterSheet.prototype.onActionRoll,
+      rollCombination: DGNSCharacterSheet.prototype.onCombinationRoll,
+      /** Handling Effects */
+      manageEffect: DGNSCharacterSheet.prototype.onManageEffect
     },
     form: {
       submitOnChange: true
@@ -1621,8 +1748,12 @@ class DGNSCharacterSheet extends ActorSheetMixin(
       template: "systems/degenesisnext/templates/actor/character/stats.hbs",
       scrollable: [""]
     },
-    effects: {
+    /*  effects: {
       template: "systems/degenesisnext/templates/actor/character/effects.hbs",
+      scrollable: [".container-scrollable"],
+    }, */
+    effects: {
+      template: "systems/degenesisnext/templates/shared/general/effects.hbs",
       scrollable: [".container-scrollable"]
     },
     combat: {
@@ -1636,8 +1767,9 @@ class DGNSCharacterSheet extends ActorSheetMixin(
     history: {
       template: "systems/degenesisnext/templates/actor/character/history.hbs",
       templates: [
-        "systems/degenesisnext/templates/actor/character/group.hbs",
+        "systems/degenesisnext/templates/actor/character/legacies.hbs",
         "systems/degenesisnext/templates/actor/character/biography.hbs",
+        "systems/degenesisnext/templates/actor/character/group.hbs",
         "systems/degenesisnext/templates/actor/character/notes.hbs",
         "systems/degenesisnext/templates/actor/character/gmnotes.hbs"
       ],
@@ -1653,30 +1785,39 @@ class DGNSCharacterSheet extends ActorSheetMixin(
       initial: "general",
       // Set the initial tab
       tabs: [
-        { id: "general", label: "DGNS.General" },
-        { id: "stats", label: "DGNS.Stats" },
-        { id: "effects", label: "DGNS.Effects" },
-        { id: "combat", label: "DGNS.Combat" },
-        { id: "inventory", label: "DGNS.Inventory" },
-        { id: "history", label: "DGNS.History" }
+        { id: "general", label: "UI.TABS.general" },
+        { id: "stats", label: "UI.TABS.stats" },
+        { id: "effects", label: "UI.TABS.effects" },
+        { id: "combat", label: "UI.TABS.combat" },
+        { id: "inventory", label: "UI.TABS.inventory" },
+        { id: "history", label: "UI.TABS.history" }
       ]
     },
     header: {
       initial: "details",
       tabs: [
-        { id: "details", label: "DGNS.Details", icon: "" },
-        { id: "modes", label: "DGNS.Modes", icon: "" },
-        { id: "currency", label: "DGNS.Currency", icon: "" },
-        { id: "xp", label: "DGNS.Experience", icon: "" }
+        {
+          id: "details",
+          label: "UI.TABS.details",
+          icon: "fa-solid fa-circle-info"
+        },
+        { id: "modes", label: "UI.TABS.modes", icon: "fa-solid fa-brain" },
+        {
+          id: "currency",
+          label: "UI.TABS.currency",
+          icon: "fa-solid fa-coins"
+        },
+        { id: "xp", label: "UI.TABS.xp", icon: "fa-solid fa-timeline" }
       ]
     },
     history: {
       initial: "group",
       tabs: [
-        { id: "group", label: "DGNS.Group" },
-        { id: "biography", label: "DGNS.Biography" },
-        { id: "notes", label: "DGNS.Notes" },
-        { id: "gmnotes", label: "DGNS.Gmnotes" }
+        { id: "biography", label: "UI.TABS.biography" },
+        { id: "legacies", label: "UI.TABS.legacies" },
+        { id: "group", label: "UI.TABS.group" },
+        { id: "notes", label: "UI.TABS.notes" },
+        { id: "gmnotes", label: "UI.TABS.gmnotes" }
       ]
     }
   };
@@ -1691,12 +1832,15 @@ class DGNSCharacterSheet extends ActorSheetMixin(
       actor: this.actor,
       system: this.actor.system,
       flags: this.actor.flags,
+      sortMode: this.actor.getFlag("degenesisnext", "inventorySortMode") || "manual",
       actorFields: this.actor.schema.fields,
       // Simplified Data Access
       culture: this.actor.system.culture,
       concept: this.actor.system.concept,
       cult: this.actor.system.cult,
       group: this.actor.system.group,
+      potentials: this.actor._preparePotentials(),
+      legacies: this.actor._prepareLegacies(),
       inventory: this.actor._prepareInventory(),
       effects: await this.actor._prepareEffects(),
       tabGroups: this.tabGroups,
@@ -1708,16 +1852,16 @@ class DGNSCharacterSheet extends ActorSheetMixin(
       // history subtabs
       // Enriched fields
       enriched: {
-        biography: await TextEditor$5.enrichHTML(this.document.system.biography, {
+        biography: await TextEditor$8.enrichHTML(this.document.system.biography, {
           secrets: this.document.isOwner
         }),
-        ownerNotes: await TextEditor$5.enrichHTML(
+        ownerNotes: await TextEditor$8.enrichHTML(
           this.document.system.ownerNotes,
           {
             secrets: this.document.isOwner
           }
         ),
-        gmNotes: await TextEditor$5.enrichHTML(this.document.system.gmNotes, {
+        gmNotes: await TextEditor$8.enrichHTML(this.document.system.gmNotes, {
           secrets: this.document.isOwner
         })
       }
@@ -1741,19 +1885,38 @@ class DGNSCharacterSheet extends ActorSheetMixin(
   /**
    * Creating initial context menus for permanent objects
    */
+  /* ---------- Context Menus --------- */
   createContextMenus() {
     function _actionRollContextOptions() {
       return [
         {
           name: "Action roll",
           callback: async (target) => {
-            await this._onActionRoll(null, target);
+            await this.onActionRoll(null, target);
           }
         },
         {
           name: "Combination roll",
           callback: async (target) => {
-            await this._onCombinationRoll(null, target);
+            await this.onCombinationRoll(null, target);
+          }
+        }
+      ];
+    }
+    function _itemContextOptions() {
+      return [
+        {
+          name: "Edit",
+          icon: '<i class="fas fa-edit"></i>',
+          callback: async (target) => {
+            await this.onEditItem(null, target);
+          }
+        },
+        {
+          name: "Delete",
+          icon: '<i class="fas fa-trash"></i>',
+          callback: async (target) => {
+            await this.onDeleteItem(null, target);
           }
         }
       ];
@@ -1763,6 +1926,16 @@ class DGNSCharacterSheet extends ActorSheetMixin(
       `[data-action=rollAction]`,
       {
         hookName: "getActionRollContextOptions",
+        fixed: true,
+        parentClassHooks: false
+      }
+    );
+    this._createContextMenu(
+      _itemContextOptions.bind(this),
+      `[data-action=openItemMenu]`,
+      {
+        eventName: "click",
+        hookName: "getItemContextOptions",
         fixed: true,
         parentClassHooks: false
       }
@@ -1789,79 +1962,113 @@ class DGNSCharacterSheet extends ActorSheetMixin(
   _onResize(event) {
     super._onResize(event);
   }
-  async _onDrop(event) {
-    event.preventDefault();
-    const data = TextEditor$5.getDragEventData(event);
-    if (data.type === "Actor") {
-      const actor = await Actor.implementation.fromDropData(data);
-      if (actor.type === "group") {
-        await this.actor.setGroup(actor);
+  async _onDropActor(data) {
+    const actor = await Actor.implementation.fromDropData(data);
+    if (actor.type === "group") {
+      await this.actor.setGroup(actor);
+    }
+  }
+  async _onDropItem(event, data) {
+    const item = await Item.implementation.fromDropData(data);
+    if (!item) return false;
+    const targetElement = event.target.closest(".entry");
+    const targetId = targetElement?.dataset.itemId;
+    const targetItem = targetId ? this.actor.items.get(targetId) : null;
+    if (item.type === "culture" && !item.actor) {
+      await this.actor.system.setCulture(item.id);
+      return false;
+    }
+    if (item.type === "cult" && !item.actor) {
+      await this.actor.system.setCult(item.id);
+      return false;
+    }
+    if (item.type === "concept" && !item.actor) {
+      await this.actor.system.setConcept(item.id);
+      return false;
+    }
+    const isSameActor = item.actor?.id === this.actor.id;
+    const isFromSidebar = !item.actor;
+    item.actor && item.actor.id !== this.actor.id;
+    if (isSameActor) {
+      if (targetItem) {
+        if (item.id === targetItem.id) return false;
+        const sortModes = this.actor.getFlag("degenesisnext", "inventorySortModes") || {};
+        const sortMode = sortModes[targetItem.type] || "manual";
+        console.log(sortMode);
+        if (sortMode === "manual") {
+          return this._handleSort(item, targetItem);
+        } else {
+          ui.notifications.warn("Disable alphabetical sorting first. ");
+          return false;
+        }
       }
     }
-    if (data.type === "Item") {
-      const item = await Item.implementation.fromDropData(data);
-      if (item.type === "culture" && !item.actor) {
-        await this.actor.system.setCulture(item.id);
-        return false;
-      }
-      if (item.type === "cult" && !item.actor) {
-        await this.actor.system.setCult(item.id);
-        return false;
-      }
-      if (item.type === "concept" && !item.actor) {
-        await this.actor.system.setConcept(item.id);
-        return false;
-      }
+    if (isFromSidebar) {
+      return super._onDropItem(event, item);
     }
-    return super._onDrop(event);
+  }
+  /* ------- Sorting & DragNDrop ------ */
+  async _handleSort(source, target) {
+    const siblings = this.actor.items.filter(
+      (i) => i.type === target.type && i.id !== source.id
+    );
+    const sortUpdates = performIntegerSort(source, {
+      target,
+      siblings
+    });
+    const updates = sortUpdates.map((u) => ({
+      _id: u.target.id,
+      sort: u.update.sort
+    }));
+    return this.actor.updateEmbeddedDocuments("Item", updates);
   }
   //#region Effects
-  /** Static wrapper for logic. */
-  static async #onManageEffect(event, target) {
-    await this._onManageEffect(event, target);
-  }
+  /* ---------------------------------- */
+  /*               Effects              */
+  /* ---------------------------------- */
   /**
    * Manage effect on Actor's side.
    * @param {*} event
    * @param {*} target
    * @returns
    */
-  async _onManageEffect(event, target) {
+  async onManageEffect(event, target) {
     if (event) event.preventDefault();
     const action = target.dataset.type;
     const effectId = target.closest(".effect")?.dataset.effectId;
     return await this.actor._manageEffect(action, effectId);
   }
-  //#endregion
-  //#region Rolls
-  // static wrappers
-  static async #onActionRoll(event, target) {
-    await this._onActionRoll(event, target);
-  }
-  static async #onCombinationRoll(event, target) {
-    await this._onCombinationRoll(event, target);
-  }
-  async _onCombinationRoll(event, target) {
+  /* ---------------------------------- */
+  /*                Rolls               */
+  /* ---------------------------------- */
+  async onCombinationRoll(event, target) {
     if (event) event.preventDefault();
     const skill = target.dataset.skill;
     const attribute = target.dataset.attribute;
     await this.actor.combinationRoll(attribute, skill);
   }
-  // Main method to be used by click and context menu
-  async _onActionRoll(event, target) {
+  /* ---------------------------------- */
+  async onActionRoll(event, target) {
     if (event) event.preventDefault();
     const skill = target.dataset.skill;
     const attribute = target.dataset.attribute;
     await this.actor.actionRoll(attribute, skill);
   }
-  //#endregion
+  /* ---------------------------------- */
+  /* ---------------------------------- */
+  /*          Items / Inventory         */
+  /* ---------------------------------- */
+  async createItem(event, target) {
+    const itemType = target.closest("[data-item-type")?.dataset.itemType;
+    await this.actor._createItem(itemType);
+  }
   /**
    * Display linked Item, and fallback to cached one if main do not exist anymore.
    * Mainly used with Culture / Concept / Cult
    * @param {*} event
    * @param {*} target
    */
-  static async showLinkedItem(event, target) {
+  async showLinkedItem(event, target) {
     const itemType = target.dataset.itemType;
     const itemId = this.actor.system[itemType].id;
     const item = itemId === this.actor.system[`${itemType}Item`].linked.id ? game.items.get(itemId) : this.actor.items.get(itemId);
@@ -1869,22 +2076,80 @@ class DGNSCharacterSheet extends ActorSheetMixin(
       item.sheet.render(true);
     }
   }
-  static async removeLinkedItem(event, target) {
+  async onCreateItem() {
+  }
+  async onEditItem(event, target) {
+    const itemId = target.closest("[data-item-id]")?.dataset.itemId;
+    const item = this.actor.items.get(itemId);
+    if (item) item.sheet.render(true);
+  }
+  async onDeleteItem(event, target) {
+    const itemId = target.closest("[data-item-id]")?.dataset.itemId;
+    const item = this.actor.items.get(itemId);
+    if (item) item.delete();
+  }
+  async removeLinkedItem(event, target) {
     const itemType = target.dataset.itemType;
     await this.actor.system.removeLinkedItem(itemType);
   }
-  static async unsetGroup() {
+  async unsetGroup() {
     await this.actor.unsetGroup();
+  }
+  async toggleSort(event, target) {
+    const group = target.dataset.group;
+    const currentMode = this.actor.getFlag("degenesisnext", `inventorySortModes.${group}`) || "manual";
+    const newMode = currentMode === "manual" ? "alpha" : "manual";
+    await this.actor.setFlag(
+      "degenesisnext",
+      `inventorySortModes.${group}`,
+      newMode
+    );
+  }
+  toggleItemProp(propPath) {
+    return async function(event, target) {
+      const itemId = target.closest("[data-item-id]").dataset.itemId;
+      const item = this.document.items.get(itemId);
+      console.log(`Toggle item prop`);
+      console.log(item);
+      console.log(propPath);
+      const currentValue = foundry.utils.getProperty(item, propPath);
+      console.log(currentValue);
+      await item.update({ [propPath]: !currentValue });
+    };
+  }
+  async toggleDescription(event, target) {
+    const entry = target.closest(".entry.item");
+    const itemId = entry.dataset.itemId;
+    const item = this.document.items.get(itemId);
+    let existingDesc = entry.nextElementSibling;
+    if (existingDesc?.classList.contains("entry-description-dropdown")) {
+      existingDesc.remove();
+      return;
+    }
+    const templateData = {
+      description: await TextEditor$8.enrichHTML(item.system.description, {
+        async: true
+      }),
+      item
+    };
+    const html = await renderTemplate$2(
+      "systems/degenesisnext/templates/shared/item/dropdown.hbs",
+      templateData
+    );
+    entry.insertAdjacentHTML(
+      "afterend",
+      `<div class="entry entry-description-dropdown" data-item-id="${itemId}">${html}</div>`
+    );
   }
   /*  changeTab(tab, group, options) {
     super.changeTab(tab, group, options);
   } */
 }
-const { api: api$5, sheets: sheets$5 } = foundry.applications;
+const { api: api$8, sheets: sheets$8 } = foundry.applications;
 const { DialogV2 } = foundry.applications.api;
-const { TextEditor: TextEditor$4 } = foundry.applications.ux;
+const { TextEditor: TextEditor$7 } = foundry.applications.ux;
 class DGNSGroupSheet extends ActorSheetMixin(
-  sheets$5.ActorSheetV2
+  sheets$8.ActorSheetV2
 ) {
   static DEFAULT_OPTIONS = {
     actions: {},
@@ -1989,9 +2254,9 @@ const _module$3 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePro
   DGNSCharacterSheet,
   DGNSGroupSheet
 }, Symbol.toStringTag, { value: "Module" }));
-const { api: api$4, sheets: sheets$4 } = foundry.applications;
+const { api: api$7, sheets: sheets$7 } = foundry.applications;
 function ItemSheetMixin(Base) {
-  return class DGNSItemSheet extends api$4.HandlebarsApplicationMixin(Base) {
+  return class DGNSItemSheet extends api$7.HandlebarsApplicationMixin(Base) {
     static TABS = [];
     static MODES = {
       PLAY: 1,
@@ -2168,11 +2433,11 @@ function BackgroundSheetMixin(Base) {
     }
   };
 }
-const { api: api$3, sheets: sheets$3 } = foundry.applications;
-const { TextEditor: TextEditor$3 } = foundry.applications.ux;
+const { api: api$6, sheets: sheets$6 } = foundry.applications;
+const { TextEditor: TextEditor$6 } = foundry.applications.ux;
 const { FilePicker: FilePicker$4 } = foundry.applications.apps;
 class DegenesisWeaponSheet extends ItemSheetMixin(
-  sheets$3.ItemSheetV2
+  sheets$6.ItemSheetV2
 ) {
   static DEFAULT_OPTIONS = {
     actions: {
@@ -2216,6 +2481,10 @@ class DegenesisWeaponSheet extends ItemSheetMixin(
       template: "systems/degenesisnext/templates/item/weapon/qualities.hbs",
       scrollable: [""]
     },
+    modifications: {
+      template: "systems/degenesisnext/templates/item/weapon/modifications.hbs",
+      scrollable: [""]
+    },
     effects: {
       template: "systems/degenesisnext/templates/shared/item/tab.effects.hbs",
       scrollable: [""]
@@ -2233,7 +2502,7 @@ class DegenesisWeaponSheet extends ItemSheetMixin(
         { id: "details", label: "DGNS.Details" },
         { id: "effects", label: "DGNS.Effects" },
         { id: "qualities", label: "DGNS.Qualities" },
-        { id: "mods", label: "DGNS.Mods" }
+        { id: "modifications", label: "DGNS.Mods" }
       ]
     }
   };
@@ -2269,12 +2538,13 @@ class DegenesisWeaponSheet extends ItemSheetMixin(
         };
       }),
       effects: await this.item._prepareEffects(),
+      modifications: this.document.system.modifications,
       // Tabs
       tabGroups: this.tabGroups,
       mainTabs: this._prepareTabs("main"),
       // main navigation groups
       enriched: {
-        description: await TextEditor$3.enrichHTML(
+        description: await TextEditor$6.enrichHTML(
           this.document.system.description
         )
       }
@@ -2331,6 +2601,274 @@ class DegenesisWeaponSheet extends ItemSheetMixin(
       value
     );
   }
+}
+const { api: api$5, sheets: sheets$5 } = foundry.applications;
+const { TextEditor: TextEditor$5 } = foundry.applications.ux;
+class DegenesisModificationSheet extends ItemSheetMixin(
+  sheets$5.ItemSheetV2
+) {
+  static DEFAULT_OPTIONS = {
+    actions: {},
+    form: { submitOnChange: true },
+    window: { controls: [], resizable: true, frame: true },
+    position: { width: 600, height: 600 },
+    classes: ["dgns-modification", "dgns-item"]
+  };
+  static PARTS = {
+    sheetTitle: {
+      template: "systems/degenesisnext/templates/shared/sheet/title.bar.hbs"
+    },
+    header: {
+      template: "systems/degenesisnext/templates/item/modification/header.hbs"
+    },
+    tabs: {
+      template: "systems/degenesisnext/templates/shared/item/tabs.hbs",
+      scrollable: [""]
+    },
+    description: {
+      template: "systems/degenesisnext/templates/shared/item/tab.description.hbs",
+      scrollable: [""]
+    },
+    effects: {
+      template: "systems/degenesisnext/templates/shared/item/tab.effects.hbs",
+      scrollable: [""]
+    },
+    qualities: {
+      template: "systems/degenesisnext/templates/item/modification/qualities.hbs",
+      scrollable: [""]
+    },
+    sheetFooter: {
+      template: "systems/degenesisnext/templates/shared/sheet/footer.hbs"
+    }
+  };
+  static TABS = {
+    main: {
+      initial: "description",
+      // Set the initial tab
+      tabs: [
+        { id: "description", label: "DGNS.Description" },
+        // { id: "details", label: "DGNS.Details" },
+        { id: "effects", label: "DGNS.Effects" },
+        { id: "qualities", label: "DGNS.Qualities" }
+      ]
+    }
+  };
+  /* ---------------------------------- */
+  /*               Context              */
+  /* ---------------------------------- */
+  async _prepareContext(options) {
+    const context = await super._prepareContext(options);
+    const availableQualities = Qualities.modification;
+    Object.assign(context, {
+      mode: this._mode,
+      document: this.document,
+      system: this.document.system,
+      fields: this.document.schema.fields,
+      systemFields: this.document.system.schema.fields,
+      isEditable: this.isEditable,
+      // System data
+      // * idea: make qualities avaiable based on modification basic type (melee, armor etc)
+      qualities: availableQualities.map((def) => {
+        const data = this.document.system.qualities.find(
+          (q) => q.key === def.key
+        );
+        return {
+          key: def.key,
+          label: def.label,
+          description: def.description,
+          // Jeśli nie ma w bazie, domyślnie jest wyłączona (false)
+          enabled: data ? data.enabled : false,
+          // Mapujemy inputy, wstrzykując aktualne wartości z bazy lub defaulty
+          inputs: (def.inputs || []).map((input) => ({
+            ...input,
+            value: data?.values?.[input.name] ?? input.default
+          }))
+        };
+      }),
+      effects: await this.item._prepareEffects(),
+      // Tabs
+      tabGroups: this.tabGroups,
+      mainTabs: this._prepareTabs("main"),
+      // main navigation groups
+      enriched: {
+        description: await TextEditor$5.enrichHTML(
+          this.document.system.description
+        )
+      }
+    });
+    console.log(`Modification Sheet | Context`);
+    console.log(context);
+    console.log(`Modification Sheet | Qualities`);
+    console.log(context.system.qualities);
+    return context;
+  }
+  async _preparePartContext(partId, context, options) {
+    if (context.mainTabs?.[partId]) {
+      context.tab = context.mainTabs[partId];
+    }
+    return context;
+  }
+  /**
+   * Format window title.
+   */
+  get title() {
+    return `${this.document.name}`;
+  }
+  /* ---------------------------------- */
+  /*              Listeners             */
+  /* ---------------------------------- */
+}
+const { api: api$4, sheets: sheets$4 } = foundry.applications;
+const { TextEditor: TextEditor$4 } = foundry.applications.ux;
+class DegenesisPotentialSheet extends ItemSheetMixin(
+  sheets$4.ItemSheetV2
+) {
+  static DEFAULT_OPTIONS = {
+    actions: {},
+    form: { submitOnChange: true },
+    window: { controls: [], resizable: true, frame: true },
+    position: { width: 600, height: 600 },
+    classes: ["dgns-legacy", "dgns-item"]
+  };
+  static PARTS = {
+    sheetTitle: {
+      template: "systems/degenesisnext/templates/shared/sheet/title.hbs"
+    },
+    sheetFooter: {
+      template: "systems/degenesisnext/templates/shared/sheet/footer.hbs"
+    }
+  };
+  static TABS = {
+    main: {
+      initial: "description",
+      // Set the initial tab
+      tabs: [
+        { id: "description", label: "DGNS.Description" },
+        // { id: "details", label: "DGNS.Details" },
+        { id: "effects", label: "DGNS.Effects" },
+        { id: "qualities", label: "DGNS.Qualities" }
+      ]
+    }
+  };
+  /* ---------------------------------- */
+  /*               Context              */
+  /* ---------------------------------- */
+  async _prepareContext(options) {
+    const context = await super._prepareContext(options);
+    Object.assign(context, {
+      mode: this._mode,
+      document: this.document,
+      system: this.document.system,
+      fields: this.document.schema.fields,
+      systemFields: this.document.system.schema.fields,
+      isEditable: this.isEditable,
+      // System data
+      // * idea: make qualities avaiable based on modification basic type (melee, armor etc)
+      effects: await this.item._prepareEffects(),
+      // Tabs
+      tabGroups: this.tabGroups,
+      mainTabs: this._prepareTabs("main"),
+      // main navigation groups
+      enriched: {
+        description: await TextEditor$4.enrichHTML(
+          this.document.system.description
+        )
+      }
+    });
+    return context;
+  }
+  async _preparePartContext(partId, context, options) {
+    if (context.mainTabs?.[partId]) {
+      context.tab = context.mainTabs[partId];
+    }
+    return context;
+  }
+  /**
+   * Format window title.
+   */
+  get title() {
+    const itemType = game.i18n.localize(this.document.type);
+    return `${itemType}: ${this.document.name}`;
+  }
+  /* ---------------------------------- */
+  /*              Listeners             */
+  /* ---------------------------------- */
+}
+const { api: api$3, sheets: sheets$3 } = foundry.applications;
+const { TextEditor: TextEditor$3 } = foundry.applications.ux;
+class DegenesisLegacySheet extends ItemSheetMixin(
+  sheets$3.ItemSheetV2
+) {
+  static DEFAULT_OPTIONS = {
+    actions: {},
+    form: { submitOnChange: true },
+    window: { controls: [], resizable: true, frame: true },
+    position: { width: 600, height: 600 },
+    classes: ["dgns-legacy", "dgns-item"]
+  };
+  static PARTS = {
+    sheetTitle: {
+      template: "systems/degenesisnext/templates/shared/sheet/title.hbs"
+    },
+    sheetFooter: {
+      template: "systems/degenesisnext/templates/shared/sheet/footer.hbs"
+    }
+  };
+  static TABS = {
+    main: {
+      initial: "description",
+      // Set the initial tab
+      tabs: [
+        { id: "description", label: "DGNS.Description" },
+        // { id: "details", label: "DGNS.Details" },
+        { id: "effects", label: "DGNS.Effects" },
+        { id: "qualities", label: "DGNS.Qualities" }
+      ]
+    }
+  };
+  /* ---------------------------------- */
+  /*               Context              */
+  /* ---------------------------------- */
+  async _prepareContext(options) {
+    const context = await super._prepareContext(options);
+    Object.assign(context, {
+      mode: this._mode,
+      document: this.document,
+      system: this.document.system,
+      fields: this.document.schema.fields,
+      systemFields: this.document.system.schema.fields,
+      isEditable: this.isEditable,
+      // System data
+      // * idea: make qualities avaiable based on modification basic type (melee, armor etc)
+      effects: await this.item._prepareEffects(),
+      // Tabs
+      tabGroups: this.tabGroups,
+      mainTabs: this._prepareTabs("main"),
+      // main navigation groups
+      enriched: {
+        description: await TextEditor$3.enrichHTML(
+          this.document.system.description
+        )
+      }
+    });
+    return context;
+  }
+  async _preparePartContext(partId, context, options) {
+    if (context.mainTabs?.[partId]) {
+      context.tab = context.mainTabs[partId];
+    }
+    return context;
+  }
+  /**
+   * Format window title.
+   */
+  get title() {
+    const itemType = game.i18n.localize(this.document.type);
+    return `${itemType}: ${this.document.name}`;
+  }
+  /* ---------------------------------- */
+  /*              Listeners             */
+  /* ---------------------------------- */
 }
 const { api: api$2, sheets: sheets$2 } = foundry.applications;
 const { TextEditor: TextEditor$2 } = foundry.applications.ux;
@@ -2727,6 +3265,9 @@ const _module$2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePro
   DGNSConceptSheet: DegenesisConceptSheet,
   DGNSCultSheet: DegenesisCultSheet,
   DGNSCultureSheet: DegenesisCultureSheet,
+  DGNSLegacySheet: DegenesisLegacySheet,
+  DGNSModificationSheet: DegenesisModificationSheet,
+  DGNSPotentialSheet: DegenesisPotentialSheet,
   DGNSWeaponSheet: DegenesisWeaponSheet,
   ItemSheetMixin
 }, Symbol.toStringTag, { value: "Module" }));
@@ -2981,80 +3522,18 @@ class CheckboxElement extends StyleSheetMixin(
   }
 }
 const icons$1 = {
-  0: `<svg width="48" height="48" viewBox="0 0 512 512">
-    <g style="display:inline">
-        <path style="display:inline;fill:#000;fill-opacity:1;stroke:#fff;stroke-width:6.36819;stroke-opacity:1" d="M94.244 262.83s-7.901 7.176 0 15.219c0 0 64 60.292 130.927 76.878 0 0 49.212 15.117 104.78-13.073 0 0 45.464-17.952 93.659-61.074 0 0 12.292-8.585.39-19.902 0 0-48.39-48-105.17-67.707 0 0-56.976-21.073-111.22-2.147 0 0-50.537 13.464-113.366 71.805z"/>
-        <path style="display:inline;fill:#fff;fill-opacity:1;stroke:#000;stroke-width:6.36819;stroke-opacity:1" d="M124.098 262.049s-11.903 8.39-.196 15.22c0 0 38.244 34.146 76.098 48.194 0 0 51.122 25.561 117.268.78 0 0 43.903-16.194 77.269-47.414 0 0 15.22-4.878-.196-19.512 0 0-37.853-29.854-73.17-44.878 0 0-62.83-25.56-112.586-3.122 0 0-46.244 15.024-84.487 50.732z"/>
-        <path style="display:inline;fill:#fff;fill-opacity:1;stroke:#000;stroke-width:6.36819;stroke-opacity:1" d="M325.205 266.32a64.683 64.683 0 0 1-61.742 67.47 64.683 64.683 0 0 1-67.495-61.715 64.683 64.683 0 0 1 61.687-67.52 64.683 64.683 0 0 1 67.546 61.659"/>
-        <path style="display:inline;fill:#000;fill-opacity:1;stroke:#000;stroke-width:6.36819;stroke-opacity:1" d="M284.465 268.711a23.707 23.707 0 0 1-22.63 24.729 23.707 23.707 0 0 1-24.738-22.62 23.707 23.707 0 0 1 22.61-24.747 23.707 23.707 0 0 1 24.756 22.6"/>
-        <path style="fill:#000;fill-opacity:1;stroke:#000;stroke-width:1.923;stroke-opacity:1" d="M213.284 249.497s1.626 9.164 5.912 2.66c0 0 5.026-13.894 16.555-20.988 0 0 7.094-7.39-3.843-5.765 0 0-18.033 10.938-18.624 24.093zM305.656 292.36s-1.1-9.242-5.75-2.994c0 0-5.812 13.584-17.728 20.008 0 0-7.505 6.973 3.508 5.975 0 0 18.628-9.89 19.97-22.989z"/>
-        <path style="display:inline;fill:none;stroke:#fff;stroke-width:6.19509;stroke-opacity:1" d="M121.325 270.135s127.374 143.321 277.754.008"/>
-        <path style="display:inline;fill:none;stroke:#fff;stroke-width:6.19509;stroke-opacity:1" d="M104.126 284.547s145.29-183.174 312.17 1.145"/>
-    </g>
-</svg>`,
-  1: `<svg width="48" height="48" viewBox="0 0 512 512">
-    <g style="display:inline">
-        <path style="display:inline;fill:#000;fill-opacity:1;stroke:#fff;stroke-width:6.36819;stroke-opacity:1" d="M93.858 262.383s-7.901 7.176 0 15.22c0 0 64 60.292 130.927 76.877 0 0 49.212 15.117 104.78-13.073 0 0 45.463-17.951 93.659-61.073 0 0 12.292-8.586.39-19.903 0 0-48.39-48-105.17-67.707 0 0-56.977-21.073-111.22-2.146 0 0-50.537 13.463-113.366 71.805z" transform="translate(.592 -.32)"/>
-        <path style="display:inline;fill:#fff;fill-opacity:1;stroke:#000;stroke-width:5.51662;stroke-opacity:1" d="M123.69 263.292s-11.938 6.278-.196 11.387c0 0 38.359 25.548 76.326 36.06 0 0 51.275 19.124 117.62.584 0 0 44.034-12.118 77.5-35.476 0 0 15.265-3.65-.195-14.599 0 0-37.968-22.336-73.39-33.577 0 0-63.018-19.124-112.924-2.336 0 0-46.382 11.241-84.74 37.957z" transform="translate(.592 -.32)"/>
-        <path style="display:inline;fill:#fff;fill-opacity:1;stroke:#000;stroke-width:6.36819;stroke-opacity:1" d="M325.205 266.32a64.683 64.683 0 0 1-61.742 67.47 64.683 64.683 0 0 1-67.495-61.715 64.683 64.683 0 0 1 61.687-67.52 64.683 64.683 0 0 1 67.546 61.659" transform="translate(.592 -.32)"/>
-        <path style="display:inline;fill:#000;fill-opacity:1;stroke:#000;stroke-width:6.36819;stroke-opacity:1" d="M284.465 268.711a23.707 23.707 0 0 1-22.63 24.729 23.707 23.707 0 0 1-24.738-22.62 23.707 23.707 0 0 1 22.61-24.747 23.707 23.707 0 0 1 24.756 22.6" transform="translate(.592 -.32)"/>
-        <path style="fill:#000;fill-opacity:1;stroke:#000;stroke-width:1.923;stroke-opacity:1" d="M213.284 249.497s1.626 9.164 5.912 2.66c0 0 5.026-13.894 16.555-20.988 0 0 7.094-7.39-3.843-5.765 0 0-18.033 10.938-18.624 24.093zM305.656 292.36s-1.1-9.242-5.75-2.994c0 0-5.812 13.584-17.728 20.008 0 0-7.505 6.973 3.508 5.975 0 0 18.628-9.89 19.97-22.989z" transform="translate(.592 -.32)"/>
-        <path style="fill:#000;fill-opacity:1;stroke:#000;stroke-width:1.54415;stroke-opacity:1" d="M196.971 225.62s75.049-9.364 128.155-.204l-8.904-25.85-59.784-5.088-51.835 12.212z" transform="translate(.592 -.32)"/>
-        <path style="fill:#000;fill-opacity:1;stroke:#000;stroke-width:1.54172;stroke-opacity:1" d="M197.187 310.905s52.157 11.767 127.21-.406l-14.947 21.708-75.372 5.073z" transform="translate(.592 -.32)"/>
-        <path style="display:inline;fill:none;stroke:#fff;stroke-width:6.19509;stroke-opacity:1" d="M120.933 269.35s131.926 104.049 277.987.392"/>
-        <path style="display:inline;fill:none;stroke:#fff;stroke-width:6.19509;stroke-opacity:1" d="M101.977 281.578s145.93-137.177 316.89 1.446"/>
-    </g>
-</svg>
-`,
-  2: `<svg width="48" height="48" viewBox="0 0 512 512">
-    <g style="display:inline">
-        <path style="display:inline;fill:#000;fill-opacity:1;stroke:#fff;stroke-width:6.36819;stroke-opacity:1" d="M94.037 263.131s-7.9 7.177 0 15.22c0 0 64 60.292 130.927 76.878 0 0 49.212 15.117 104.78-13.073 0 0 45.464-17.952 93.66-61.073 0 0 12.292-8.586.39-19.903 0 0-48.39-48-105.171-67.707 0 0-56.976-21.073-111.22-2.147 0 0-50.536 13.464-113.366 71.805z" transform="translate(4.964 -3.906)"/>
-        <path style="display:inline;fill:#fff;fill-opacity:1;stroke:#000;stroke-width:4.84134;stroke-opacity:1" d="M123.367 264.59s-11.966 4.823-.196 8.749c0 0 38.45 19.63 76.507 27.706 0 0 51.396 14.694 117.898.449 0 0 44.139-9.31 77.684-27.258 0 0 15.301-2.804-.196-11.217 0 0-38.057-17.162-73.564-25.799 0 0-63.167-14.694-113.19-1.794 0 0-46.493 8.637-84.943 29.164z" transform="translate(4.964 -3.906)"/>
-        <path style="display:inline;fill:#fff;fill-opacity:1;stroke:#000;stroke-width:6.36819;stroke-opacity:1" d="M325.205 266.32a64.683 64.683 0 0 1-61.742 67.47 64.683 64.683 0 0 1-67.495-61.715 64.683 64.683 0 0 1 61.687-67.52 64.683 64.683 0 0 1 67.546 61.659" transform="translate(4.964 -3.906)"/>
-        <path style="display:inline;fill:#000;fill-opacity:1;stroke:#000;stroke-width:6.36819;stroke-opacity:1" d="M284.465 268.711a23.707 23.707 0 0 1-22.63 24.729 23.707 23.707 0 0 1-24.738-22.62 23.707 23.707 0 0 1 22.61-24.747 23.707 23.707 0 0 1 24.756 22.6" transform="translate(4.964 -3.906)"/>
-        <path style="fill:#000;fill-opacity:1;stroke:#000;stroke-width:1.923;stroke-opacity:1" d="M213.284 249.497s1.626 9.164 5.912 2.66c0 0 5.026-13.894 16.555-20.988 0 0 7.094-7.39-3.843-5.765 0 0-18.033 10.938-18.624 24.093zM305.656 292.36s-1.1-9.242-5.75-2.994c0 0-5.812 13.584-17.728 20.008 0 0-7.505 6.973 3.508 5.975 0 0 18.628-9.89 19.97-22.989z" transform="translate(4.964 -3.906)"/>
-        <path style="fill:#000;fill-opacity:1;stroke:#000;stroke-width:1.76492;stroke-opacity:1" d="M197.15 237.421s74.88-12.259 127.867-.266l-8.884-33.845-59.65-6.663-51.718 15.99z" transform="translate(4.964 -3.906)"/>
-        <path style="fill:#000;fill-opacity:1;stroke:#000;stroke-width:1.8381;stroke-opacity:1" d="M197.378 299.572s52.001 16.776 126.832-.579l-14.902 30.95-75.148 7.231z" transform="translate(4.964 -3.906)"/>
-        <path style="display:inline;fill:none;stroke:#fff;stroke-width:6.19509;stroke-opacity:1" d="M125.644 264.245s125.303 85.038 280.002-.164"/>
-        <path style="display:inline;fill:none;stroke:#fff;stroke-width:6.19509;stroke-opacity:1" d="M103.142 276.68s138.829-110.156 325.01-.9"/>
-    </g>
-</svg>
-`,
-  3: `<svg width="48" height="48" viewBox="0 0 512 512" >
-    <g style="display:inline">
-        <path style="display:inline;fill:#000;fill-opacity:1;stroke:#fff;stroke-width:6.36819;stroke-opacity:1" d="M95.418 262.37s-7.9 7.177 0 15.22c0 0 64 60.292 130.927 76.877 0 0 49.212 15.117 104.78-13.073 0 0 45.464-17.951 93.659-61.073 0 0 12.293-8.585.39-19.903 0 0-48.39-48-105.17-67.707 0 0-56.976-21.073-111.22-2.146 0 0-50.537 13.463-113.366 71.805z" transform="translate(5.44 -1.314)"/>
-        <path style="display:inline;fill:#fff;fill-opacity:1;stroke:#000;stroke-width:3.91754;stroke-opacity:1" d="M122.924 263.87s-12.006 3.147-.197 5.71c0 0 38.574 12.81 76.755 18.082 0 0 51.563 9.59 118.281.293 0 0 44.282-6.077 77.936-17.79 0 0 15.351-1.83-.197-7.32 0 0-38.18-11.202-73.803-16.839 0 0-63.372-8.63-113.558-.21 0 0-46.643 4.676-85.217 18.073z" transform="translate(5.44 -1.314)"/>
-        <path style="display:inline;fill:#fff;fill-opacity:1;stroke:#000;stroke-width:6.36819;stroke-opacity:1" d="M325.205 266.32a64.683 64.683 0 0 1-61.742 67.47 64.683 64.683 0 0 1-67.495-61.715 64.683 64.683 0 0 1 61.687-67.52 64.683 64.683 0 0 1 67.546 61.659" transform="translate(5.44 -1.314)"/>
-        <path style="display:inline;fill:#000;fill-opacity:1;stroke:#000;stroke-width:6.36819;stroke-opacity:1" d="M284.465 268.711a23.707 23.707 0 0 1-22.63 24.729 23.707 23.707 0 0 1-24.738-22.62 23.707 23.707 0 0 1 22.61-24.747 23.707 23.707 0 0 1 24.756 22.6" transform="translate(5.44 -1.314)"/>
-        <path style="fill:#000;fill-opacity:1;stroke:#000;stroke-width:1.923;stroke-opacity:1" d="M213.284 249.497s1.626 9.164 5.912 2.66c0 0 5.026-13.894 16.555-20.988 0 0 7.094-7.39-3.843-5.765 0 0-18.033 10.938-18.624 24.093zM305.656 292.36s-1.1-9.242-5.75-2.994c0 0-5.812 13.584-17.728 20.008 0 0-7.505 6.973 3.508 5.975 0 0 18.628-9.89 19.97-22.989z" transform="translate(5.44 -1.314)"/>
-        <path style="fill:#000;fill-opacity:1;stroke:#000;stroke-width:1.97234;stroke-opacity:1" d="M193.117 251.639s74.727-15.341 127.606-.334l-8.866-42.355-59.529-8.337-51.612 20.01z" transform="translate(5.44 -1.314)"/>
-        <path style="fill:#000;fill-opacity:1;stroke:#000;stroke-width:2.11782;stroke-opacity:1" d="M197.555 287.007s51.857 22.333 126.482-.77l-14.862 41.2-74.94 9.626z" transform="translate(5.44 -1.314)"/>
-        <path style="display:inline;fill:none;stroke:#fff;stroke-width:6.19509;stroke-opacity:1" d="M125.836 265.215s126.836 60.898 279.066.082"/>
-        <path style="display:inline;fill:none;stroke:#fff;stroke-width:6.19509;stroke-opacity:1" d="M99.84 273.103s165.076-60.739 333.46 1.562"/>
-    </g>
-</svg>
-`,
-  4: `<svg width="48" height="48" viewBox="0 0 512 512">
-    <g style="display:inline">
-        <path style="display:inline;fill:#000;fill-opacity:1;stroke:#fff;stroke-width:6.36819;stroke-opacity:1" d="M92.782 263.395s-7.901 7.177 0 15.22c0 0 64 60.292 130.927 76.878 0 0 49.212 15.117 104.78-13.073 0 0 45.464-17.952 93.659-61.073 0 0 12.292-8.586.39-19.903 0 0-48.39-48-105.17-67.707 0 0-56.976-21.073-111.22-2.147 0 0-50.537 13.464-113.366 71.805z" transform="translate(4.337 -2.81)"/>
-        <path style="display:inline;fill:#fff;fill-opacity:1;stroke:#000;stroke-width:2.39967;stroke-opacity:1" d="M122.197 267.061s-12.069 1.175-.198 2.132c0 0 38.78 4.781 77.162 6.749 0 0 51.837 3.58 118.908.109 0 0 44.517-2.268 78.35-6.64 0 0 15.432-.683-.199-2.732 0 0-38.383-4.18-74.194-6.285 0 0-63.708-3.579-114.16-.437 0 0-46.89 2.104-85.669 7.104z" transform="translate(4.337 -2.81)"/>
-        <path style="display:inline;fill:#fff;fill-opacity:1;stroke:#000;stroke-width:6.36819;stroke-opacity:1" d="M325.205 266.32a64.683 64.683 0 0 1-61.742 67.47 64.683 64.683 0 0 1-67.495-61.715 64.683 64.683 0 0 1 61.687-67.52 64.683 64.683 0 0 1 67.546 61.659" transform="translate(4.337 -2.81)"/>
-        <path style="display:inline;fill:#000;fill-opacity:1;stroke:#000;stroke-width:6.36819;stroke-opacity:1" d="M284.465 268.711a23.707 23.707 0 0 1-22.63 24.729 23.707 23.707 0 0 1-24.738-22.62 23.707 23.707 0 0 1 22.61-24.747 23.707 23.707 0 0 1 24.756 22.6" transform="translate(4.337 -2.81)"/>
-        <path style="fill:#000;fill-opacity:1;stroke:#000;stroke-width:1.923;stroke-opacity:1" d="M213.284 249.497s1.626 9.164 5.912 2.66c0 0 5.026-13.894 16.555-20.988 0 0 7.094-7.39-3.843-5.765 0 0-18.033 10.938-18.624 24.093zM305.656 292.36s-1.1-9.242-5.75-2.994c0 0-5.812 13.584-17.728 20.008 0 0-7.505 6.973 3.508 5.975 0 0 18.628-9.89 19.97-22.989z" transform="translate(4.337 -2.81)"/>
-        <path style="fill:#000;fill-opacity:1;stroke:#000;stroke-width:2.19714;stroke-opacity:1" d="M196.972 260.607s72.663-4.505 127.327 1.486l-8.846-52.675-59.398-10.37-51.5 24.887z" transform="translate(4.337 -2.81)"/>
-        <path style="fill:#000;fill-opacity:1;stroke:#000;stroke-width:2.33045;stroke-opacity:1" d="M196.154 275.927s56.458 5.26 127.695-.619l-14.818 50.035-87.394 13.592z" transform="translate(4.337 -2.81)"/>
-        <path style="display:inline;fill:none;stroke:#fff;stroke-width:6.19509;stroke-opacity:1" d="M125.654 264.442s132.244 25.842 278.077-.286"/>
-        <path style="display:inline;fill:none;stroke:#fff;stroke-width:6.19508;stroke-opacity:1" d="M95.552 269.959s126.156-31.722 335.132-2.245"/>
-    </g>
-</svg>
-`
+  0: "di di-discomfort0",
+  1: "di di-discomfort1",
+  2: "di di-discomfort2",
+  3: "di di-discomfort3",
+  4: "di di-discomfort4"
 };
 const discomfort = [
-  { value: 0, icon: icons$1[0] },
-  { value: 1, icon: icons$1[1] },
-  { value: 2, icon: icons$1[2] },
-  { value: 3, icon: icons$1[3] },
-  { value: 4, icon: icons$1[4] }
+  { value: 0, icon: icons$1[0], tooltip: "0" },
+  { value: 1, icon: icons$1[1], tooltip: "-1" },
+  { value: 2, icon: icons$1[2], tooltip: "-2" },
+  { value: 3, icon: icons$1[3], tooltip: "-3" },
+  { value: 4, icon: icons$1[4], tooltip: "-4" }
 ];
 class DiscomfortElement extends StyleSheetMixin(
   foundry.applications.elements.AbstractFormInputElement
@@ -3141,7 +3620,7 @@ class DiscomfortElement extends StyleSheetMixin(
     const container = document.createElement("div");
     const button = document.createElement("button");
     button.setAttribute("id", "discomfortButton");
-    button.innerHTML = icons$1[this.value];
+    button.innerHTML = `<i class="${icons$1[this.value]}"></i>`;
     const dropdown = document.createElement("div");
     dropdown.setAttribute("id", "discomfortDropdown");
     dropdown.classList.add("discomfort-dropdown");
@@ -3149,7 +3628,11 @@ class DiscomfortElement extends StyleSheetMixin(
       const item = document.createElement("div");
       item.className = "discomfort-dropdown-item";
       item.setAttribute("data-value", discomfort2.value);
-      item.innerHTML = discomfort2.icon;
+      const malus = document.createElement("label");
+      malus.className = "discomfort-malus";
+      malus.textContent = discomfort2.tooltip;
+      item.innerHTML = `<i class="${discomfort2.icon}"></i>`;
+      item.appendChild(malus);
       item.addEventListener("click", (ev) => {
         let selection = ev.target.closest("div");
         let newValue = selection.getAttribute("data-value");
@@ -3190,7 +3673,7 @@ class DiscomfortElement extends StyleSheetMixin(
     } else {
       dropdown = this.firstChild.lastChild;
     }
-    dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+    dropdown.classList.toggle("active");
   }
 }
 class SlideToggleElement extends CheckboxElement {
@@ -3233,73 +3716,11 @@ class SlideToggleElement extends CheckboxElement {
   }
 }
 const icons = {
-  0: `<svg width="48" height="48" viewBox="0 0 512 512">
-    <g style="display:inline">
-        <path style="display:inline;fill:#000;fill-opacity:1;stroke:#fff;stroke-width:6.36819;stroke-opacity:1" d="M94.244 262.83s-7.901 7.176 0 15.219c0 0 64 60.292 130.927 76.878 0 0 49.212 15.117 104.78-13.073 0 0 45.464-17.952 93.659-61.074 0 0 12.292-8.585.39-19.902 0 0-48.39-48-105.17-67.707 0 0-56.976-21.073-111.22-2.147 0 0-50.537 13.464-113.366 71.805z"/>
-        <path style="display:inline;fill:#fff;fill-opacity:1;stroke:#000;stroke-width:6.36819;stroke-opacity:1" d="M124.098 262.049s-11.903 8.39-.196 15.22c0 0 38.244 34.146 76.098 48.194 0 0 51.122 25.561 117.268.78 0 0 43.903-16.194 77.269-47.414 0 0 15.22-4.878-.196-19.512 0 0-37.853-29.854-73.17-44.878 0 0-62.83-25.56-112.586-3.122 0 0-46.244 15.024-84.487 50.732z"/>
-        <path style="display:inline;fill:#fff;fill-opacity:1;stroke:#000;stroke-width:6.36819;stroke-opacity:1" d="M325.205 266.32a64.683 64.683 0 0 1-61.742 67.47 64.683 64.683 0 0 1-67.495-61.715 64.683 64.683 0 0 1 61.687-67.52 64.683 64.683 0 0 1 67.546 61.659"/>
-        <path style="display:inline;fill:#000;fill-opacity:1;stroke:#000;stroke-width:6.36819;stroke-opacity:1" d="M284.465 268.711a23.707 23.707 0 0 1-22.63 24.729 23.707 23.707 0 0 1-24.738-22.62 23.707 23.707 0 0 1 22.61-24.747 23.707 23.707 0 0 1 24.756 22.6"/>
-        <path style="fill:#000;fill-opacity:1;stroke:#000;stroke-width:1.923;stroke-opacity:1" d="M213.284 249.497s1.626 9.164 5.912 2.66c0 0 5.026-13.894 16.555-20.988 0 0 7.094-7.39-3.843-5.765 0 0-18.033 10.938-18.624 24.093zM305.656 292.36s-1.1-9.242-5.75-2.994c0 0-5.812 13.584-17.728 20.008 0 0-7.505 6.973 3.508 5.975 0 0 18.628-9.89 19.97-22.989z"/>
-        <path style="display:inline;fill:none;stroke:#fff;stroke-width:6.19509;stroke-opacity:1" d="M121.325 270.135s127.374 143.321 277.754.008"/>
-        <path style="display:inline;fill:none;stroke:#fff;stroke-width:6.19509;stroke-opacity:1" d="M104.126 284.547s145.29-183.174 312.17 1.145"/>
-    </g>
-</svg>`,
-  1: `<svg width="48" height="48" viewBox="0 0 512 512">
-    <g style="display:inline">
-        <path style="display:inline;fill:#000;fill-opacity:1;stroke:#fff;stroke-width:6.36819;stroke-opacity:1" d="M93.858 262.383s-7.901 7.176 0 15.22c0 0 64 60.292 130.927 76.877 0 0 49.212 15.117 104.78-13.073 0 0 45.463-17.951 93.659-61.073 0 0 12.292-8.586.39-19.903 0 0-48.39-48-105.17-67.707 0 0-56.977-21.073-111.22-2.146 0 0-50.537 13.463-113.366 71.805z" transform="translate(.592 -.32)"/>
-        <path style="display:inline;fill:#fff;fill-opacity:1;stroke:#000;stroke-width:5.51662;stroke-opacity:1" d="M123.69 263.292s-11.938 6.278-.196 11.387c0 0 38.359 25.548 76.326 36.06 0 0 51.275 19.124 117.62.584 0 0 44.034-12.118 77.5-35.476 0 0 15.265-3.65-.195-14.599 0 0-37.968-22.336-73.39-33.577 0 0-63.018-19.124-112.924-2.336 0 0-46.382 11.241-84.74 37.957z" transform="translate(.592 -.32)"/>
-        <path style="display:inline;fill:#fff;fill-opacity:1;stroke:#000;stroke-width:6.36819;stroke-opacity:1" d="M325.205 266.32a64.683 64.683 0 0 1-61.742 67.47 64.683 64.683 0 0 1-67.495-61.715 64.683 64.683 0 0 1 61.687-67.52 64.683 64.683 0 0 1 67.546 61.659" transform="translate(.592 -.32)"/>
-        <path style="display:inline;fill:#000;fill-opacity:1;stroke:#000;stroke-width:6.36819;stroke-opacity:1" d="M284.465 268.711a23.707 23.707 0 0 1-22.63 24.729 23.707 23.707 0 0 1-24.738-22.62 23.707 23.707 0 0 1 22.61-24.747 23.707 23.707 0 0 1 24.756 22.6" transform="translate(.592 -.32)"/>
-        <path style="fill:#000;fill-opacity:1;stroke:#000;stroke-width:1.923;stroke-opacity:1" d="M213.284 249.497s1.626 9.164 5.912 2.66c0 0 5.026-13.894 16.555-20.988 0 0 7.094-7.39-3.843-5.765 0 0-18.033 10.938-18.624 24.093zM305.656 292.36s-1.1-9.242-5.75-2.994c0 0-5.812 13.584-17.728 20.008 0 0-7.505 6.973 3.508 5.975 0 0 18.628-9.89 19.97-22.989z" transform="translate(.592 -.32)"/>
-        <path style="fill:#000;fill-opacity:1;stroke:#000;stroke-width:1.54415;stroke-opacity:1" d="M196.971 225.62s75.049-9.364 128.155-.204l-8.904-25.85-59.784-5.088-51.835 12.212z" transform="translate(.592 -.32)"/>
-        <path style="fill:#000;fill-opacity:1;stroke:#000;stroke-width:1.54172;stroke-opacity:1" d="M197.187 310.905s52.157 11.767 127.21-.406l-14.947 21.708-75.372 5.073z" transform="translate(.592 -.32)"/>
-        <path style="display:inline;fill:none;stroke:#fff;stroke-width:6.19509;stroke-opacity:1" d="M120.933 269.35s131.926 104.049 277.987.392"/>
-        <path style="display:inline;fill:none;stroke:#fff;stroke-width:6.19509;stroke-opacity:1" d="M101.977 281.578s145.93-137.177 316.89 1.446"/>
-    </g>
-</svg>
-`,
-  2: `<svg width="48" height="48" viewBox="0 0 512 512">
-    <g style="display:inline">
-        <path style="display:inline;fill:#000;fill-opacity:1;stroke:#fff;stroke-width:6.36819;stroke-opacity:1" d="M94.037 263.131s-7.9 7.177 0 15.22c0 0 64 60.292 130.927 76.878 0 0 49.212 15.117 104.78-13.073 0 0 45.464-17.952 93.66-61.073 0 0 12.292-8.586.39-19.903 0 0-48.39-48-105.171-67.707 0 0-56.976-21.073-111.22-2.147 0 0-50.536 13.464-113.366 71.805z" transform="translate(4.964 -3.906)"/>
-        <path style="display:inline;fill:#fff;fill-opacity:1;stroke:#000;stroke-width:4.84134;stroke-opacity:1" d="M123.367 264.59s-11.966 4.823-.196 8.749c0 0 38.45 19.63 76.507 27.706 0 0 51.396 14.694 117.898.449 0 0 44.139-9.31 77.684-27.258 0 0 15.301-2.804-.196-11.217 0 0-38.057-17.162-73.564-25.799 0 0-63.167-14.694-113.19-1.794 0 0-46.493 8.637-84.943 29.164z" transform="translate(4.964 -3.906)"/>
-        <path style="display:inline;fill:#fff;fill-opacity:1;stroke:#000;stroke-width:6.36819;stroke-opacity:1" d="M325.205 266.32a64.683 64.683 0 0 1-61.742 67.47 64.683 64.683 0 0 1-67.495-61.715 64.683 64.683 0 0 1 61.687-67.52 64.683 64.683 0 0 1 67.546 61.659" transform="translate(4.964 -3.906)"/>
-        <path style="display:inline;fill:#000;fill-opacity:1;stroke:#000;stroke-width:6.36819;stroke-opacity:1" d="M284.465 268.711a23.707 23.707 0 0 1-22.63 24.729 23.707 23.707 0 0 1-24.738-22.62 23.707 23.707 0 0 1 22.61-24.747 23.707 23.707 0 0 1 24.756 22.6" transform="translate(4.964 -3.906)"/>
-        <path style="fill:#000;fill-opacity:1;stroke:#000;stroke-width:1.923;stroke-opacity:1" d="M213.284 249.497s1.626 9.164 5.912 2.66c0 0 5.026-13.894 16.555-20.988 0 0 7.094-7.39-3.843-5.765 0 0-18.033 10.938-18.624 24.093zM305.656 292.36s-1.1-9.242-5.75-2.994c0 0-5.812 13.584-17.728 20.008 0 0-7.505 6.973 3.508 5.975 0 0 18.628-9.89 19.97-22.989z" transform="translate(4.964 -3.906)"/>
-        <path style="fill:#000;fill-opacity:1;stroke:#000;stroke-width:1.76492;stroke-opacity:1" d="M197.15 237.421s74.88-12.259 127.867-.266l-8.884-33.845-59.65-6.663-51.718 15.99z" transform="translate(4.964 -3.906)"/>
-        <path style="fill:#000;fill-opacity:1;stroke:#000;stroke-width:1.8381;stroke-opacity:1" d="M197.378 299.572s52.001 16.776 126.832-.579l-14.902 30.95-75.148 7.231z" transform="translate(4.964 -3.906)"/>
-        <path style="display:inline;fill:none;stroke:#fff;stroke-width:6.19509;stroke-opacity:1" d="M125.644 264.245s125.303 85.038 280.002-.164"/>
-        <path style="display:inline;fill:none;stroke:#fff;stroke-width:6.19509;stroke-opacity:1" d="M103.142 276.68s138.829-110.156 325.01-.9"/>
-    </g>
-</svg>
-`,
-  3: `<svg width="48" height="48" viewBox="0 0 512 512" >
-    <g style="display:inline">
-        <path style="display:inline;fill:#000;fill-opacity:1;stroke:#fff;stroke-width:6.36819;stroke-opacity:1" d="M95.418 262.37s-7.9 7.177 0 15.22c0 0 64 60.292 130.927 76.877 0 0 49.212 15.117 104.78-13.073 0 0 45.464-17.951 93.659-61.073 0 0 12.293-8.585.39-19.903 0 0-48.39-48-105.17-67.707 0 0-56.976-21.073-111.22-2.146 0 0-50.537 13.463-113.366 71.805z" transform="translate(5.44 -1.314)"/>
-        <path style="display:inline;fill:#fff;fill-opacity:1;stroke:#000;stroke-width:3.91754;stroke-opacity:1" d="M122.924 263.87s-12.006 3.147-.197 5.71c0 0 38.574 12.81 76.755 18.082 0 0 51.563 9.59 118.281.293 0 0 44.282-6.077 77.936-17.79 0 0 15.351-1.83-.197-7.32 0 0-38.18-11.202-73.803-16.839 0 0-63.372-8.63-113.558-.21 0 0-46.643 4.676-85.217 18.073z" transform="translate(5.44 -1.314)"/>
-        <path style="display:inline;fill:#fff;fill-opacity:1;stroke:#000;stroke-width:6.36819;stroke-opacity:1" d="M325.205 266.32a64.683 64.683 0 0 1-61.742 67.47 64.683 64.683 0 0 1-67.495-61.715 64.683 64.683 0 0 1 61.687-67.52 64.683 64.683 0 0 1 67.546 61.659" transform="translate(5.44 -1.314)"/>
-        <path style="display:inline;fill:#000;fill-opacity:1;stroke:#000;stroke-width:6.36819;stroke-opacity:1" d="M284.465 268.711a23.707 23.707 0 0 1-22.63 24.729 23.707 23.707 0 0 1-24.738-22.62 23.707 23.707 0 0 1 22.61-24.747 23.707 23.707 0 0 1 24.756 22.6" transform="translate(5.44 -1.314)"/>
-        <path style="fill:#000;fill-opacity:1;stroke:#000;stroke-width:1.923;stroke-opacity:1" d="M213.284 249.497s1.626 9.164 5.912 2.66c0 0 5.026-13.894 16.555-20.988 0 0 7.094-7.39-3.843-5.765 0 0-18.033 10.938-18.624 24.093zM305.656 292.36s-1.1-9.242-5.75-2.994c0 0-5.812 13.584-17.728 20.008 0 0-7.505 6.973 3.508 5.975 0 0 18.628-9.89 19.97-22.989z" transform="translate(5.44 -1.314)"/>
-        <path style="fill:#000;fill-opacity:1;stroke:#000;stroke-width:1.97234;stroke-opacity:1" d="M193.117 251.639s74.727-15.341 127.606-.334l-8.866-42.355-59.529-8.337-51.612 20.01z" transform="translate(5.44 -1.314)"/>
-        <path style="fill:#000;fill-opacity:1;stroke:#000;stroke-width:2.11782;stroke-opacity:1" d="M197.555 287.007s51.857 22.333 126.482-.77l-14.862 41.2-74.94 9.626z" transform="translate(5.44 -1.314)"/>
-        <path style="display:inline;fill:none;stroke:#fff;stroke-width:6.19509;stroke-opacity:1" d="M125.836 265.215s126.836 60.898 279.066.082"/>
-        <path style="display:inline;fill:none;stroke:#fff;stroke-width:6.19509;stroke-opacity:1" d="M99.84 273.103s165.076-60.739 333.46 1.562"/>
-    </g>
-</svg>
-`,
-  4: `<svg width="48" height="48" viewBox="0 0 512 512">
-    <g style="display:inline">
-        <path style="display:inline;fill:#000;fill-opacity:1;stroke:#fff;stroke-width:6.36819;stroke-opacity:1" d="M92.782 263.395s-7.901 7.177 0 15.22c0 0 64 60.292 130.927 76.878 0 0 49.212 15.117 104.78-13.073 0 0 45.464-17.952 93.659-61.073 0 0 12.292-8.586.39-19.903 0 0-48.39-48-105.17-67.707 0 0-56.976-21.073-111.22-2.147 0 0-50.537 13.464-113.366 71.805z" transform="translate(4.337 -2.81)"/>
-        <path style="display:inline;fill:#fff;fill-opacity:1;stroke:#000;stroke-width:2.39967;stroke-opacity:1" d="M122.197 267.061s-12.069 1.175-.198 2.132c0 0 38.78 4.781 77.162 6.749 0 0 51.837 3.58 118.908.109 0 0 44.517-2.268 78.35-6.64 0 0 15.432-.683-.199-2.732 0 0-38.383-4.18-74.194-6.285 0 0-63.708-3.579-114.16-.437 0 0-46.89 2.104-85.669 7.104z" transform="translate(4.337 -2.81)"/>
-        <path style="display:inline;fill:#fff;fill-opacity:1;stroke:#000;stroke-width:6.36819;stroke-opacity:1" d="M325.205 266.32a64.683 64.683 0 0 1-61.742 67.47 64.683 64.683 0 0 1-67.495-61.715 64.683 64.683 0 0 1 61.687-67.52 64.683 64.683 0 0 1 67.546 61.659" transform="translate(4.337 -2.81)"/>
-        <path style="display:inline;fill:#000;fill-opacity:1;stroke:#000;stroke-width:6.36819;stroke-opacity:1" d="M284.465 268.711a23.707 23.707 0 0 1-22.63 24.729 23.707 23.707 0 0 1-24.738-22.62 23.707 23.707 0 0 1 22.61-24.747 23.707 23.707 0 0 1 24.756 22.6" transform="translate(4.337 -2.81)"/>
-        <path style="fill:#000;fill-opacity:1;stroke:#000;stroke-width:1.923;stroke-opacity:1" d="M213.284 249.497s1.626 9.164 5.912 2.66c0 0 5.026-13.894 16.555-20.988 0 0 7.094-7.39-3.843-5.765 0 0-18.033 10.938-18.624 24.093zM305.656 292.36s-1.1-9.242-5.75-2.994c0 0-5.812 13.584-17.728 20.008 0 0-7.505 6.973 3.508 5.975 0 0 18.628-9.89 19.97-22.989z" transform="translate(4.337 -2.81)"/>
-        <path style="fill:#000;fill-opacity:1;stroke:#000;stroke-width:2.19714;stroke-opacity:1" d="M196.972 260.607s72.663-4.505 127.327 1.486l-8.846-52.675-59.398-10.37-51.5 24.887z" transform="translate(4.337 -2.81)"/>
-        <path style="fill:#000;fill-opacity:1;stroke:#000;stroke-width:2.33045;stroke-opacity:1" d="M196.154 275.927s56.458 5.26 127.695-.619l-14.818 50.035-87.394 13.592z" transform="translate(4.337 -2.81)"/>
-        <path style="display:inline;fill:none;stroke:#fff;stroke-width:6.19509;stroke-opacity:1" d="M125.654 264.442s132.244 25.842 278.077-.286"/>
-        <path style="display:inline;fill:none;stroke:#fff;stroke-width:6.19508;stroke-opacity:1" d="M95.552 269.959s126.156-31.722 335.132-2.245"/>
-    </g>
-</svg>
-`
+  0: "di di-vision0",
+  1: "di di-vision1",
+  2: "di di-vision2",
+  3: "di di-vision3",
+  4: "di di-vision4"
 };
 const vision = [
   { value: 0, icon: icons[0], tooltip: "0" },
@@ -3393,7 +3814,7 @@ class VisionElement extends StyleSheetMixin(
     const container = document.createElement("div");
     const button = document.createElement("button");
     button.setAttribute("id", "visionButton");
-    button.innerHTML = icons[this.value];
+    button.innerHTML = `<i class="${icons[this.value]}"></i>`;
     const dropdown = document.createElement("div");
     dropdown.setAttribute("id", "visionDropdown");
     dropdown.classList.add("vision-dropdown");
@@ -3404,7 +3825,7 @@ class VisionElement extends StyleSheetMixin(
       const malus = document.createElement("label");
       malus.className = "vision-malus";
       malus.textContent = vision2.tooltip;
-      item.innerHTML = vision2.icon;
+      item.innerHTML = `<i class="${vision2.icon}"></i>`;
       item.appendChild(malus);
       item.addEventListener("click", (ev) => {
         let selection = ev.target.closest("div");
@@ -4187,6 +4608,52 @@ class DGNSCombinationRollDialog extends HandlebarsApplicationMixin(
     this.preformRoll(this.roll);
   }
 }
+const ICONS_PATH = "systems/degenesisnext/assets/icons/items";
+const ITEM_TEMPLATES = {
+  potential: {
+    img: `${ICONS_PATH}/potentials/common.svg`,
+    system: {
+      origin: "common"
+    }
+  },
+  default: {
+    img: `${ICONS_PATH}/default.svg`
+  }
+};
+const ItemHelper = {
+  /**
+   * Creating item data structure based on templates.
+   * @param {*} name
+   * @param {*} type
+   * @param {*} customData
+   * @returns
+   */
+  prepareItemData(name, type, customData = {}) {
+    const template = ITEM_TEMPLATES[type] || ITEM_TEMPLATES.default;
+    const defaultName = game.i18n.format("DOCUMENT.New", {
+      type: game.i18n.localize(`TYPES.Item.${type}`)
+    });
+    return {
+      name: name || defaultName,
+      type,
+      img: template.img,
+      system: { ...template.system, ...customData }
+    };
+  },
+  /**
+   * Helper for creating Items on Actor.
+   * @param {*} actor
+   * @param {{}} [itemName={}]
+   * @param {{}} [itemType={}]
+   * @param {{}} [customData={}]
+   * @returns
+   */
+  async createActorItem(actor, itemName, itemType, customData = {}) {
+    if (!actor) return;
+    const item = this.prepareItemData(itemName, itemType, customData);
+    return await actor.createEmbeddedDocuments("Item", [item]);
+  }
+};
 const EffectHelper = {
   async _prepareEffects(doc) {
     const effects = doc.effects;
@@ -4325,13 +4792,15 @@ class DGNSActor extends Actor {
    * Remove reference to group.
    */
   async unsetGroup() {
-    let group = this.system.group;
-    await this.system.group.update({
-      ["system.members"]: group.system.members.filter(
-        (member) => member.actor.id !== this.id
-      )
-    });
-    await this.update({ ["system.group"]: null });
+    if (this.system?.group) {
+      let group = this.system.group;
+      await this.system.group.update({
+        ["system.members"]: group.system.members.filter(
+          (member) => member.actor.id !== this.id
+        )
+      });
+      await this.update({ ["system.group"]: null });
+    }
   }
   /**
    * Force members to prepareData after Group information been changed.
@@ -4430,52 +4899,77 @@ class DGNSActor extends Actor {
   async _onCreateEffect() {
     return await EffectHelper._onCreateEffect(this);
   }
-  /* -------------------------------- Inventory ------------------------------- */
+  /* ----------- Potentials ----------- */
+  /**
+   * Prepare potentials collection for actor sheet.
+   * todo: still to improve.
+   * @returns
+   */
+  _preparePotentials() {
+    const potentials = this.items.filter((item) => item.type === "potential").sort((a, b) => a.name.localeCompare(b.name));
+    return potentials;
+  }
+  /* ----------- Legacies ----------- */
+  /**
+   * Prepare potentials collection for actor sheet.
+   * todo: still to improve.
+   * @returns
+   */
+  _prepareLegacies() {
+    const legacies = this.items.filter((item) => item.type === "legacy").sort((a, b) => a.name.localeCompare(b.name));
+    return legacies;
+  }
+  /* -------- Items / Inventory ------- */
   /**
    * Prepare inventory for beeing displayed on actor's sheet.
    * @returns
    */
   _prepareInventory() {
-    const items = this.items;
-    const excluded = /* @__PURE__ */ new Set([
-      "cult",
-      "culture",
-      "concept",
-      "potential",
-      "legacy"
-    ]);
-    const inventory = {
-      weapon: [],
-      shield: [],
-      armor: [],
-      ammunition: [],
-      transportation: [],
-      equipment: [],
-      other: []
-    };
-    const categories = new Set(Object.keys(inventory));
-    const transportationItems = items.filter(
-      (i) => i.type === "transportation"
+    const sortModes = this.getFlag("degenesisnext", "inventorySortModes") || {};
+    const groups = [
+      "weapon",
+      "armor",
+      "modification",
+      "transportation",
+      "equipment"
+    ];
+    const excludedTypes = ["cult", "culture", "concept", "potential", "legacy"];
+    const inventoryMap = [...groups, "other"].reduce(
+      (acc, g) => (acc[g] = [], acc),
+      {}
     );
-    const hiddenItemIds = /* @__PURE__ */ new Set();
-    for (const transportation in transportationItems) {
-      const items2 = transportation.system.items;
-      items2.forEach((item) => hiddenItemIds.add(item.id));
-      inventory.transportation.push({
-        item: transportation,
-        items: items2
-      });
-    }
-    for (const item of items) {
-      if (excluded.has(item.type) || // skip excluded types
-      item.type === "transportation" || // skip transportation types
-      hiddenItemIds.has(item.id)) {
-        continue;
+    for (const item of this.items) {
+      if (excludedTypes.includes(item.type)) continue;
+      if (groups.includes(item.type)) {
+        inventoryMap[item.type].push(item);
+      } else {
+        inventoryMap["other"].push(item);
       }
-      const category = categories.has(item.type) ? item.type : "other";
-      inventory[category].push(item);
     }
-    return inventory;
+    const displayGroups = [...groups, "other"];
+    return displayGroups.map((group) => {
+      const mode = sortModes[group] || "manual";
+      const items = inventoryMap[group];
+      items.sort((a, b) => {
+        return mode === "alpha" ? a.name.localeCompare(b.name) : (a.sort || 0) - (b.sort || 0);
+      });
+      const labelKey = group === "other" ? "DEGENESIS.Other" : `TYPES.Item.${group}`;
+      return {
+        id: group,
+        label: game.i18n.localize(labelKey),
+        items,
+        isAlpha: mode === "alpha",
+        sortIcon: mode === "alpha" ? "fa-arrow-down-a-z" : "fa-sort"
+      };
+    });
+  }
+  /**
+   * Create embedded item in actor.
+   * @param {*} itemType
+   * @returns
+   */
+  async _createItem(itemType) {
+    return ItemHelper.createActorItem(this, "", itemType, {});
   }
   /* -------------------------------------------------------------------------- */
   //#endregion
@@ -4525,6 +5019,37 @@ class DGNSActor extends Actor {
   /* -------------------------------------------------------------------------- */
 }
 class DGNSItem extends Item {
+  /* ---------------------------------- */
+  /*        Main Data Preparation       */
+  /* ---------------------------------- */
+  /**
+   * Main data preparation loop. Do not override without specific purpose.
+   */
+  prepareData() {
+    super.prepareData();
+  }
+  /**
+   * Base data peparation.
+   */
+  prepareBaseData() {
+    super.prepareBaseData();
+  }
+  /**
+   * Preparing embedded documents.
+   */
+  prepareEmbeddedDocuments() {
+    super.prepareEmbeddedDocuments();
+  }
+  /**
+   * Devied data preparation - this should be mostly used for presenting finished data.
+   */
+  prepareDerivedData() {
+    super.prepareDerivedData();
+    if (this.system?.qualities) ;
+    if (this.system?.modifications) {
+      this.system.modifications.used = 0;
+    }
+  }
   /* -------------------------------------------------------------------------- */
   /*                                  Qualities                                 */
   /* -------------------------------------------------------------------------- */
@@ -5418,7 +5943,7 @@ class GeneralFields2 {
   }
   static get dropped() {
     return {
-      equipped: new BooleanField$d({ default: false })
+      dropped: new BooleanField$d({ default: false })
     };
   }
   static get prerequisite() {
@@ -5444,7 +5969,8 @@ class GeneralFields2 {
           enabled: new BooleanField$d({ initial: true }),
           // toggling state
           values: new ObjectField({ initial: {} })
-        })
+        }),
+        { initial: [] }
       )
     };
   }
@@ -5935,10 +6461,15 @@ class ModData extends foundry.abstract.TypeDataModel {
     return {
       ...GeneralFields2.description,
       ...GeneralFields2.effect,
+      ...GeneralFields2.value,
       ...GeneralFields2.qualities,
       type: new StringField$4({
         label: "DGNS.ModType",
-        initial: "weapon"
+        initial: "melee",
+        choices: Modification.type
+      }),
+      requirement: new StringField$4({
+        label: "DGNS.requirement"
       }),
       // ItemId of document where mod is beeing used.
       mounted: new ForeignDocumentField$1(BaseItem, {
@@ -5946,7 +6477,7 @@ class ModData extends foundry.abstract.TypeDataModel {
         required: false,
         nullable: true
       }),
-      cost: new NumberField$4({
+      slotcost: new NumberField$4({
         label: "DGNS.SlotCost",
         initial: 1,
         min: 0,
@@ -6000,6 +6531,8 @@ class PotentialData extends foundry.abstract.TypeDataModel {
       ...GeneralFields2.prerequisite,
       ...GeneralFields2.rules,
       ...GeneralFields2.effect,
+      origin: new StringField$2({ initial: "None" }),
+      isAction: new BooleanField$2({ initial: false }),
       level: new NumberField$2({
         label: "DGNS.Level",
         initial: 1,
@@ -6145,7 +6678,7 @@ const config = {
   burn: BurnData,
   complication: ComplicationData,
   equipment: EquipmentData,
-  mod: ModData,
+  modification: ModData,
   phenomenon: PhenomenonData,
   potential: PotentialData,
   shield: ShieldData,
@@ -6256,6 +6789,42 @@ Hooks.once("init", async function() {
     types: ["weapon"],
     makeDefault: true,
     label: "TYPES.Item.TypeWeaponSheet",
+    themes: {
+      dark: "SETTINGS.UI.FIELDS.colorScheme.dark",
+      light: "SETTINGS.UI.FIELDS.colorScheme.light"
+      //artifacts: "SETTINGS.UI.FIELDS.colorScheme.artifacts",
+      // darkBlood: "SETTINGS.UI.FIELDS.colorScheme.darkBlood",
+      // lightBlood: "SETTINGS.UI.FIELDS.colorScheme.lightBlood",
+    }
+  });
+  Items.registerSheet("degenesis", DegenesisModificationSheet, {
+    types: ["modification"],
+    makeDefault: true,
+    label: "TYPES.Item.TypeModificationSheet",
+    themes: {
+      dark: "SETTINGS.UI.FIELDS.colorScheme.dark",
+      light: "SETTINGS.UI.FIELDS.colorScheme.light"
+      //artifacts: "SETTINGS.UI.FIELDS.colorScheme.artifacts",
+      // darkBlood: "SETTINGS.UI.FIELDS.colorScheme.darkBlood",
+      // lightBlood: "SETTINGS.UI.FIELDS.colorScheme.lightBlood",
+    }
+  });
+  Items.registerSheet("degenesis", DegenesisPotentialSheet, {
+    types: ["potential"],
+    makeDefault: true,
+    label: "TYPES.Item.TypePotentialSheet",
+    themes: {
+      dark: "SETTINGS.UI.FIELDS.colorScheme.dark",
+      light: "SETTINGS.UI.FIELDS.colorScheme.light"
+      //artifacts: "SETTINGS.UI.FIELDS.colorScheme.artifacts",
+      // darkBlood: "SETTINGS.UI.FIELDS.colorScheme.darkBlood",
+      // lightBlood: "SETTINGS.UI.FIELDS.colorScheme.lightBlood",
+    }
+  });
+  Items.registerSheet("degenesis", DegenesisLegacySheet, {
+    types: ["legacy"],
+    makeDefault: true,
+    label: "TYPES.Item.TypeLegacySheet",
     themes: {
       dark: "SETTINGS.UI.FIELDS.colorScheme.dark",
       light: "SETTINGS.UI.FIELDS.colorScheme.light"

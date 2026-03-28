@@ -12,12 +12,12 @@
 
     path.square {
       fill: none;
-      stroke: var(--dgns-ui-primary);
+      stroke: var(--dgns-ui-secondary);
       stroke-width: var(--dgns-line-width);
     }
     path.line {
       fill: none;
-      stroke: var(--dgns-ui-primary);
+      stroke: var(--dgns-ui-secondary);
       stroke-width: var(--dgns-line-width);
     }
   }
@@ -81,12 +81,12 @@
 
     path.square {
       fill: none;
-      stroke: var(--dgns-ui-primary);
+      stroke: var(--dgns-ui-secondary);
       stroke-width: var(--dgns-line-width);
     }
     path.line {
       fill: none;
-      stroke: var(--dgns-ui-primary);
+      stroke: var(--dgns-ui-secondary);
       stroke-width: var(--dgns-line-width);
     }
   }
@@ -101,7 +101,7 @@
 
   div.line-left,
   div.line-right {
-    flex: 1 0 120px;
+    flex: 1 1 0;
   }
 
   div.line-right {

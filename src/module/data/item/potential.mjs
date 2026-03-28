@@ -19,6 +19,10 @@ export default class PotentialData extends foundry.abstract.TypeDataModel {
       ...GeneralFields.prerequisite,
       ...GeneralFields.rules,
       ...GeneralFields.effect,
+
+      origin: new StringField({ initial: "None" }),
+
+      isAction: new BooleanField({ initial: false }),
       level: new NumberField({
         label: "DGNS.Level",
         initial: 1,

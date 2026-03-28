@@ -1,24 +1,47 @@
-<section class="tab history {{tab.cssClass}}" data-group="main" data-tab="history">
-  {{> "dgns.group.header" header="DGNS.History" }}
+<section class="tab sheet-section history {{tab.cssClass}}" data-group="main" data-tab="history">
 
   {{! Tabs }}
-  <nav class="sheet-navigation tabs" data-group="history">
-    {{#each historyTabs}}
-      <a class="{{this.cssClass}}" data-group="history" data-action="tab" data-tab="{{this.id}}">
-        {{localize this.label}}
-      </a>
-    {{/each}}
-  </nav>
 
 
-  <section class="tab group {{subtabs.group.cssClass}} section-scrollable" data-group="history" data-tab="group">
-    {{> "systems/degenesisnext/templates/actor/character/group.hbs" }}
-  </section>
+  <div class="sheet-group-header">
+
+    <div class="line-left"><svg>
+        <path d="M9.938,1.452L18.424,9.937L9.938,18.422L1.453,9.937L9.938,1.452Z" class="line" />
+        <path d="M18.424,9.937L540,9.937" class="line" />
+      </svg></div>
+    <nav class="sheet-navigation tabs" data-group="history">
+      {{#each historyTabs}}
+        <a class="{{this.cssClass}}" data-group="history" data-action="tab" data-tab="{{this.id}}">
+          {{localize this.label}}
+        </a>
+      {{/each}}
+    </nav>
+    <div class="line-right"><svg>
+
+        <path d="M9.938,1.452L18.424,9.937L9.938,18.422L1.453,9.937L9.938,1.452Z" class="line" />
+
+        <path d="M18.424,9.937L540,9.937" class="line" />
+
+      </svg></div>
+
+  </div>
 
   <section class="tab biography {{subtabs.biography.cssClass}} section-scrollable" data-group="history"
     data-tab="biography">
     {{> "systems/degenesisnext/templates/actor/character/biography.hbs" }}
   </section>
+
+
+  <section class="tab legacies {{subtabs.legacies.cssClass}} section-scrollable" data-group="history"
+    data-tab="legacies">
+    {{> "systems/degenesisnext/templates/actor/character/legacies.hbs" }}
+  </section>
+
+  <section class="tab group {{subtabs.group.cssClass}} section-scrollable" data-group="history" data-tab="group">
+    {{> "systems/degenesisnext/templates/actor/character/group.hbs" }}
+  </section>
+
+
 
   {{#if document.isOwner}}
     <section class="tab notes {{subtabs.notes.cssClass}} section-scrollable" data-group="history" data-tab="notes">

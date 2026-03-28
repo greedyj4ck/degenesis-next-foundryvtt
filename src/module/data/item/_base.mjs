@@ -22,6 +22,7 @@ export class BaseItemData extends foundry.abstract.TypeDataModel {
   /** Generic handling for dropping equipped items.  */
   _preUpdate(changed, options, user) {
     const res = super._preUpdate(changed, options, user);
+
     if (res === false) return false;
 
     // Only if item is equippable

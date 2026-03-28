@@ -44,7 +44,7 @@ export const config = {
   burn: BurnData,
   complication: ComplicationData,
   equipment: EquipmentData,
-  mod: ModificationData,
+  modification: ModificationData,
   phenomenon: PhenomenonData,
   potential: PotentialData,
   shield: ShieldData,

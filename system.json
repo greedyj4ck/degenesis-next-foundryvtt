@@ -1,10 +1,10 @@
 {
   "id": "degenesisnext",
-  "title": "DEGENESIS: Rebirth Edition (NEXT)",
+  "title": "DEGENESIS: NEXT",
   "description": "DEGENESIS is a critically acclaimed and Free to Play Tabletop RPG, with an international community and cult following. It merges visionary design, intuitive gameplay, and dense worldbuilding, thrusting new Players into an inhospitable future at the close of the 26th century.",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "compatibility": {
-    "minimum": "13",
+    "minimum": "14",
     "verified": "14"
   },
   "authors": [
@@ -34,8 +34,8 @@
     }
   ],
   "esmodules": ["degenesis.mjs"],
-  "styles": ["styles/degenesis.css"],
-  "scripts": [""],
+  "styles": ["fonts/dgns-icons/dgns-icons.css", "styles/degenesis.css"],
+  "scripts": [],
 
   "languages": [
     {
@@ -112,13 +112,13 @@
       "culture": {},
       "cult": {},
       "concept": {},
+      "modification": {},
       "legacy": {},
       "ammunition": {},
       "armor": {},
       "burn": {},
       "complication": {},
       "equipment": {},
-      "mod": {},
       "phenomenon": {},
       "potential": {},
       "shield": {},

@@ -15,8 +15,20 @@
         font-size: var(--font-size-14);
         font-weight: 700;
         color: var(--dgns-ui-primary);
-
         text-transform: uppercase;
+        align-items: center;
+      }
+
+      .field-static-value {
+        display: flex;
+        height: 26px;
+        padding-left: 10px;
+        font-family: var(--font-sans);
+        font-size: var(--font-size-14);
+        font-weight: 700;
+        color: var(--dgns-ui-primary);
+        text-transform: uppercase;
+        align-items: center;
       }
 
       .field-label {
@@ -97,7 +109,6 @@
 
     section.tab {
       flex: 1;
-      padding-top: 5px;
     }
 
     /* ---------------------------- Specific Sections --------------------------- */

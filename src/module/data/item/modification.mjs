@@ -3,6 +3,7 @@
  * Mods should be items with ActiveEffects and then linked to Weapons by ForeignDocumentField.
  */
 import GeneralFields from "./partials/general.mjs";
+import { Modification } from "../../logic/modification.mjs";
 
 const {
   SchemaField,
@@ -25,11 +26,17 @@ export default class ModData extends foundry.abstract.TypeDataModel {
     return {
       ...GeneralFields.description,
       ...GeneralFields.effect,
+      ...GeneralFields.value,
       ...GeneralFields.qualities,
 
       type: new StringField({
         label: "DGNS.ModType",
-        initial: "weapon",
+        initial: "melee",
+        choices: Modification.type,
+      }),
+
+      requirement: new StringField({
+        label: "DGNS.requirement",
       }),
 
       // ItemId of document where mod is beeing used.
@@ -39,7 +46,7 @@ export default class ModData extends foundry.abstract.TypeDataModel {
         nullable: true,
       }),
 
-      cost: new NumberField({
+      slotcost: new NumberField({
         label: "DGNS.SlotCost",
         initial: 1,
         min: 0,

@@ -1,9 +1,54 @@
+/** @import Item from '@common/documents/item.mjs*/
+
 import { WEAPON_GROUPS_SKILLS } from "../logic/config/items.mjs";
 import { Qualities, QUALITY_DEFINITIONS } from "../logic/quality.mjs";
 
 import { EffectHelper } from "../utils/effect.helper.mjs";
 
 export default class DGNSItem extends Item {
+  /* ---------------------------------- */
+  /*        Main Data Preparation       */
+  /* ---------------------------------- */
+
+  /**
+   * Main data preparation loop. Do not override without specific purpose.
+   */
+  prepareData() {
+    super.prepareData();
+  }
+
+  /**
+   * Base data peparation.
+   */
+  prepareBaseData() {
+    super.prepareBaseData();
+  }
+
+  /**
+   * Preparing embedded documents.
+   */
+
+  prepareEmbeddedDocuments() {
+    super.prepareEmbeddedDocuments();
+  }
+
+  /**
+   * Devied data preparation - this should be mostly used for presenting finished data.
+   */
+  prepareDerivedData() {
+    super.prepareDerivedData();
+
+    /* ------------ Qualities ----------- */
+    if (this.system?.qualities) {
+    }
+
+    /* ---------- Modifications --------- */
+    if (this.system?.modifications) {
+      //todo: move to external logic helper
+      this.system.modifications.used = 0;
+    }
+  }
+
   /* -------------------------------------------------------------------------- */
   /*                                  Qualities                                 */
   /* -------------------------------------------------------------------------- */
@@ -12,10 +57,10 @@ export default class DGNSItem extends Item {
     action,
     qualityKey = null,
     field = null,
-    value = null
+    value = null,
   ) {
     console.log(
-      `Manage quality fired. ${action} | ${qualityKey} | ${field} | ${value}|`
+      `Manage quality fired. ${action} | ${qualityKey} | ${field} | ${value}|`,
     );
 
     if (!qualityKey) return;
@@ -40,7 +85,7 @@ export default class DGNSItem extends Item {
     if (quality) {
       const newState = !quality.enabled;
       qualities = this.system.qualities.map((q) =>
-        q.key === qualityKey ? { ...q, enabled: newState } : q
+        q.key === qualityKey ? { ...q, enabled: newState } : q,
       );
     } else {
       const defaultValues = {};

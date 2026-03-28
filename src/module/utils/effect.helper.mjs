@@ -1,3 +1,7 @@
+/**
+ * Helper for managing effects in streamliend way.
+ */
+
 export const EffectHelper = {
   async _prepareEffects(doc) {
     const effects = doc.effects;

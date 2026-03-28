@@ -1,0 +1,29 @@
+<div class="concept" data-action="showConcept">
+    {{#if concept}}
+        <div class="controls">
+            <label class="header">{{localize "DGNS.Concept"}}</label>
+            {{#if (sheetEditMode mode) }}
+                <!-- todo: add proper styilng -->
+                <button type="button" data-action="removeLinkedItem" data-item-type="concept" class="remove-cult">
+                    <i class="fas fa-eraser"></i>
+                </button>
+            {{/if}}
+        </div>
+        <div class="icon">
+            <img src="{{concept.img}}" />
+        </div>
+        <div class="label">
+            <label class="value">{{ concept.name }}</label>
+        </div>
+    {{else}}
+        <div class="controls">
+            <label class="header">{{localize "DGNS.Concept"}}</label>
+        </div>
+        <div class="icon">
+            <div class="drop-placeholder"></div>
+        </div>
+        <div class="label">
+            {{localize "DGNS.None"}}
+        </div>
+    {{/if}}
+</div>

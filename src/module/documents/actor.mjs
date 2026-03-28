@@ -9,6 +9,7 @@ import DGNSCombinationRollDialog from "../applications/roll/combination.dialog.m
 
 /** Roll logic and helper functions  */
 
+import { ItemHelper } from "../utils/item.helper.mjs";
 import { EffectHelper } from "../utils/effect.helper.mjs";
 
 /**
@@ -107,14 +108,16 @@ export default class DGNSActor extends Actor {
    * Remove reference to group.
    */
   async unsetGroup() {
-    let group = this.system.group;
+    if (this.system?.group) {
+      let group = this.system.group;
 
-    await this.system.group.update({
-      ["system.members"]: group.system.members.filter(
-        (member) => member.actor.id !== this.id
-      ),
-    });
-    await this.update({ ["system.group"]: null });
+      await this.system.group.update({
+        ["system.members"]: group.system.members.filter(
+          (member) => member.actor.id !== this.id,
+        ),
+      });
+      await this.update({ ["system.group"]: null });
+    }
   }
 
   /**
@@ -163,7 +166,7 @@ export default class DGNSActor extends Actor {
     for (const field of fieldsToSync) {
       const itemChange = foundry.utils.getProperty(
         data,
-        `system.${field}.linked`
+        `system.${field}.linked`,
       );
 
       if (itemChange === undefined) continue;
@@ -237,91 +240,108 @@ export default class DGNSActor extends Actor {
     return await EffectHelper._onCreateEffect(this);
   }
 
-  /* -------------------------------- Inventory ------------------------------- */
+  /* ----------- Potentials ----------- */
+
+  /**
+   * Prepare potentials collection for actor sheet.
+   * todo: still to improve.
+   * @returns
+   */
+  _preparePotentials() {
+    const potentials = this.items
+      .filter((item) => item.type === "potential")
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    return potentials;
+  }
+
+  /* ----------- Legacies ----------- */
+
+  /**
+   * Prepare potentials collection for actor sheet.
+   * todo: still to improve.
+   * @returns
+   */
+  _prepareLegacies() {
+    const legacies = this.items
+      .filter((item) => item.type === "legacy")
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    return legacies;
+  }
+
+  /* -------- Items / Inventory ------- */
 
   /**
    * Prepare inventory for beeing displayed on actor's sheet.
    * @returns
    */
   _prepareInventory() {
-    const items = this.items;
+    const sortModes = this.getFlag("degenesisnext", "inventorySortModes") || {};
 
-    const excluded = new Set([
-      "cult",
-      "culture",
-      "concept",
-      "potential",
-      "legacy",
-    ]);
+    // When adding new category, just create another entry here.
+    const groups = [
+      "weapon",
+      "armor",
+      "modification",
+      "transportation",
+      "equipment",
+    ];
 
-    // When adding new category, just create another property here.
-    const inventory = {
-      weapon: [],
-      shield: [],
-      armor: [],
-      ammunition: [],
-      transportation: [],
-      equipment: [],
-      other: [],
-    };
+    // Excluded item types.
+    const excludedTypes = ["cult", "culture", "concept", "potential", "legacy"];
 
-    // mapping inventory array into categories
-    const categories = new Set(Object.keys(inventory));
-
-    // Step 1: Prepare all transportation items.
-    const transportationItems = items.filter(
-      (i) => i.type === "transportation"
+    // Preparing structure map for inventory groups.
+    const inventoryMap = [...groups, "other"].reduce(
+      (acc, g) => ((acc[g] = []), acc),
+      {},
     );
 
-    // hide items stored in transportation
-    const hiddenItemIds = new Set();
+    // Splitting embedded items into proper groups.
+    for (const item of this.items) {
+      if (excludedTypes.includes(item.type)) continue;
 
-    // !important: property paths may change in future
-    for (const transportation in transportationItems) {
-      const items = transportation.system.items;
-      items.forEach((item) => hiddenItemIds.add(item.id));
-      inventory.transportation.push({
-        item: transportation,
-        items: items,
+      if (groups.includes(item.type)) {
+        inventoryMap[item.type].push(item);
+      } else {
+        inventoryMap["other"].push(item);
+      }
+    }
+
+    const displayGroups = [...groups, "other"];
+
+    return displayGroups.map((group) => {
+      const mode = sortModes[group] || "manual";
+      const items = inventoryMap[group];
+
+      // Sorting inventory inside group
+      items.sort((a, b) => {
+        return mode === "alpha"
+          ? a.name.localeCompare(b.name)
+          : (a.sort || 0) - (b.sort || 0);
       });
-    }
-    // Step 2: Prepare inventory.
-    for (const item of items) {
-      if (
-        excluded.has(item.type) || // skip excluded types
-        item.type === "transportation" || // skip transportation types
-        hiddenItemIds.has(item.id) // skip items in transportation items
-      ) {
-        continue;
-      }
-      const category = categories.has(item.type) ? item.type : "other";
-      inventory[category].push(item);
-    }
 
-    return inventory;
+      // Generating label keys.
+      const labelKey =
+        group === "other" ? "DEGENESIS.Other" : `TYPES.Item.${group}`;
 
-    /* return this.items.reduce(
-      (inventory, item) => {
-        const type = item.type;
-        if (excluded.has(type)) return inventory;
+      return {
+        id: group,
+        label: game.i18n.localize(labelKey),
+        items: items,
+        isAlpha: mode === "alpha",
+        sortIcon: mode === "alpha" ? "fa-arrow-down-a-z" : "fa-sort",
+      };
+    });
+  }
 
-        const category = ["container", "weapon", "shield", "armor"].includes(
-          type
-        )
-          ? type
-          : "other";
-
-        inventory[category].items.push(item);
-        return inventory;
-      },
-      {
-        weapon: { label: "DGNS.Inventory.weapons", items: [] },
-        shield: { label: "DGNS.Inventory.shields", items: [] },
-        armor: { label: "DGNS.Inventory.armor", items: [] },
-        container: { label: "DGNS.Inventory.container", items: [] },
-        other: { label: "DGNS.Inventory.other", items: [] },
-      }
-    ); */
+  /**
+   * Create embedded item in actor.
+   * @param {*} itemType
+   * @returns
+   */
+  async _createItem(itemType) {
+    return ItemHelper.createActorItem(this, "", itemType, {});
   }
 
   /* -------------------------------------------------------------------------- */
