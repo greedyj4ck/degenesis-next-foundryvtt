@@ -50,7 +50,7 @@ async function runBuild() {
   await build(viteConfig);
   console.log(`Build finished!`);
 
-  const branch = "alpha"; // ustawiony na alpha
+  const branch = "alpha";
   const isAlpha = branch === "alpha";
 
   const sourcePath = path.resolve("system.json");
@@ -65,13 +65,13 @@ async function runBuild() {
     ? "https://github.com/USER/REPO/archive/refs/heads/alpha.zip"
     : "https://github.com/USER/REPO/archive/refs/heads/main.zip";
 
+  console.log("mkdirSync:", path.dirname(destPath));
   fs.mkdirSync(path.dirname(destPath), { recursive: true });
-  fs.writeFileSync(destPath, JSON.stringify(baseJson, null, 2));
+  fs.writeFileSync(path.join(destPath), JSON.stringify(baseJson, null, 2));
 
   console.log(`System.json modified for alpha testing.`);
 
   const src = [
-    { src: "system.json", dest: "dist/system.json" },
     { src: "assets", dest: "dist/assets" },
     { src: "fonts", dest: "dist/fonts" },
     { src: "packs", dest: "dist/packs" },
