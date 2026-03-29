@@ -99,6 +99,7 @@ jobs:
           prerelease: true
           draft: false
           artifacts: dist.zip
+            dist/system.json
           token: ${{ secrets.PAT_TOKEN }}
 
       # 10: Optional log
