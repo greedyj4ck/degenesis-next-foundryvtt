@@ -14,7 +14,8 @@ jobs:
       # 1️⃣ Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v3
-        token: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          persist-credentials: false # wyłącz domyślny token
 
       # 2️⃣ Set up Node.js
       - name: Setup Node.js
@@ -53,7 +54,7 @@ jobs:
           cd $WORKTREE_DIR
           git add .
           git commit -m "Deploy alpha build [skip ci]" --allow-empty
-          git push origin $DEPLOY_BRANCH --force
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/greedyj4ck/degenesis-next-foundryvtt.git alpha --force
 
           cd $GITHUB_WORKSPACE
           git worktree remove $WORKTREE_DIR --force
