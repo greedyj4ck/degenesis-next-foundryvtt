@@ -51,7 +51,6 @@ jobs:
           node -e "
             const fs = require('fs');
             const json = JSON.parse(fs.readFileSync('$SYSTEM_JSON', 'utf-8'));
-            json.manifest = '$RELEASE_URL';
             json.download = '$RELEASE_URL';
             fs.writeFileSync('$SYSTEM_JSON', JSON.stringify(json, null, 2));
           "

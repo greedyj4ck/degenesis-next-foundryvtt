@@ -25,9 +25,9 @@ Although the system is based on the original foundry implementation, a lot of th
 
 WIP
 
-## System.json manifest (not working yet)
+## System.json manifest
 
-    https://github.com/greedyj4ck/degenesis-next-foundryvtt/releases/latest/download/system.json
+    https://raw.githubusercontent.com/greedyj4ck/degenesis-next-foundryvtt/main/system.json
 
 ## Developer Installation
 
