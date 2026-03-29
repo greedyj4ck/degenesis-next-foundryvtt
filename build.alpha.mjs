@@ -50,28 +50,10 @@ async function runBuild() {
   await build(viteConfig);
   console.log(`Build finished!`);
 
-  const branch = "alpha";
-  const isAlpha = branch === "alpha";
-
-  const sourcePath = path.resolve("system.json");
-  const destPath = path.resolve("dist/system.json");
-
-  const baseJson = JSON.parse(fs.readFileSync(sourcePath, "utf-8"));
-
-  baseJson.manifest = isAlpha
-    ? "https://raw.githubusercontent.com/USER/REPO/alpha/system.json"
-    : "https://raw.githubusercontent.com/USER/REPO/main/system.json";
-  baseJson.download = isAlpha
-    ? "https://github.com/USER/REPO/archive/refs/heads/alpha.zip"
-    : "https://github.com/USER/REPO/archive/refs/heads/main.zip";
-
-  console.log("mkdirSync:", path.dirname(destPath));
-  fs.mkdirSync(path.dirname(destPath), { recursive: true });
-  fs.writeFileSync(path.join(destPath), JSON.stringify(baseJson, null, 2));
-
-  console.log(`System.json modified for alpha testing.`);
+  console.log(`Copying files...`);
 
   const src = [
+    { src: "system.json", dest: "dist/system.json" },
     { src: "assets", dest: "dist/assets" },
     { src: "fonts", dest: "dist/fonts" },
     { src: "packs", dest: "dist/packs" },

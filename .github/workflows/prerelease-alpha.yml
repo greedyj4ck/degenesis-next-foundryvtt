@@ -1,0 +1,93 @@
+name: Build Alpha and Update Latest Pre-release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2️⃣ Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "24"
+
+      # 3️⃣ Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # 4️⃣ Build alpha
+      - name: Build alpha
+        run: npm run build:alpha
+
+      # 5️⃣ Get version from system.json
+      - name: Get version from system.json
+        id: get_version
+        run: |
+          VERSION=$(node -p "require('./dist/system.json').version")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      # 6️⃣ Define tag for "latest alpha" (fixed tag)
+      - name: Set release tag
+        run: |
+          ALPHA_TAG="${VERSION}-alpha-latest"
+          echo "ALPHA_TAG=$ALPHA_TAG" >> $GITHUB_ENV
+
+      # 7️⃣ Update system.json with correct manifest, download, version
+      - name: Update system.json for latest alpha release
+        run: |
+          SYSTEM_JSON="dist/system.json"
+          RELEASE_URL="https://github.com/${{ github.repository }}/releases/download/$ALPHA_TAG/dist.zip"
+
+          node -e "
+            const fs = require('fs');
+            const json = JSON.parse(fs.readFileSync('$SYSTEM_JSON', 'utf-8'));
+            json.manifest = '$RELEASE_URL';
+            json.download = '$RELEASE_URL';
+            json.version = '$ALPHA_TAG';
+            fs.writeFileSync('$SYSTEM_JSON', JSON.stringify(json, null, 2));
+          "
+
+      # 8️⃣ Delete existing prerelease if exists
+      - name: Delete existing prerelease (if exists)
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const tag = process.env.ALPHA_TAG;
+            const releases = await github.rest.repos.listReleases({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
+            const existing = releases.data.find(r => r.tag_name === tag);
+            if (existing) {
+              console.log(`Deleting existing release: ${tag}`);
+              await github.rest.repos.deleteRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id: existing.id
+              });
+              // optionally delete tag
+              await github.rest.git.deleteRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: `tags/${tag}`
+              });
+            }
+
+      # 9️⃣ Create prerelease on GitHub
+      - name: Create latest alpha prerelease
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ env.ALPHA_TAG }}
+          name: Latest Alpha Build
+          body: "Automatic latest alpha build based on version ${{ env.VERSION }}"
+          draft: false
+          prerelease: true
+          artifacts: dist/
