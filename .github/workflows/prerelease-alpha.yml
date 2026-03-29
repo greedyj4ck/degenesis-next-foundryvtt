@@ -1,19 +1,19 @@
 name: Build Alpha and Update Latest Pre-release
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
-  contents: write
-  packages: write
-  actions: write
+  contents: write # dla push/commit, chociaż do release używamy PAT
 
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout repository
+      # 1️⃣ Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v3
 
@@ -38,17 +38,17 @@ jobs:
           VERSION=$(node -p "require('./dist/system.json').version")
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
-      # 6️⃣ Define tag for "latest alpha" (fixed tag)
+      # 6️⃣ Set tag for latest alpha
       - name: Set release tag
         run: |
           ALPHA_TAG="${VERSION}-alpha-latest"
           echo "ALPHA_TAG=$ALPHA_TAG" >> $GITHUB_ENV
 
-      # 7️⃣ Update system.json with correct manifest, download, version
-      - name: Update system.json for latest alpha release
+      # 7️⃣ Update system.json with latest release URLs
+      - name: Update system.json
         run: |
           SYSTEM_JSON="dist/system.json"
-          RELEASE_URL="https://github.com/${{ github.repository }}/releases/download/$ALPHA_TAG/dist.zip"
+          RELEASE_URL="https://github.com/${{ github.repository }}/releases/download/${ALPHA_TAG}/dist.zip"
 
           node -e "
             const fs = require('fs');
@@ -59,11 +59,11 @@ jobs:
             fs.writeFileSync('$SYSTEM_JSON', JSON.stringify(json, null, 2));
           "
 
-      # 8️⃣ Delete existing prerelease if exists
-      - name: Delete existing prerelease (if exists)
+      # 8️⃣ Delete existing prerelease with same tag (optional, aby nadpisać)
+      - name: Delete existing prerelease
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.PAT_TOKEN }}
           script: |
             const tag = process.env.ALPHA_TAG;
             const releases = await github.rest.repos.listReleases({
@@ -78,7 +78,6 @@ jobs:
                 repo: context.repo.repo,
                 release_id: existing.id
               });
-              // optionally delete tag
               await github.rest.git.deleteRef({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -86,13 +85,18 @@ jobs:
               });
             }
 
-      # 9️⃣ Create prerelease on GitHub
+      # 9️⃣ Create prerelease
       - name: Create latest alpha prerelease
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ env.ALPHA_TAG }}
           name: Latest Alpha Build
-          body: "Automatic latest alpha build based on version ${{ env.VERSION }}"
-          draft: false
+          body: Automatic latest alpha build based on version ${{ env.VERSION }}
           prerelease: true
+          draft: false
           artifacts: dist/
+          token: ${{ secrets.PAT_TOKEN }}
+
+      # 10️⃣ Optional log
+      - name: Done
+        run: echo "✅ Latest alpha prerelease created/updated successfully."
