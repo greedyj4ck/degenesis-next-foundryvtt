@@ -651,6 +651,47 @@ dgns-discomfort i {
   line-height: 0;
 }
 
+dgns-primal-focus,
+dgns-faith-will {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+dgns-primal-focus .mode-title,
+dgns-faith-will .mode-title {
+  text-transform: uppercase;
+  font-family: var(--font-serif);
+  font-size: var(--font-size-14);
+  letter-spacing: 0.08em;
+}
+dgns-primal-focus .mode-switch,
+dgns-faith-will .mode-switch {
+  display: flex;
+  gap: 5px;
+}
+dgns-primal-focus button,
+dgns-faith-will button {
+  width: 45px;
+  height: 45px;
+  min-height: 45px;
+  line-height: 0;
+  font-size: 35px;
+}
+dgns-primal-focus button i,
+dgns-faith-will button i {
+  display: flex;
+  line-height: 0;
+  padding: 0;
+}
+dgns-primal-focus button i::before,
+dgns-faith-will button i::before {
+  line-height: 0;
+  padding: 0;
+  margin: 0;
+}
+
 svg {
   width: 100%;
   height: 100%;
@@ -1458,6 +1499,8 @@ svg path.line {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    gap: 5px;
     flex: 1;
   }
   .application.sheet.dgns-character .character-header .container-left .primalFocus {
@@ -2813,4 +2856,4 @@ svg path.line {
     font-weight: 700;
   }
 }
-@layer foundry, dgns;
+@layer foundry, dgns;/*$vite$:1*/

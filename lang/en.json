@@ -55,6 +55,11 @@
     "s": "S",
     "t": "T",
 
+    "TITLES": {
+      "primalFocus": "Primal or Focus",
+      "faithWill": "Faith or Willpower"
+    },
+
     "TABS": {
       "general": "General",
       "stats": "Stats",

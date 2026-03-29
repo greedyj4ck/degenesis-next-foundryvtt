@@ -165,6 +165,7 @@ export default class DGNSCharacterSheet extends ActorSheetMixin(
       mode: this._mode,
       owner: this.document.isOwner,
       limited: this.document.limited,
+      isEditMode: this._mode === 2,
       isEditable: this.isEditable,
       actor: this.actor,
       system: this.actor.system,

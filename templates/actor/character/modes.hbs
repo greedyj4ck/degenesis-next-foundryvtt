@@ -1,10 +1,12 @@
 <div class="modes-container">
-    <div class="primalFocus">
-        <a>DGNS.Primal</a>
-        <a>DGNS.Focus</a>
-    </div>
-    <div class="faithWillpower">
-        <a>DGNS.Faith</a>
-        <a>DGNS.Willpower</a>
-    </div>
+
+    <dgns-primal-focus name="system.modes.primalFocus" value="{{system.modes.primalFocus}}"
+        {{#unless isEditMode}}locked{{/unless}}>
+    </dgns-primal-focus>
+
+    <dgns-faith-will name="system.modes.faithWillpower" value="{{system.modes.faithWillpower}}"
+        {{#unless isEditMode}}locked{{/unless}}>
+        </dgns-primal-focus>
+
+
 </div>
