@@ -1,0 +1,62 @@
+name: Deploy Alpha Build
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout repo
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2️⃣ Set up Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      # 3️⃣ Install dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # 4️⃣ Build alpha
+      - name: Build alpha
+        run: npm run build:alpha
+
+      # 5️⃣ Deploy dist to alpha branch using worktree
+      - name: Deploy dist to alpha branch
+        run: |
+          set -e
+
+          DEPLOY_BRANCH="alpha"
+          DEPLOY_DIR="dist"
+          WORKTREE_DIR="/tmp/alpha"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          if git show-ref --verify --quiet refs/heads/$DEPLOY_BRANCH; then
+            git worktree add $WORKTREE_DIR $DEPLOY_BRANCH
+          else
+            git worktree add -b $DEPLOY_BRANCH $WORKTREE_DIR
+          fi
+
+          cp -r $DEPLOY_DIR/* $WORKTREE_DIR/
+
+          cd $WORKTREE_DIR
+          git add .
+          git commit -m "Deploy alpha build [skip ci]" --allow-empty
+          git push origin $DEPLOY_BRANCH --force
+
+          cd $GITHUB_WORKSPACE
+          git worktree remove $WORKTREE_DIR --force
+
+      # 6️⃣ Optional log
+      - name: Done
+        run: echo "✅ Alpha branch updated without switching main."
