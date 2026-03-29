@@ -83,8 +83,12 @@ jobs:
               });
             }
 
-      - name: List dist contents
-        run: ls -R dist/
+      - name: Zip dist folder
+        run: |
+          ZIP_FILE="dist.zip"
+          cd dist
+          zip -r "../$ZIP_FILE" .
+          cd ..
 
       # 9️⃣ Create prerelease
       - name: Create latest alpha prerelease
@@ -95,7 +99,7 @@ jobs:
           body: Automatic latest alpha build based on version ${{ env.VERSION }}
           prerelease: true
           draft: false
-          artifacts: dist/
+          artifacts: dist.zip
           token: ${{ secrets.PAT_TOKEN }}
 
       # 10️⃣ Optional log
