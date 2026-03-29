@@ -38,7 +38,7 @@ jobs:
 
           DEPLOY_BRANCH="alpha"
           DEPLOY_DIR="dist"
-          WORKTREE_DIR="/tmp/alpha"
+          WORKTREE_DIR="$GITHUB_WORKSPACE/_alpha"
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -49,7 +49,7 @@ jobs:
             git worktree add -b $DEPLOY_BRANCH $WORKTREE_DIR
           fi
 
-          cp -r $DEPLOY_DIR/* $WORKTREE_DIR/
+          rsync -a $DEPLOY_DIR/ $WORKTREE_DIR/
 
           cd $WORKTREE_DIR
           git add .
