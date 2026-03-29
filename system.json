@@ -89,7 +89,7 @@
 
   "background": "systems/degenesisnext/ui/artifacts.jpg",
   "manifest": "https://raw.githubusercontent.com/greedyj4ck/degenesis-next-foundryvtt/main/system.json",
-  "download": "",
+  "download": "https://github.com/greedyj4ck/degenesis-next-foundryvtt/releases/latest/download/dist.zip",
   "license": "LICENSE.txt",
   "flags": {
     "hotReload": {
