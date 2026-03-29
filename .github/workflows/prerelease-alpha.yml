@@ -11,38 +11,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout repo
+      # Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2️⃣ Setup Node.js
+      # Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: "24"
 
-      # 3️⃣ Install dependencies
+      # Install dependencies
       - name: Install dependencies
         run: npm install
 
-      # 4️⃣ Build alpha
+      # Build alpha
       - name: Build alpha
         run: npm run build:alpha
 
-      # 5️⃣ Get version from system.json
+      # Get version from system.json
       - name: Get version from system.json
         id: get_version
         run: |
           VERSION=$(node -p "require('./dist/system.json').version")
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
-      # 6️⃣ Set tag for latest alpha
+      # Set tag for latest alpha
       - name: Set release tag
         run: |
           ALPHA_TAG="${VERSION}-alpha"
           echo "ALPHA_TAG=$ALPHA_TAG" >> $GITHUB_ENV
 
-      # 7️⃣ Update system.json with latest release URLs
+      # Update system.json with latest release URLs
       - name: Update system.json
         run: |
           SYSTEM_JSON="dist/system.json"
@@ -53,11 +53,10 @@ jobs:
             const json = JSON.parse(fs.readFileSync('$SYSTEM_JSON', 'utf-8'));
             json.manifest = '$RELEASE_URL';
             json.download = '$RELEASE_URL';
-            json.version = '$ALPHA_TAG';
             fs.writeFileSync('$SYSTEM_JSON', JSON.stringify(json, null, 2));
           "
 
-      # 8️⃣ Delete existing prerelease with same tag
+      # Delete existing prerelease with same tag
       - name: Delete existing prerelease
         uses: actions/github-script@v7
         with:
@@ -90,7 +89,7 @@ jobs:
           zip -r "../$ZIP_FILE" .
           cd ..
 
-      # 9️⃣ Create prerelease
+      # 9:Create prerelease
       - name: Create latest alpha prerelease
         uses: ncipollo/release-action@v1
         with:
@@ -102,6 +101,6 @@ jobs:
           artifacts: dist.zip
           token: ${{ secrets.PAT_TOKEN }}
 
-      # 10️⃣ Optional log
+      # 10: Optional log
       - name: Done
         run: echo "✅ Latest alpha prerelease created/updated successfully."
