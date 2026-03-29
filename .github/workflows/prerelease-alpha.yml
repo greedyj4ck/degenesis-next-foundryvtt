@@ -1,12 +1,10 @@
 name: Build Alpha and Update Latest Pre-release
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
-  contents: write # dla push/commit, chociaż do release używamy PAT
+  contents: write
 
 jobs:
   build-and-release:
@@ -41,7 +39,7 @@ jobs:
       # 6️⃣ Set tag for latest alpha
       - name: Set release tag
         run: |
-          ALPHA_TAG="${VERSION}-alpha-latest"
+          ALPHA_TAG="${VERSION}-alpha"
           echo "ALPHA_TAG=$ALPHA_TAG" >> $GITHUB_ENV
 
       # 7️⃣ Update system.json with latest release URLs
@@ -59,7 +57,7 @@ jobs:
             fs.writeFileSync('$SYSTEM_JSON', JSON.stringify(json, null, 2));
           "
 
-      # 8️⃣ Delete existing prerelease with same tag (optional, aby nadpisać)
+      # 8️⃣ Delete existing prerelease with same tag
       - name: Delete existing prerelease
         uses: actions/github-script@v7
         with:
@@ -84,6 +82,9 @@ jobs:
                 ref: `tags/${tag}`
               });
             }
+
+      - name: List dist contents
+        run: ls -R dist/
 
       # 9️⃣ Create prerelease
       - name: Create latest alpha prerelease
