@@ -1,0 +1,11 @@
+@use "../colors";
+
+@layer dgns.chat {
+  .message {
+    background-image: none;
+    background-color: var(--dgns-ui-background);
+    color: var(--dgns-ui-primary);
+
+    border: 1px solid;
+  }
+}

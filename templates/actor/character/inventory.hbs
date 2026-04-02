@@ -1,7 +1,6 @@
 <section class="sheet-section tab inventory  {{tab.cssClass}} scrollable" data-group="main" data-tab="inventory">
 
-
-  {{#each inventory as |group|}}
+  {{#each inventory.groups as |group|}}
     <div class="document-table inventory-group" data-group="{{group.id}}">
       <div class="header">
         <div class="name">{{group.label}}</div>
@@ -27,32 +26,47 @@
 
       <div class="entries">
         {{#each items  as |item|}}
-          <div class="entry item" data-drag data-item-id="{{item.id}}" data-action="openItemContextMenu">
-            <div class="field image">
-              <img src="{{item.img}}">
-            </div>
-            <div class="field name">
-              <a class="caption" data-action="editItem">{{item.name}}</a>
-              <div class="subcaption">{{item.system.group}}</div>
+          <div class="entry item collapsible" data-drag data-item-id="{{item.id}}" data-expand-id="{{item.id}}"
+            data-action="openItemContextMenu">
+
+            <div class="entry-row">
+              <div class="field image">
+                <img src="{{item.img}}">
+              </div>
+              <div class="field name">
+                <a class="caption" data-action="editItem">{{item.name}}</a>
+                <div class="subcaption">{{localizeConcat "DGNS." (uppercase group.label) "." item.system.group}}</div>
+              </div>
+
+
+              <div class="field encumbrance">
+                {{item.system.encumbrance}}
+              </div>
+              <div class="field controls">
+
+                <a data-action="toggleEquipped">
+                  <i class="fa-solid fa-shield-halved {{#if item.system.equipped}}active{{/if}}"></i>
+                </a>
+                <a data-action="toggleDropped">
+                  <i class="fa-solid fa-sack-xmark {{#if item.system.dropped}}active{{/if}}"></i></a>
+                <a data-action="toggleExpanded"><i class="fa-solid fa-square-caret-down"></i></a>
+                <a data-action="openItemMenu"> <i class="fa-solid fa-ellipsis-vertical"></i></a>
+
+              </div>
             </div>
 
 
-            <div class="field encumbrance">
-              {{item.system.encumbrance}}
+            <div class="entry-row entry-dropdown collapsible-content">
+              {{> "dgns.item.summary" ctx=item.expanded }}
             </div>
-            <div class="field controls">
 
-              <a data-action="toggleEquipped">
-                <i class="fa-solid fa-shield-halved {{#if item.system.equipped}}active{{/if}}"></i>
-              </a>
-              <a data-action="toggleDropped">
-                <i class="fa-solid fa-sack-xmark {{#if item.system.dropped}}active{{/if}}"></i></a>
-              <a data-action="toggleDescription"><i class="fa-solid fa-square-caret-down"></i></a>
-              <a data-action="openItemMenu"> <i class="fa-solid fa-ellipsis-vertical"></i></a>
 
-            </div>
+
 
           </div>
+
+
+
         {{/each}}
       </div>
     </div>

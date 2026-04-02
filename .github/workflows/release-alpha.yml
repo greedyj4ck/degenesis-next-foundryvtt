@@ -95,7 +95,7 @@ jobs:
           tag: ${{ env.ALPHA_TAG }}
           name: Latest Alpha Build
           body: Automatic latest alpha build based on version ${{ env.VERSION }}
-          prerelease: true
+          prerelease: false
           draft: false
           artifacts: |
             dist.zip

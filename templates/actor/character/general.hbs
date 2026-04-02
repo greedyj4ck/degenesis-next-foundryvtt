@@ -33,36 +33,10 @@
         </div>
       </div>
 
-      <div class="entries">
-        {{#each potentials  as |item|}}
-          <div class="entry item" data-drag data-item-id="{{item.id}}" data-action="openItemContextMenu">
-            <div class="field image">
-              <img src="{{item.img}}">
-            </div>
-            <div class="field name">
-              <a class="caption" data-action="editItem">{{item.name}}</a>
-              <div class="subcaption">{{item.system.group}}</div>
-            </div>
 
-            <div class="field origin">
-              {{item.system.origin}}
-            </div>
+      {{>"dgns.actor.potentials" ctx=potentials}}
 
 
-            <div class="field level">
-              {{item.system.level}}
-            </div>
-            <div class="field controls">
-
-
-              <a data-action="toggleDescription"><i class="fa-solid fa-square-caret-down"></i></a>
-              <a data-action="openItemMenu"> <i class="fa-solid fa-ellipsis-vertical"></i></a>
-
-            </div>
-
-          </div>
-        {{/each}}
-      </div>
     </div>
 
 

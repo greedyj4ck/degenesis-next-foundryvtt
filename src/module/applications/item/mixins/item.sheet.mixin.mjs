@@ -46,10 +46,10 @@ export default function ItemSheetMixin(Base) {
         const toggle = document.createElement("dgns-slidetoggle");
         toggle.checked = this._mode === this.constructor.MODES.EDIT;
         toggle.classList.add("mode-slider");
-        toggle.dataset.tooltip = "DGNS.SheetModeEdit";
+        toggle.dataset.tooltip = "UI.SHEETMODES.play";
         toggle.setAttribute(
           "aria-label",
-          game.i18n.localize("DGNS.SheetModeEdit")
+          game.i18n.localize("UI.SHEETMODES.play"),
         );
         toggle.addEventListener("change", this._onChangeSheetMode.bind(this));
         toggle.addEventListener("dblclick", (event) => event.stopPropagation());
@@ -71,8 +71,8 @@ export default function ItemSheetMixin(Base) {
       context.cssClass = context.editable
         ? "editable"
         : this.isEditable
-        ? "interactable"
-        : "locked";
+          ? "interactable"
+          : "locked";
 
       return context;
     }
@@ -109,7 +109,7 @@ export default function ItemSheetMixin(Base) {
 
       // TODO: Change the localization strings
       const label = game.i18n.localize(
-        `DGNS.SheetMode${toggle.checked ? "Play" : "Edit"}`
+        `UI.SHEETMODES.${toggle.checked ? "edit" : "play"}`,
       );
       toggle.dataset.tooltip = label;
       toggle.setAttribute("aria-label", label);

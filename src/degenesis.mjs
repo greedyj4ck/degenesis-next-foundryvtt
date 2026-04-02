@@ -52,6 +52,7 @@ CONFIG.Dice.DGNSRoll = DGNSRoll;
 // Configuring document class
 CONFIG.Actor.documentClass = documents.DGNSActor;
 CONFIG.Item.documentClass = documents.DGNSItem;
+CONFIG.ChatMessage.documentClass = documents.DGNSChatMessage;
 
 // Configuring data models
 CONFIG.Actor.dataModels = dataModels.actor.config;

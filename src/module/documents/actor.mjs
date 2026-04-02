@@ -274,6 +274,7 @@ export default class DGNSActor extends Actor {
 
   /**
    * Prepare inventory for beeing displayed on actor's sheet.
+   * Added both groups / keyed structure.
    * @returns
    */
   _prepareInventory() {
@@ -308,9 +309,7 @@ export default class DGNSActor extends Actor {
       }
     }
 
-    const displayGroups = [...groups, "other"];
-
-    return displayGroups.map((group) => {
+    const byGroup = [...groups, "other"].map((group) => {
       const mode = sortModes[group] || "manual";
       const items = inventoryMap[group];
 
@@ -333,6 +332,10 @@ export default class DGNSActor extends Actor {
         sortIcon: mode === "alpha" ? "fa-arrow-down-a-z" : "fa-sort",
       };
     });
+
+    const byType = Object.fromEntries(byGroup.map((g) => [g.id, g]));
+
+    return { groups: byGroup, types: byType };
   }
 
   /**

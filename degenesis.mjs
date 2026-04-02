@@ -15,9 +15,11 @@ var __exportAll = (all, no_symbols) => {
 async function preloadHandlebarsTemplates() {
 	const partials = [
 		"systems/degenesisnext/templates/shared/group/header.hbs",
+		"systems/degenesisnext/templates/shared/item/summary.hbs",
 		"systems/degenesisnext/templates/shared/actor/culture.hbs",
 		"systems/degenesisnext/templates/shared/actor/concept.hbs",
-		"systems/degenesisnext/templates/shared/actor/cult.hbs"
+		"systems/degenesisnext/templates/shared/actor/cult.hbs",
+		"systems/degenesisnext/templates/shared/actor/potentials.hbs"
 	];
 	const paths = {};
 	for (const path of partials) {
@@ -26,6 +28,7 @@ async function preloadHandlebarsTemplates() {
 		const folderName = parts.pop();
 		paths[`dgns.${folderName}.${fileName}`] = path;
 	}
+	console.log(paths);
 	return await foundry.applications.handlebars.loadTemplates(paths);
 }
 //#endregion
@@ -37,6 +40,7 @@ async function registerHandlebarsHelpers() {
 	Handlebars.registerHelper("isGM", function(options) {
 		return game.user.isGM;
 	});
+	Handlebars.registerHelper("uppercase", (str) => str?.toUpperCase() ?? "");
 	Handlebars.registerHelper("titleCase", (str) => {
 		if (!str) return "";
 		return str.charAt(0).toUpperCase() + str.slice(1);
@@ -57,6 +61,10 @@ async function registerHandlebarsHelpers() {
 	});
 	Handlebars.registerHelper("prettyJson", function(context) {
 		return JSON.stringify(context, null, 2);
+	});
+	Handlebars.registerHelper("localizeConcat", (...parts) => {
+		parts.pop();
+		return game.i18n.localize(parts.join(""));
 	});
 }
 //#endregion
@@ -1465,11 +1473,8 @@ function sidebar_default() {
 		badge.innerHTML = `<img src="systems/degenesisnext/ui/logotypes/degenesis-logo-${theme}.svg" data-tooltip="${game.system.title}" alt="${game.system.title}"> `;
 		if (info) info.insertAdjacentElement("beforeBegin", badge);
 	});
-	Hooks.on("renderChatLog", async (app, html) => {
-		console.log("hooks.js renderChat", {
-			app,
-			html
-		});
+	Hooks.on("renderChatLog", (application, element) => {
+		element.querySelector(".chat-log").classList.remove("theme-light");
 	});
 }
 //#endregion
@@ -1551,7 +1556,7 @@ function _module_default() {
 //#region src/module/applications/actor/actor.sheet.mixin.mjs
 /** @import HandlebarsApplicationMixin from '@client/applications/api/handlebars-application.mjs*/
 var { api: api$10, sheets: sheets$10 } = foundry.applications;
-var { DragDrop, TextEditor: TextEditor$9 } = foundry.applications.ux;
+var { DragDrop, TextEditor: TextEditor$10 } = foundry.applications.ux;
 var getSheetPrefs = (doc) => {
 	const key = `${doc.type}${doc.limited ? ":limited" : ""}`;
 	return game.user.getFlag("degenesisnext", `actorSheetPrefs.${key}`) ?? {};
@@ -1564,10 +1569,13 @@ function ActorSheetMixin(Base) {
 			PLAY: 1,
 			EDIT: 2
 		};
-		static DEFAULT_OPTIONS = { dragDrop: [{
-			dragSelector: "[data-drag]",
-			dropSelector: null
-		}] };
+		static DEFAULT_OPTIONS = {
+			actions: { toggleExpanded: DegenesisActorSheet.#toggleExpanded },
+			dragDrop: [{
+				dragSelector: "[data-drag]",
+				dropSelector: null
+			}]
+		};
 		_mode = this.constructor.MODES.PLAY;
 		_dropdownState = {};
 		constructor(object, options = {}) {
@@ -1576,6 +1584,33 @@ function ActorSheetMixin(Base) {
 			options.height ??= height;
 			super(object, options);
 			this.#dragDrop = this.#createDragDropHandlers();
+		}
+		/**
+		* Expanded states for collapsible sections to persist between renders.
+		*/
+		#expandedSections = /* @__PURE__ */ new Map();
+		get expandedSections() {
+			return this.#expandedSections;
+		}
+		/**
+		*
+		* Handling collapsible sections. Based on dnd5e implementation, but items are hidden
+		* on defautl and we are toggling 'Expanded' instead 'Collapsed' to not confuse
+		* future generation of programmer`s.
+		*
+		* .collapsible is the required class for elements
+		*
+		* @this {*}
+		* @param {*} event
+		* @param {*} target
+		* @returns
+		*/
+		static #toggleExpanded(event, target) {
+			const collapsible = target.closest(".collapsible");
+			if (!collapsible) return;
+			collapsible.classList.remove("expanded--restored");
+			collapsible.classList.toggle("expanded");
+			this.#expandedSections.set(target.closest("[data-expand-id]")?.dataset.expandId, collapsible.classList.contains("expanded"));
 		}
 		#dragDrop;
 		/**
@@ -1658,7 +1693,7 @@ function ActorSheetMixin(Base) {
 		*/
 		async _onDrop(event) {
 			event.preventDefault();
-			const data = TextEditor$9.getDragEventData(event);
+			const data = TextEditor$10.getDragEventData(event);
 			console.log(`onDropData`);
 			console.log(data);
 			if (!data.type) return super._onDrop(event);
@@ -1683,17 +1718,24 @@ function ActorSheetMixin(Base) {
 			const html = await super._renderFrame(options);
 			const header = html.children[0];
 			if (this.isEditable) {
+				const modeIcon = document.createElement("i");
+				modeIcon.classList.add("mode-icon");
 				const toggle = document.createElement("dgns-slidetoggle");
 				toggle.checked = this._mode === this.constructor.MODES.EDIT;
+				modeIcon.classList.add("fa-solid");
+				modeIcon.classList.add(toggle.checked ? "fa-pen" : "fa-play");
 				toggle.classList.add("mode-slider");
-				toggle.dataset.tooltip = "DGNS.SheetModeEdit";
-				toggle.setAttribute("aria-label", game.i18n.localize("DGNS.SheetModeEdit"));
+				toggle.dataset.tooltip = "UI.SHEETMODES.play";
+				toggle.setAttribute("aria-label", game.i18n.localize("UI.SHEETMODES.play"));
 				toggle.addEventListener("change", (event) => {
 					event.stopPropagation();
 					event.stopImmediatePropagation();
+					modeIcon.classList.toggle("fa-pen", toggle.checked);
+					modeIcon.classList.toggle("fa-play", !toggle.checked);
 					this._onChangeSheetMode(event);
 				});
 				toggle.addEventListener("dblclick", (event) => event.stopPropagation());
+				header.insertAdjacentElement("afterbegin", modeIcon);
 				header.insertAdjacentElement("afterbegin", toggle);
 			}
 			let resizeHandle = html.lastChild;
@@ -1707,19 +1749,20 @@ function ActorSheetMixin(Base) {
 			context.cssClass = context.editable ? "editable" : this.isEditable ? "interactable" : "locked";
 			return context;
 		}
+		/** @inheritdoc */
+		_replaceHTML(result, content, options) {
+			/**
+			* Function used for restoring state of collapsible containers.
+			*/
+			for (const part of Object.values(result)) for (const element of part.querySelectorAll("[data-expand-id]")) {
+				const isExpanded = this.#expandedSections.get(element.dataset.expandId);
+				const collapsible = element.classList.contains("collapsible") ? element : element.querySelector(".collapsible");
+				collapsible?.classList.toggle("expanded", isExpanded ?? false);
+				collapsible?.classList.toggle("expanded--restored", isExpanded ?? false);
+			}
+			super._replaceHTML(result, content, options);
+		}
 		activateListeners(html) {
-			html.querySelectorAll(".section-dropdown").forEach((sectionEl) => {
-				const sectionId = sectionEl.dataset.section;
-				const body = sectionEl.querySelector(".section-body");
-				const toggleBtn = sectionEl.querySelector(".dropdown-toggle");
-				if (!(sectionId in this._dropdownState)) this._dropdownState[sectionId] = sectionEl.dataset.collapsed === "true" ? true : false;
-				if (this._dropdownState[sectionId]) body.classList.add("collapsed");
-				toggleBtn?.addEventListener("click", (event) => {
-					const isCollapsed = body.classList.contains("collapsed");
-					body.classList.toggle("collapsed");
-					this._dropdownState[sectionId] = !isCollapsed;
-				});
-			});
 			this.#dragDrop.forEach((d) => d.bind(this.element));
 		}
 		_onRender(context, options) {
@@ -1738,7 +1781,7 @@ function ActorSheetMixin(Base) {
 		async _onChangeSheetMode(event) {
 			const { MODES } = this.constructor;
 			const toggle = event.currentTarget;
-			const label = game.i18n.localize(`DGNS.SheetMode${toggle.checked ? "Play" : "Edit"}`);
+			const label = game.i18n.localize(`UI.SHEETMODES.${toggle.checked ? "edit" : "play"}`);
 			toggle.dataset.tooltip = label;
 			toggle.setAttribute("aria-label", label);
 			this._mode = toggle.checked ? MODES.EDIT : MODES.PLAY;
@@ -1746,17 +1789,6 @@ function ActorSheetMixin(Base) {
 		}
 		_disableFields(form) {
 			super._disableFields(form);
-		}
-		/** Events handling */
-		/** Dropdown sections handling  */
-		_onDropdownToggle(event) {
-			try {
-				let target = event.currentTarget;
-				target.dataset.dropdown;
-				console.log(target.attributes);
-			} catch (err) {
-				console.log(err);
-			}
 		}
 	};
 }
@@ -1767,10 +1799,10 @@ function ActorSheetMixin(Base) {
 * Extend the basic ActorSheet class to suppose system-specific logic and functionality.
 * @abstract
 */
-var { renderTemplate: renderTemplate$2 } = foundry.applications.handlebars;
+var { renderTemplate: renderTemplate$3 } = foundry.applications.handlebars;
 var { api: api$9, sheets: sheets$9 } = foundry.applications;
 var { DialogV2: DialogV2$1 } = foundry.applications.api;
-var { TextEditor: TextEditor$8 } = foundry.applications.ux;
+var { TextEditor: TextEditor$9 } = foundry.applications.ux;
 var { performIntegerSort } = foundry.utils;
 var DGNSCharacterSheet = class DGNSCharacterSheet extends ActorSheetMixin(sheets$9.ActorSheetV2) {
 	static DEFAULT_OPTIONS = {
@@ -1929,7 +1961,9 @@ var DGNSCharacterSheet = class DGNSCharacterSheet extends ActorSheetMixin(sheets
 			]
 		}
 	};
-	/** Preparing sheet context */
+	/** Preparing sheet context
+	* @this {DGNSCharacterSheet}
+	*/
 	async _prepareContext(options) {
 		const context = await super._prepareContext(options);
 		Object.assign(context, {
@@ -1956,12 +1990,21 @@ var DGNSCharacterSheet = class DGNSCharacterSheet extends ActorSheetMixin(sheets
 			headerTabs: this._prepareTabs("header"),
 			historyTabs: this._prepareTabs("history"),
 			enriched: {
-				biography: await TextEditor$8.enrichHTML(this.document.system.biography, { secrets: this.document.isOwner }),
-				ownerNotes: await TextEditor$8.enrichHTML(this.document.system.ownerNotes, { secrets: this.document.isOwner }),
-				gmNotes: await TextEditor$8.enrichHTML(this.document.system.gmNotes, { secrets: this.document.isOwner })
+				biography: await TextEditor$9.enrichHTML(this.document.system.biography, { secrets: this.document.isOwner }),
+				ownerNotes: await TextEditor$9.enrichHTML(this.document.system.ownerNotes, { secrets: this.document.isOwner }),
+				gmNotes: await TextEditor$9.enrichHTML(this.document.system.gmNotes, { secrets: this.document.isOwner })
 			}
 		});
-		console.log(`context: `);
+		if (context.inventory?.groups) for (const group of context.inventory.groups) for (const item of group.items) {
+			item.expanded = await item._getChatData({ secrets: item.isOwner });
+			if (!this.expandedSections.has(item.id)) continue;
+			if (!this.document.items.has(item.id)) {
+				this.expandedSections.delete(item.id);
+				continue;
+			}
+			item.isExpanded = true;
+		}
+		console.log(`Context for: ${this.actor.name}`);
 		console.dir(context);
 		return context;
 	}
@@ -2036,7 +2079,9 @@ var DGNSCharacterSheet = class DGNSCharacterSheet extends ActorSheetMixin(sheets
 	_onResize(event) {
 		super._onResize(event);
 	}
-	async _onDropActor(data) {
+	async _onDropActor(event, data) {
+		console.log(`character sheet mixin`);
+		console.log(event, data);
 		const actor = await Actor.implementation.fromDropData(data);
 		if (actor.type === "group") await this.actor.setGroup(actor);
 	}
@@ -2168,8 +2213,8 @@ var DGNSCharacterSheet = class DGNSCharacterSheet extends ActorSheetMixin(sheets
 			existingDesc.remove();
 			return;
 		}
-		const html = await renderTemplate$2("systems/degenesisnext/templates/shared/item/dropdown.hbs", {
-			description: await TextEditor$8.enrichHTML(item.system.description, { async: true }),
+		const html = await renderTemplate$3("systems/degenesisnext/templates/shared/item/summary.hbs", {
+			description: await TextEditor$9.enrichHTML(item.system.description, { async: true }),
 			item
 		});
 		entry.insertAdjacentHTML("afterend", `<div class="entry entry-description-dropdown" data-item-id="${itemId}">${html}</div>`);
@@ -2183,7 +2228,7 @@ var DGNSCharacterSheet = class DGNSCharacterSheet extends ActorSheetMixin(sheets
 */
 var { api: api$8, sheets: sheets$8 } = foundry.applications;
 var { DialogV2 } = foundry.applications.api;
-var { TextEditor: TextEditor$7 } = foundry.applications.ux;
+var { TextEditor: TextEditor$8 } = foundry.applications.ux;
 var DGNSGroupSheet = class extends ActorSheetMixin(sheets$8.ActorSheetV2) {
 	static DEFAULT_OPTIONS = {
 		actions: {},
@@ -2287,8 +2332,8 @@ function ItemSheetMixin(Base) {
 				const toggle = document.createElement("dgns-slidetoggle");
 				toggle.checked = this._mode === this.constructor.MODES.EDIT;
 				toggle.classList.add("mode-slider");
-				toggle.dataset.tooltip = "DGNS.SheetModeEdit";
-				toggle.setAttribute("aria-label", game.i18n.localize("DGNS.SheetModeEdit"));
+				toggle.dataset.tooltip = "UI.SHEETMODES.play";
+				toggle.setAttribute("aria-label", game.i18n.localize("UI.SHEETMODES.play"));
 				toggle.addEventListener("change", this._onChangeSheetMode.bind(this));
 				toggle.addEventListener("dblclick", (event) => event.stopPropagation());
 				header.insertAdjacentElement("afterbegin", toggle);
@@ -2319,7 +2364,7 @@ function ItemSheetMixin(Base) {
 		async _onChangeSheetMode(event) {
 			const { MODES } = this.constructor;
 			const toggle = event.currentTarget;
-			const label = game.i18n.localize(`DGNS.SheetMode${toggle.checked ? "Play" : "Edit"}`);
+			const label = game.i18n.localize(`UI.SHEETMODES.${toggle.checked ? "edit" : "play"}`);
 			toggle.dataset.tooltip = label;
 			toggle.setAttribute("aria-label", label);
 			this._mode = toggle.checked ? MODES.EDIT : MODES.PLAY;
@@ -2356,8 +2401,8 @@ function ItemSheetMixin(Base) {
 //#endregion
 //#region src/module/applications/item/mixins/background.sheet.mixin.mjs
 /**
-* Mixin obsługujący dynamiczne tło arkusza dla systemu Degenesis.
-* @param {Function} Base - Klasa bazowa (np. ItemSheetV2)
+* Mixin for customizable background images
+* @param {Function} Base - Base class
 */
 function BackgroundSheetMixin(Base) {
 	return class extends Base {
@@ -2412,7 +2457,7 @@ function BackgroundSheetMixin(Base) {
 //#endregion
 //#region src/module/applications/item/weapon.sheet.mjs
 var { api: api$6, sheets: sheets$6 } = foundry.applications;
-var { TextEditor: TextEditor$6 } = foundry.applications.ux;
+var { TextEditor: TextEditor$7 } = foundry.applications.ux;
 var { FilePicker: FilePicker$4 } = foundry.applications.apps;
 var DegenesisWeaponSheet = class extends ItemSheetMixin(sheets$6.ItemSheetV2) {
 	static DEFAULT_OPTIONS = {
@@ -2514,7 +2559,7 @@ var DegenesisWeaponSheet = class extends ItemSheetMixin(sheets$6.ItemSheetV2) {
 			modifications: this.document.system.modifications,
 			tabGroups: this.tabGroups,
 			mainTabs: this._prepareTabs("main"),
-			enriched: { description: await TextEditor$6.enrichHTML(this.document.system.description) }
+			enriched: { description: await TextEditor$7.enrichHTML(this.document.system.description) }
 		});
 		console.log(`WeaponSheet | Context`);
 		console.log(context);
@@ -2559,7 +2604,7 @@ var DegenesisWeaponSheet = class extends ItemSheetMixin(sheets$6.ItemSheetV2) {
 //#endregion
 //#region src/module/applications/item/modification.sheet.mjs
 var { api: api$5, sheets: sheets$5 } = foundry.applications;
-var { TextEditor: TextEditor$5 } = foundry.applications.ux;
+var { TextEditor: TextEditor$6 } = foundry.applications.ux;
 var DegenesisModificationSheet = class extends ItemSheetMixin(sheets$5.ItemSheetV2) {
 	static DEFAULT_OPTIONS = {
 		actions: {},
@@ -2639,7 +2684,7 @@ var DegenesisModificationSheet = class extends ItemSheetMixin(sheets$5.ItemSheet
 			effects: await this.item._prepareEffects(),
 			tabGroups: this.tabGroups,
 			mainTabs: this._prepareTabs("main"),
-			enriched: { description: await TextEditor$5.enrichHTML(this.document.system.description) }
+			enriched: { description: await TextEditor$6.enrichHTML(this.document.system.description) }
 		});
 		console.log(`Modification Sheet | Context`);
 		console.log(context);
@@ -2661,8 +2706,75 @@ var DegenesisModificationSheet = class extends ItemSheetMixin(sheets$5.ItemSheet
 //#endregion
 //#region src/module/applications/item/potential.sheet.mjs
 var { api: api$4, sheets: sheets$4 } = foundry.applications;
-var { TextEditor: TextEditor$4 } = foundry.applications.ux;
+var { TextEditor: TextEditor$5 } = foundry.applications.ux;
 var DegenesisPotentialSheet = class extends ItemSheetMixin(sheets$4.ItemSheetV2) {
+	static DEFAULT_OPTIONS = {
+		actions: {},
+		form: { submitOnChange: true },
+		window: {
+			controls: [],
+			resizable: true,
+			frame: true
+		},
+		position: {
+			width: 600,
+			height: 600
+		},
+		classes: ["dgns-legacy", "dgns-item"]
+	};
+	static PARTS = {
+		sheetTitle: { template: "systems/degenesisnext/templates/shared/sheet/title.hbs" },
+		sheetFooter: { template: "systems/degenesisnext/templates/shared/sheet/footer.hbs" }
+	};
+	static TABS = { main: {
+		initial: "description",
+		tabs: [
+			{
+				id: "description",
+				label: "DGNS.Description"
+			},
+			{
+				id: "effects",
+				label: "DGNS.Effects"
+			},
+			{
+				id: "qualities",
+				label: "DGNS.Qualities"
+			}
+		]
+	} };
+	async _prepareContext(options) {
+		const context = await super._prepareContext(options);
+		Object.assign(context, {
+			mode: this._mode,
+			document: this.document,
+			system: this.document.system,
+			fields: this.document.schema.fields,
+			systemFields: this.document.system.schema.fields,
+			isEditable: this.isEditable,
+			effects: await this.item._prepareEffects(),
+			tabGroups: this.tabGroups,
+			mainTabs: this._prepareTabs("main"),
+			enriched: { description: await TextEditor$5.enrichHTML(this.document.system.description) }
+		});
+		return context;
+	}
+	async _preparePartContext(partId, context, options) {
+		if (context.mainTabs?.[partId]) context.tab = context.mainTabs[partId];
+		return context;
+	}
+	/**
+	* Format window title.
+	*/
+	get title() {
+		return `${game.i18n.localize(this.document.type)}: ${this.document.name}`;
+	}
+};
+//#endregion
+//#region src/module/applications/item/legacy.sheet.mjs
+var { api: api$3, sheets: sheets$3 } = foundry.applications;
+var { TextEditor: TextEditor$4 } = foundry.applications.ux;
+var DegenesisLegacySheet = class extends ItemSheetMixin(sheets$3.ItemSheetV2) {
 	static DEFAULT_OPTIONS = {
 		actions: {},
 		form: { submitOnChange: true },
@@ -2726,80 +2838,13 @@ var DegenesisPotentialSheet = class extends ItemSheetMixin(sheets$4.ItemSheetV2)
 	}
 };
 //#endregion
-//#region src/module/applications/item/legacy.sheet.mjs
-var { api: api$3, sheets: sheets$3 } = foundry.applications;
-var { TextEditor: TextEditor$3 } = foundry.applications.ux;
-var DegenesisLegacySheet = class extends ItemSheetMixin(sheets$3.ItemSheetV2) {
-	static DEFAULT_OPTIONS = {
-		actions: {},
-		form: { submitOnChange: true },
-		window: {
-			controls: [],
-			resizable: true,
-			frame: true
-		},
-		position: {
-			width: 600,
-			height: 600
-		},
-		classes: ["dgns-legacy", "dgns-item"]
-	};
-	static PARTS = {
-		sheetTitle: { template: "systems/degenesisnext/templates/shared/sheet/title.hbs" },
-		sheetFooter: { template: "systems/degenesisnext/templates/shared/sheet/footer.hbs" }
-	};
-	static TABS = { main: {
-		initial: "description",
-		tabs: [
-			{
-				id: "description",
-				label: "DGNS.Description"
-			},
-			{
-				id: "effects",
-				label: "DGNS.Effects"
-			},
-			{
-				id: "qualities",
-				label: "DGNS.Qualities"
-			}
-		]
-	} };
-	async _prepareContext(options) {
-		const context = await super._prepareContext(options);
-		Object.assign(context, {
-			mode: this._mode,
-			document: this.document,
-			system: this.document.system,
-			fields: this.document.schema.fields,
-			systemFields: this.document.system.schema.fields,
-			isEditable: this.isEditable,
-			effects: await this.item._prepareEffects(),
-			tabGroups: this.tabGroups,
-			mainTabs: this._prepareTabs("main"),
-			enriched: { description: await TextEditor$3.enrichHTML(this.document.system.description) }
-		});
-		return context;
-	}
-	async _preparePartContext(partId, context, options) {
-		if (context.mainTabs?.[partId]) context.tab = context.mainTabs[partId];
-		return context;
-	}
-	/**
-	* Format window title.
-	*/
-	get title() {
-		return `${game.i18n.localize(this.document.type)}: ${this.document.name}`;
-	}
-};
-//#endregion
 //#region src/module/applications/item/culture.sheet.mjs
 /**
 * Extend the basic ItemSheet class to suppose system-specific logic and functionality.
 * @abstract
 */
 var { api: api$2, sheets: sheets$2 } = foundry.applications;
-var { TextEditor: TextEditor$2 } = foundry.applications.ux;
+var { TextEditor: TextEditor$3 } = foundry.applications.ux;
 var { FilePicker: FilePicker$3 } = foundry.applications.apps;
 var DegenesisCultureSheet = class extends BackgroundSheetMixin(ItemSheetMixin(sheets$2.ItemSheetV2)) {
 	static DEFAULT_OPTIONS = {
@@ -2842,7 +2887,7 @@ var DegenesisCultureSheet = class extends BackgroundSheetMixin(ItemSheetMixin(sh
 		context.tabGroups = this.tabGroups;
 		context.tabs = this.getTabs();
 		context.mode = this._mode;
-		context.enriched = { description: await TextEditor$2.enrichHTML(this.document.system.description) };
+		context.enriched = { description: await TextEditor$3.enrichHTML(this.document.system.description) };
 		console.log(`Sheet context:`);
 		console.log(context);
 		return context;
@@ -2904,7 +2949,7 @@ var DegenesisCultureSheet = class extends BackgroundSheetMixin(ItemSheetMixin(sh
 //#endregion
 //#region src/module/applications/item/concept.sheet.mjs
 var { api: api$1, sheets: sheets$1 } = foundry.applications;
-var { TextEditor: TextEditor$1 } = foundry.applications.ux;
+var { TextEditor: TextEditor$2 } = foundry.applications.ux;
 var { FilePicker: FilePicker$2 } = foundry.applications.apps;
 var DegenesisConceptSheet = class extends BackgroundSheetMixin(ItemSheetMixin(sheets$1.ItemSheetV2)) {
 	static DEFAULT_OPTIONS = {
@@ -2936,7 +2981,7 @@ var DegenesisConceptSheet = class extends BackgroundSheetMixin(ItemSheetMixin(sh
 		context.systemFields = this.document.system.schema.fields;
 		context.isEditable = this.isEditable;
 		context.mode = this._mode;
-		context.enriched = { description: await TextEditor$1.enrichHTML(this.document.system.description) };
+		context.enriched = { description: await TextEditor$2.enrichHTML(this.document.system.description) };
 		return context;
 	}
 	/**
@@ -2962,7 +3007,7 @@ var DegenesisConceptSheet = class extends BackgroundSheetMixin(ItemSheetMixin(sh
 //#endregion
 //#region src/module/applications/item/cult.sheet.mjs
 var { api, sheets } = foundry.applications;
-var { TextEditor } = foundry.applications.ux;
+var { TextEditor: TextEditor$1 } = foundry.applications.ux;
 var { FilePicker: FilePicker$1 } = foundry.applications.apps;
 var DegenesisCultSheet = class extends BackgroundSheetMixin(ItemSheetMixin(sheets.ItemSheetV2)) {
 	static DEFAULT_OPTIONS = {
@@ -2993,7 +3038,7 @@ var DegenesisCultSheet = class extends BackgroundSheetMixin(ItemSheetMixin(sheet
 		context.systemFields = this.document.system.schema.fields;
 		context.isEditable = this.isEditable;
 		context.mode = this._mode;
-		context.enriched = { description: await TextEditor.enrichHTML(this.document.system.description) };
+		context.enriched = { description: await TextEditor$1.enrichHTML(this.document.system.description) };
 		console.log(`CultSheet | Context`);
 		console.log(context);
 		return context;
@@ -4032,7 +4077,7 @@ var CachedReferenceField = class extends SchemaField$28 {
 //#region src/module/dice/base.roll.mjs
 /** @import Roll from '@client/dice/roll.mjs*/
 var { Roll: Roll$1 } = foundry.dice;
-var { renderTemplate: renderTemplate$1 } = foundry.applications.handlebars;
+var { renderTemplate: renderTemplate$2 } = foundry.applications.handlebars;
 /**
 * Default roll class. Use it for building variations (like action roll,
 * complex roll etc.)
@@ -4121,7 +4166,7 @@ var DGNSRoll = class extends Roll$1 {
 			resultLabel: game.i18n.localize(`DGNS.ROLL.${this.result}`)
 		};
 		const template = this.constructor.CHAT_TEMPLATE;
-		const content = await renderTemplate$1(template, chatData);
+		const content = await renderTemplate$2(template, chatData);
 		const messageOptions = foundry.utils.mergeObject({
 			user: game.user.id,
 			style: CONST.CHAT_MESSAGE_STYLES ? CONST.CHAT_MESSAGE_STYLES.ROLL : void 0,
@@ -4275,7 +4320,7 @@ var DGNSActionRollDialog = class extends HandlebarsApplicationMixin$1(Applicatio
 };
 //#endregion
 //#region src/module/dice/combination.roll.mjs
-var { renderTemplate } = foundry.applications.handlebars;
+var { renderTemplate: renderTemplate$1 } = foundry.applications.handlebars;
 /**
 * Combination roll class - using two instances of basic rolls.
 */
@@ -4293,7 +4338,7 @@ var DGNSCombinationRoll = class {
 		return this;
 	}
 	async toMessage(messageData = {}) {
-		const content = await renderTemplate("systems/degenesisnext/templates/chat/combination.roll.hbs", {
+		const content = await renderTemplate$1("systems/degenesisnext/templates/chat/combination.roll.hbs", {
 			primary: this.primary,
 			secondary: this.secondary,
 			totalTriggers: this.primary.triggers + this.secondary.triggers
@@ -4764,6 +4809,7 @@ var DGNSActor = class extends Actor {
 	}
 	/**
 	* Prepare inventory for beeing displayed on actor's sheet.
+	* Added both groups / keyed structure.
 	* @returns
 	*/
 	_prepareInventory() {
@@ -4788,7 +4834,7 @@ var DGNSActor = class extends Actor {
 			if (groups.includes(item.type)) inventoryMap[item.type].push(item);
 			else inventoryMap["other"].push(item);
 		}
-		return [...groups, "other"].map((group) => {
+		const byGroup = [...groups, "other"].map((group) => {
 			const mode = sortModes[group] || "manual";
 			const items = inventoryMap[group];
 			items.sort((a, b) => {
@@ -4803,6 +4849,10 @@ var DGNSActor = class extends Actor {
 				sortIcon: mode === "alpha" ? "fa-arrow-down-a-z" : "fa-sort"
 			};
 		});
+		return {
+			groups: byGroup,
+			types: Object.fromEntries(byGroup.map((g) => [g.id, g]))
+		};
 	}
 	/**
 	* Create embedded item in actor.
@@ -4876,6 +4926,18 @@ var DGNSItem = class extends Item {
 		super.prepareDerivedData();
 		if (this.system?.qualities) {}
 		if (this.system?.modifications) this.system.modifications.used = 0;
+	}
+	/**
+	* Preparing data format for displaying in chat messages and dropdowns
+	* Just basic implementation for now, can be extended with arguments that takes the item.type
+	* todo: seperate methods for different item types ?
+	*/
+	async _getChatData() {
+		const data = this.system;
+		return {
+			description: await TextEditor.enrichHTML(data.description),
+			qualities: data.qualities
+		};
 	}
 	async _manageQualities(action, qualityKey = null, field = null, value = null) {
 		console.log(`Manage quality fired. ${action} | ${qualityKey} | ${field} | ${value}|`);
@@ -4954,6 +5016,50 @@ var DGNSItem = class extends Item {
 	}
 	get isSonic() {
 		if (this.type = "weapon") return this.system.group == "sonic";
+	}
+};
+//#endregion
+//#region src/module/documents/chat.mjs
+/** @import ChatMessage from '@common/documents/chat-message.mjs*/
+var { renderTemplate } = foundry.applications.handlebars;
+var DGNSChatMessage = class DGNSChatMessage extends ChatMessage {
+	static TEMPLATES = { default: "systems/degenesisnext/templates/chat/default.hbs" };
+	get customType() {
+		return this.getFlag("degenesisnext", "type") ?? "default";
+	}
+	/**
+	* Build the template context.
+	*/
+	async _getTemplateData() {
+		return {
+			message: this,
+			speaker: this.speaker,
+			isGM: game.user.isGM,
+			isAuthor: this.isAuthor,
+			...this.getFlag("degenesisnext", "actionData") ?? {}
+		};
+	}
+	/** Using base Foundry message and inserting proper template  */
+	async renderHTML() {
+		const el = await super.renderHTML();
+		const content = await renderTemplate(DGNSChatMessage.TEMPLATES[this.customType] ?? DGNSChatMessage.TEMPLATES.default, await this._getTemplateData());
+		el.querySelector(".message-content").innerHTML = content;
+		return el;
+	}
+	/**
+	* @param {string} type        - Must match a key in TEMPLATES
+	* @param {object} actionData  - Arbitrary payload passed to the template
+	* @param {object} [data]      - Extra ChatMessage fields
+	*/
+	static async createAction(type, actionData, data = {}) {
+		return this.create({
+			content: `[${type}]`,
+			flags: { degenesisnext: {
+				type,
+				actionData
+			} },
+			...data
+		});
 	}
 };
 ActiveEffect;
@@ -5329,6 +5435,20 @@ var DetailsFields = class {
 			})
 		}) };
 	}
+	static get currency() {
+		return { currency: new SchemaField$22({
+			drafts: new NumberField$23({
+				integer: true,
+				nullable: false,
+				initial: 0
+			}),
+			dinars: new NumberField$23({
+				integer: true,
+				nullable: false,
+				initial: 0
+			})
+		}) };
+	}
 	static get backrounds() {
 		return { backgrounds: new SchemaField$22({
 			allies: new NumberField$23({
@@ -5423,6 +5543,7 @@ var CharacterData = class extends foundry.abstract.TypeDataModel {
 			...GeneralFields$1.fighting,
 			...ConditionFields.condition,
 			...DetailsFields.details,
+			...DetailsFields.currency,
 			...DetailsFields.backrounds,
 			...DetailsFields.biography,
 			...IdentityFields.identity
@@ -6274,6 +6395,7 @@ CONFIG.Dice.rolls = [Roll, DGNSRoll];
 CONFIG.Dice.DGNSRoll = DGNSRoll;
 CONFIG.Actor.documentClass = DGNSActor;
 CONFIG.Item.documentClass = DGNSItem;
+CONFIG.ChatMessage.documentClass = DGNSChatMessage;
 CONFIG.Actor.dataModels = config$1;
 CONFIG.Item.dataModels = config;
 CONFIG.ui.pause = DGNSGamePause;
@@ -6424,3 +6546,5 @@ function _configureFonts() {
 	};
 }
 //#endregion
+
+//# sourceMappingURL=degenesis.mjs.map

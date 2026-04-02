@@ -24,60 +24,6 @@
     --font-h5-size: var(--font-size-10);
   }
 
-  .theme-dark * {
-    --dgns-ui-primary: var(--c-gold-4);
-    --dgns-ui-secondary: var(--c-gold);
-    --dgns-ui-accent: var(--c-resin-4);
-    --dgns-ui-contrast: var(--c-pred);
-
-    --dgns-ui-background: rgba(15, 15, 15, 0.98);
-
-    --dgns-ui-control-content: var(--c-gold-4);
-    --dgns-ui-hover-control-content: var(--c-gold-2);
-    --dgns-ui-active-control-content: var(--c-resin-3);
-
-    --dgns-ui-control-border: var(--c-gold-7);
-    --dgns-ui-hover-control-border: var(--c-gold-3);
-    --dgns-ui-active-control-border: var(--c-resin-4);
-
-    --dgns-ui-control-bg: var(--c-gold-9);
-    --dgns-ui-hover-control-bg: var(--c-gold-8);
-    --dgns-ui-active-control-bg: var(--c-resin-8);
-
-    --dgns-ui-primary-text: var(--c-gold-4);
-    --dgns-ui-secondary-text: var(--c-gold-4);
-
-    --color-text-primary: var(--dgns-ui-primary);
-    --menu-background: var(--dgns-ui-background);
-    --input-background-color: var(--dgns-ui-background);
-  }
-
-  .theme-light {
-    --dgns-ui-primary: var(--c-grey-8);
-    --dgns-ui-secondary: var(--c-resin-5);
-
-    --dgns-ui-background: rgba(245, 245, 245, 0.98);
-    --dgns-ui-accent: var(--c-pred-5);
-
-    --dgns-ui-primary-text: var(--c-grey-8);
-    --dgns-ui-secondary-text: var(--c-pred-6);
-
-    --dgns-ui-control-content: var(--c-grey-8);
-    --dgns-ui-hover-control-content: var(--c-grey-5);
-    --dgns-ui-active-control-content: var(--c-resin-2);
-
-    --dgns-ui-control-border: var(--c-grey-8);
-    --dgns-ui-hover-control-border: var(--c-grey-6);
-    --dgns-ui-active-control-border: var(--c-pred);
-
-    --dgns-ui-control-bg: var(--c-white-2);
-    --dgns-ui-hover-control-bg: var(--c-white-0);
-    --dgns-ui-active-control-bg: var(--c-white-0);
-
-    --dgns-ui-primary-text: var(--c-grey-8);
-    --dgns-ui-secondary-text: var(--c-gold-4);
-  }
-
   h1,
   h2,
   h3,
@@ -151,7 +97,7 @@
 
       &.active {
         color: var(--dgns-ui-active-control-content);
-        background: var(--dgns-ui-active-control-background);
+        background: var(--dgns-ui-active-control-bg);
         border-color: var(--dgns-ui-active-control-border);
 
         span.count {

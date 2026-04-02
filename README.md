@@ -1,7 +1,7 @@
 ![image](./docs/img/system-banner.webp)
 
 ![CurrentIssues](https://img.shields.io/github/issues/greedyj4ck/degenesis-next-foundryvtt?style=for-the-badge)
-![GitHub release (latest by date)](https://img.shields.io/github/downloads/greedyj4ck/degenesis-next-foundryvtt/latest/total?style=for-the-badge)
+![GitHub release (latest by date)](https://img.shields.io/github/downloads/greedyj4ck/degenesis-next-foundryvtt/latest/dist.zip?style=for-the-badge)
 
 [![CourtOfThePiast](https://discordapp.com/api/guilds/862308554765500447/widget.png?style=banner2)](https://discord.com/invite/MC6gEVvnzm)
 
@@ -9,15 +9,23 @@ An unoffical, community-supported system for playing [Degenesis](https://degenes
 
 Degenesis® is ™ SIXMOREVODKA Studio GmbH. All rights reserved. This module contains information and graphics from Katharsys that have been used with permission from the publisher. All used content from the handbook belong to the respective authors.
 
+Special thanks to all teams working on other Foundry's systems implementations which code I could use as a foundation, like foundryvtt/dnd5e, MetaMorphic-Digital/draw-steel,
+
 ## Work in progress disclaimer
 
 This release represents an extremely early alpha version, in which approximately 80% of features are either not yet implemented or do not function correctly. It is intended solely for preliminary testing and gathering feedback.
+
+## A.I. disclaimer
+
+Some of the features were coded with help of a Claude language model. This was a tough decision to make, but with my limited time resources and team size of one, this was the only logical solution. No worries though - each line of code was reviewed and modified accordingly to proper needs.
+
+**No AI was used for art, icons, in-game content etc.**
 
 ## About NEXT
 
 Although the system is based on the original foundry implementation, a lot of things related to the data structures of actors or objects have changed, so the systems are not compatible. Writing migration scripts with such large changes, requires a lot of work (including testing all critical cases) and spare time.
 
-## Supporters
+## Sponsors
 
 **Cameron**
 

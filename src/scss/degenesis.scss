@@ -3,24 +3,52 @@
     -------------
     Version  0.1
 
-    */
+   */
 
 @forward "colors";
 
-@use "fonts"; // fonts classes
-@use "ui/foundry"; // foundry ui styling
-@use "ui/components"; // foundry ui specific compnents styling
-// @use "ui/prosemirror"; // foundry ui prosemirror styling
+/* ---------------------------------- */
+/*            // Abstracts            */
+/* ---------------------------------- */
+
+@use "abstracts/animations";
+@use "abstracts/variables"; // default variables for UI
+@use "abstracts/utils";
 
 //@use "abstracts/scrollbar"; // global scrollbar styling
+/* ---------------------------------- */
+/*                Fonts               */
+/* ---------------------------------- */
+@use "fonts"; // fonts classes
 
-// sheets
+/* ---------------------------------- */
+/*               Themes               */
+/* ---------------------------------- */
+@use "themes";
 
-@use "sheets/index";
-/* @use "sheets/sheet.common" as sheetCommon; // common set of css classes for functionality like dropdowns
-@use "sheets/sheet.character" as sheetCharacter; // specific actorsheet classes
-@use "sheets/sheet.culture" as sheetCulture; // specific style for item / culture sheet */
-// apps
-@use "apps/app.roll" as appRollDialog;
+/* ---------------------------------- */
+/*             Components             */
+/* ---------------------------------- */
+@use "ui/components"; // Custom DGNS components (discomfort/vision buttons, etc.)
+
+/* ---------------------------------- */
+/*               Sheets               */
+/* ---------------------------------- */
+
+@use "sheets";
+
+/* ---------------------------------- */
+/*                Apps                */
+/* ---------------------------------- */
+
+@use "apps/rolls";
+@use "apps/chat";
+
+/* ---------------------------------- */
+/*      Vendor styles (3rd party)     */
+/* ---------------------------------- */
+
+@use "vendor/foundry"; // foundry ui styling
+// @use "vendor/prosemirror"; // !fix before implementing
 
 @layer foundry, dgns;

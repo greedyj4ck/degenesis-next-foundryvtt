@@ -157,7 +157,9 @@ export default class DGNSCharacterSheet extends ActorSheetMixin(
     },
   };
 
-  /** Preparing sheet context */
+  /** Preparing sheet context
+   * @this {DGNSCharacterSheet}
+   */
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
 
@@ -207,7 +209,26 @@ export default class DGNSCharacterSheet extends ActorSheetMixin(
       },
     });
 
-    console.log(`context: `);
+    // Preparing expanded sections.
+
+    if (context.inventory?.groups) {
+      for (const group of context.inventory.groups) {
+        for (const item of group.items) {
+          item.expanded = await item._getChatData({ secrets: item.isOwner });
+          if (!this.expandedSections.has(item.id)) continue;
+
+          // clean up deleted items
+          if (!this.document.items.has(item.id)) {
+            this.expandedSections.delete(item.id);
+            continue;
+          }
+          // Grabbing state and data for expanded views
+          item.isExpanded = true;
+        }
+      }
+    }
+
+    console.log(`Context for: ${this.actor.name}`);
     console.dir(context);
     return context;
   }
@@ -326,8 +347,13 @@ export default class DGNSCharacterSheet extends ActorSheetMixin(
     super._onResize(event);
   }
 
-  async _onDropActor(data) {
+  async _onDropActor(event, data) {
+    console.log(`character sheet mixin`);
+
+    console.log(event, data);
+
     const actor = await Actor.implementation.fromDropData(data);
+
     if (actor.type === "group") {
       await this.actor.setGroup(actor);
     }
@@ -520,6 +546,9 @@ export default class DGNSCharacterSheet extends ActorSheetMixin(
     };
   }
 
+  // ! Deprecated, do not use.
+  // ! Transitionting to proper render cycles.
+
   async toggleDescription(event, target) {
     const entry = target.closest(".entry.item");
     const itemId = entry.dataset.itemId;
@@ -539,7 +568,7 @@ export default class DGNSCharacterSheet extends ActorSheetMixin(
     };
 
     const html = await renderTemplate(
-      "systems/degenesisnext/templates/shared/item/dropdown.hbs",
+      "systems/degenesisnext/templates/shared/item/summary.hbs",
       templateData,
     );
 

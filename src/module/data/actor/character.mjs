@@ -32,6 +32,7 @@ export default class CharacterData extends foundry.abstract.TypeDataModel {
       ...GeneralFields.fighting,
       ...ConditionFields.condition,
       ...DetailsFields.details,
+      ...DetailsFields.currency,
       ...DetailsFields.backrounds,
       ...DetailsFields.biography,
       ...IdentityFields.identity, // Culture, concept, class items UUID reference

@@ -12,6 +12,7 @@ export default defineConfig({
     emptyOutDir: false,
     copyPublicDir: false,
     cssCodeSplit: false,
+    sourcemap: true, // important for debugging
     minify: false,
     lib: {
       entry: path.resolve(__dirname, "src/degenesis.mjs"),
@@ -33,5 +34,13 @@ export default defineConfig({
         },
       },
     },
+  },
+  server: {
+    watch: {
+      usePolling: false, // optional, helps with FS watching issues
+    },
+  },
+  esbuild: {
+    sourcemap: true, // for esbuild transforms
   },
 });

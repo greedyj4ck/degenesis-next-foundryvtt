@@ -7,6 +7,8 @@ export async function registerHandlebarsHelpers() {
     return game.user.isGM;
   });
 
+  Handlebars.registerHelper("uppercase", (str) => str?.toUpperCase() ?? "");
+
   Handlebars.registerHelper("titleCase", (str) => {
     if (!str) return "";
     return str.charAt(0).toUpperCase() + str.slice(1);
@@ -38,5 +40,11 @@ export async function registerHandlebarsHelpers() {
 
   Handlebars.registerHelper("prettyJson", function (context) {
     return JSON.stringify(context, null, 2);
+  });
+
+  // Concat multiple strings for game.i18n.localize
+  Handlebars.registerHelper("localizeConcat", (...parts) => {
+    parts.pop(); // remove Handlebars options object
+    return game.i18n.localize(parts.join(""));
   });
 }

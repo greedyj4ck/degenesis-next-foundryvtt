@@ -55,6 +55,11 @@
     "s": "S",
     "t": "T",
 
+    "SHEETMODES": {
+      "play": "Play",
+      "edit": "Edit"
+    },
+
     "TITLES": {
       "primalFocus": "Primal or Focus",
       "faithWill": "Faith or Willpower"
@@ -429,6 +434,17 @@
       "modernEnergyWeapons": "Modern energy weapons",
       "modernGuns": "Modern guns",
       "armor": "Armor"
+    },
+
+    "EXPERIENCE": {
+      "current": "Current",
+      "spent": "Spent",
+      "total": "Total"
+    },
+
+    "CURRENCY": {
+      "drafts": "Drafts",
+      "dinars": "Dinars"
     }
   },
 

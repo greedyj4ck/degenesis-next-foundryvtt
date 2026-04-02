@@ -48,8 +48,10 @@ export default function () {
     }
   });
 
-  Hooks.on("renderChatLog", async (app, html) => {
-    console.log("hooks.js renderChat", { app, html });
+  Hooks.on("renderChatLog", (application, element) => {
+    // fixing light-theme on chat
+    const chatLog = element.querySelector(".chat-log");
+    chatLog.classList.remove("theme-light");
   });
 }
 

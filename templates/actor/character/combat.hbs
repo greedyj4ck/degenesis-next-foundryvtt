@@ -6,31 +6,155 @@
         <legend>STATE</legend>
         <div class="state active">
             <div class="label">ACTIVE</div>
-            <input class="field-checkbox" type="checkbox" name="system.state.active" {{checked system.state.active}} />
+            <div class="value"> <input class="field-checkbox" type="checkbox" name="system.state.active"
+                    {{checked system.state.active}} /></div>
+
         </div>
-        <div class="state active">
+        <div class="state motion">
             <div class="label">IN MOTION</div>
-            <input class="field-checkbox" type="checkbox" name="system.state.active" {{checked system.state.active}} />
+            <div class="value"> <input class="field-checkbox" type="checkbox" name="system.state.active"
+                    {{checked system.state.active}} /></div>
+
         </div>
-        <div class="state active">
-            <div class="label">IN MOTION</div>
-            <input class="field-checkbox" type="checkbox" name="system.state.active" {{checked system.state.active}} />
+        <div class="state cover">
+            <div class="label">COVER</div>
+
+            <div class="value">{{system.state.cover}}</div>
         </div>
 
+        <div class="state passive">
+            <div class="label">PASSIVE DEFENSE</div>
+            <div class="value">{{system.fighting.passiveDefense}}</div>
+        </div>
 
+        <div class="state armor">
+            <div class="label">ARMOR</div>
+            <div class="value">{{system.general.armor}}</div>
+        </div>
 
+        <div class="state vision">
+            <div class="label">VISION MALLUS</div>
+            <div class="value">{{system.state.vision.mallus}}</div>
+        </div>
 
+        <div class="state discomfort">
+            <div class="label">DISCOMFORT MALLUS</div>
+            <div class="value">{{system.state.discomfort.mallus}}</div>
+        </div>
 
         </div>
     </fieldset>
 
     <fieldset>
         <legend>ACTIONS</legend>
+
+        <div class="action">
+            <div class="label">INITIATIVE</div>
+            <div class="value"><button>4D</button></div>
+        </div>
+        <div class="action">
+            <div class="label">BRAWL ATTACK</div>
+            <div class="value"> <button>2D</button></div>
+        </div>
+        <div class="action">
+            <div class="label">SNEAK ATTACK</div>
+            <div class="value"><button>1D</button></div>
+        </div>
+        <div class="action">
+            <div class="label">DISARM</div>
+            <div class="value"><button>2D</button></div>
+        </div>
+        <div class="action">
+            <div class="label">FEINT</div>
+            <div class="value"> <button>5D</button></div>
+        </div>
+        <div class="action">
+            <div class="label">DODGE</div>
+            <div class="value"> <button>4D</button></div>
+        </div>
+        <div class="action">
+            <div class="label">MENTAL DEFENSE</div>
+            <div class="value"> <button>8D</button></div>
+        </div>
+
     </fieldset>
 
-    <fieldset>
-        <legend>WEAPONS</legend>
-    </fieldset>
+
+    <div class="items">
+        <fieldset class="weapons document-table">
+            <legend>WEAPONS</legend>
+            <div class="entries">
+                {{#each inventory.types.weapon.items as |item|}}
+                    <div class="entry item" data-drag data-item-id="{{item.id}}" data-action="openItemContextMenu">
+                        <div class="field image">
+                            <img src="{{item.img}}">
+                        </div>
+                        <div class="field name">
+                            <a class="caption" data-action="editItem">{{item.name}}</a>
+                            <div class="subcaption">{{localizeConcat "DGNS.WEAPON." item.system.group}}</div>
+                        </div>
+
+
+                        <div class="field encumbrance">
+                            {{item.system.encumbrance}}
+                        </div>
+                        <div class="field controls">
+
+                            <a data-action="toggleEquipped">
+                                <i class="fa-solid fa-shield-halved {{#if item.system.equipped}}active{{/if}}"></i>
+                            </a>
+                            <a data-action="toggleDropped">
+                                <i class="fa-solid fa-sack-xmark {{#if item.system.dropped}}active{{/if}}"></i></a>
+                            <a data-action="toggleDescription"><i class="fa-solid fa-square-caret-down"></i></a>
+                            <a data-action="openItemMenu"> <i class="fa-solid fa-ellipsis-vertical"></i></a>
+
+                        </div>
+
+                    </div>
+                {{/each}}
+            </div>
+
+        </fieldset>
+
+        <fieldset class="armor document-table">
+            <legend>ARMOR</legend>
+            <div class="entries">
+                {{#each inventory.types.armor.items as |item|}}
+                    <div class="entry item" data-drag data-item-id="{{item.id}}" data-action="openItemContextMenu">
+                        <div class="field image">
+                            <img src="{{item.img}}">
+                        </div>
+                        <div class="field name">
+                            <a class="caption" data-action="editItem">{{item.name}}</a>
+                            <div class="subcaption">{{item.system.group}}</div>
+                        </div>
+
+                        <div class="field encumbrance">
+                            {{item.system.encumbrance}}
+                        </div>
+
+                        <div class="field controls">
+
+                            <a data-action="toggleEquipped">
+                                <i class="fa-solid fa-shield-halved {{#if item.system.equipped}}active{{/if}}"></i>
+                            </a>
+                            <a data-action="toggleDropped">
+                                <i class="fa-solid fa-sack-xmark {{#if item.system.dropped}}active{{/if}}"></i></a>
+                            <a data-action="toggleDescription"><i class="fa-solid fa-square-caret-down"></i></a>
+                            <a data-action="openItemMenu"> <i class="fa-solid fa-ellipsis-vertical"></i></a>
+
+                        </div>
+
+                    </div>
+                {{/each}}
+            </div>
+        </fieldset>
+
+
+    </div>
+
+
+
 
 
 

@@ -1,0 +1,40 @@
+<div class="entries">
+    {{#each ctx as |potential|}}
+        <div class="entry item collapsible" data-drag data-item-id="{{potential.id}}" data-expand-id="{{potential.id}}"
+            data-action=" openItemContextMenu">
+
+
+            <div class="entry-row">
+                <div class="field image">
+                    <img src="{{potential.img}}">
+                </div>
+                <div class="field name">
+                    <a class="caption" data-action="editItem">{{potential.name}}</a>
+                    <div class="subcaption">{{potential.system.group}}</div>
+                </div>
+
+                <div class="field origin">
+                    {{potential.system.origin}}
+                </div>
+
+
+                <div class="field level">
+                    {{potential.system.level}}
+                </div>
+
+                <div class="field controls">
+                    <a data-action="toggleExpanded"><i class="fa-solid fa-square-caret-down"></i></a>
+                    <a data-action="openItemMenu"> <i class="fa-solid fa-ellipsis-vertical"></i></a>
+                </div>
+            </div>
+
+
+            <div class="entry-row entry-dropdown collapsible-content">
+                {{> "dgns.item.summary" ctx=pontential.expanded }}
+            </div>
+
+
+
+        </div>
+    {{/each}}
+</div>

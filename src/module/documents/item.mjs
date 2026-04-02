@@ -49,6 +49,20 @@ export default class DGNSItem extends Item {
     }
   }
 
+  /**
+   * Preparing data format for displaying in chat messages and dropdowns
+   * Just basic implementation for now, can be extended with arguments that takes the item.type
+   * todo: seperate methods for different item types ?
+   */
+
+  async _getChatData() {
+    const data = this.system;
+    return {
+      description: await TextEditor.enrichHTML(data.description),
+      qualities: data.qualities,
+    };
+  }
+
   /* -------------------------------------------------------------------------- */
   /*                                  Qualities                                 */
   /* -------------------------------------------------------------------------- */

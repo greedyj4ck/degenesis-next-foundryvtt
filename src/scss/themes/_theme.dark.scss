@@ -1,0 +1,45 @@
+@layer dgns.theme {
+  .theme-dark {
+    // Text / elements colors
+    --dgns-ui-primary: var(--c-gold-4);
+    --dgns-ui-secondary: var(--c-gold-7);
+
+    --dgns-ui-primary-text: var(--c-gold-4);
+    --dgns-ui-secondary-text: var(--c-gold-4);
+
+    --dgns-ui-accent: var(--c-pred-5);
+    --dgns-ui-contrast: var(--c-pred);
+
+    // Tabs
+    --dgns-ui-tabs-primary: var(--c-gold-7);
+    --dgns-ui-tabs-secondary: var(--c-resin-7);
+
+    // Backgrounds
+    --dgns-ui-background: hsla(from var(--dgns-ui-secondary) h 0 6/0.98);
+
+    // UI elements
+    --dgns-ui-control-content: var(--c-gold-4);
+    --dgns-ui-hover-control-content: var(--c-gold-2);
+    --dgns-ui-active-control-content: var(--c-resin-3);
+
+    --dgns-ui-control-border: var(--c-gold-7);
+    --dgns-ui-hover-control-border: var(--c-gold-3);
+    --dgns-ui-active-control-border: var(--c-resin-4);
+
+    --dgns-ui-control-bg: var(--c-gold-9);
+    --dgns-ui-hover-control-bg: var(--c-gold-8);
+    --dgns-ui-active-control-bg: var(--c-resin-8);
+
+    --color-text-primary: var(--dgns-ui-primary);
+    --menu-background: var(--dgns-ui-background);
+    --input-background-color: var(--dgns-ui-background);
+
+    // Utilities
+    --hr-gradient: linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--dgns-ui-secondary) 50%,
+      transparent 100%
+    );
+  }
+}

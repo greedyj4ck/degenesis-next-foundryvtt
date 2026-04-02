@@ -8,6 +8,8 @@ import VisionElement from "./vision.mjs";
 import PrimalFocusSwitch from "./primal-focus.mjs";
 import FaithWillSwitch from "./faith-willpower.mjs";
 
+// todo: check if they can be moved later to DEFAULT_OPTIONS of mixins.
+
 window.customElements.define("dgns-checkbox", CheckboxElement);
 window.customElements.define("dgns-slidetoggle", SlideToggleElement);
 window.customElements.define("dgns-vision", VisionElement);

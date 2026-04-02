@@ -44,6 +44,19 @@ export default class DetailsFields {
     };
   }
 
+  static get currency() {
+    return {
+      currency: new SchemaField({
+        drafts: new NumberField({
+          integer: true,
+          nullable: false,
+          initial: 0,
+        }),
+        dinars: new NumberField({ integer: true, nullable: false, initial: 0 }),
+      }),
+    };
+  }
+
   static get backrounds() {
     return {
       backgrounds: new SchemaField({

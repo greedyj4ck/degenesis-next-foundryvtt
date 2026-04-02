@@ -28,7 +28,12 @@ export default function ActorSheetMixin(Base) {
       EDIT: 2,
     };
 
+    // Default Options avaialable on all sheets.
+
     static DEFAULT_OPTIONS = {
+      actions: {
+        toggleExpanded: DegenesisActorSheet.#toggleExpanded,
+      },
       dragDrop: [{ dragSelector: "[data-drag]", dropSelector: null }],
     };
 
@@ -47,6 +52,51 @@ export default function ActorSheetMixin(Base) {
 
       super(object, options);
       this.#dragDrop = this.#createDragDropHandlers();
+    }
+
+    // Based on dnd5e implementation
+    /* -------------------------------------------- */
+    /*  Properties                                  */
+    /* -------------------------------------------- */
+
+    /**
+     * Expanded states for collapsible sections to persist between renders.
+     */
+    #expandedSections = new Map();
+
+    // Using a getter to access private property
+    get expandedSections() {
+      return this.#expandedSections;
+    }
+
+    /**
+     *
+     * Handling collapsible sections. Based on dnd5e implementation, but items are hidden
+     * on defautl and we are toggling 'Expanded' instead 'Collapsed' to not confuse
+     * future generation of programmer`s.
+     *
+     * .collapsible is the required class for elements
+     *
+     * @this {*}
+     * @param {*} event
+     * @param {*} target
+     * @returns
+     */
+
+    static #toggleExpanded(event, target) {
+      const collapsible = target.closest(".collapsible");
+      if (!collapsible) return;
+
+      // magic is happening here...
+
+      collapsible.classList.remove("expanded--restored"); // stopping animation on re-render
+      collapsible.classList.toggle("expanded");
+
+      // if the item is expanded, add it to #expandedSections
+      this.#expandedSections.set(
+        target.closest("[data-expand-id]")?.dataset.expandId,
+        collapsible.classList.contains("expanded"),
+      );
     }
 
     /* ---------------------------------- */
@@ -203,23 +253,36 @@ export default function ActorSheetMixin(Base) {
 
       // Adding edit mode toggle slider
       const header = html.children[0];
+
       if (this.isEditable) {
+        const modeIcon = document.createElement("i");
+        modeIcon.classList.add("mode-icon");
+
         const toggle = document.createElement("dgns-slidetoggle");
         toggle.checked = this._mode === this.constructor.MODES.EDIT;
+
+        modeIcon.classList.add("fa-solid");
+        modeIcon.classList.add(toggle.checked ? "fa-pen" : "fa-play");
+
         toggle.classList.add("mode-slider");
-        toggle.dataset.tooltip = "DGNS.SheetModeEdit";
+        toggle.dataset.tooltip = "UI.SHEETMODES.play";
         toggle.setAttribute(
           "aria-label",
-          game.i18n.localize("DGNS.SheetModeEdit"),
+          game.i18n.localize("UI.SHEETMODES.play"),
         );
 
         // toggle.addEventListener("change", this._onChangeSheetMode.bind(this));
         toggle.addEventListener("change", (event) => {
           event.stopPropagation();
           event.stopImmediatePropagation();
+
+          modeIcon.classList.toggle("fa-pen", toggle.checked);
+          modeIcon.classList.toggle("fa-play", !toggle.checked);
+
           this._onChangeSheetMode(event);
         });
         toggle.addEventListener("dblclick", (event) => event.stopPropagation());
+        header.insertAdjacentElement("afterbegin", modeIcon);
         header.insertAdjacentElement("afterbegin", toggle);
       }
 
@@ -247,33 +310,33 @@ export default function ActorSheetMixin(Base) {
       return context;
     }
 
+    /** @inheritdoc */
+    _replaceHTML(result, content, options) {
+      /**
+       * Function used for restoring state of collapsible containers.
+       */
+      for (const part of Object.values(result)) {
+        for (const element of part.querySelectorAll("[data-expand-id]")) {
+          const isExpanded = this.#expandedSections.get(
+            element.dataset.expandId,
+          );
+
+          const collapsible = element.classList.contains("collapsible")
+            ? element
+            : element.querySelector(".collapsible");
+
+          collapsible?.classList.toggle("expanded", isExpanded ?? false);
+          collapsible?.classList.toggle(
+            "expanded--restored",
+            isExpanded ?? false,
+          );
+        }
+      }
+
+      super._replaceHTML(result, content, options);
+    }
+
     activateListeners(html) {
-      // section dropdown containers
-      //todo: move to separate helper function
-      html.querySelectorAll(".section-dropdown").forEach((sectionEl) => {
-        const sectionId = sectionEl.dataset.section;
-        const body = sectionEl.querySelector(".section-body");
-        const toggleBtn = sectionEl.querySelector(".dropdown-toggle");
-
-        // Domyślny stan z HTML jeśli nie był zapisany wcześniej
-        if (!(sectionId in this._dropdownState)) {
-          this._dropdownState[sectionId] =
-            sectionEl.dataset.collapsed === "true" ? true : false;
-        }
-
-        // Ustaw klasę w zależności od stanu
-        if (this._dropdownState[sectionId]) {
-          body.classList.add("collapsed");
-        }
-
-        // Obsługa przycisku
-        toggleBtn?.addEventListener("click", (event) => {
-          const isCollapsed = body.classList.contains("collapsed");
-          body.classList.toggle("collapsed");
-          this._dropdownState[sectionId] = !isCollapsed;
-        });
-      });
-
       // Binding dragndrop
       this.#dragDrop.forEach((d) => d.bind(this.element));
     }
@@ -300,34 +363,23 @@ export default function ActorSheetMixin(Base) {
 
       // TODO: Change the localization strings
       const label = game.i18n.localize(
-        `DGNS.SheetMode${toggle.checked ? "Play" : "Edit"}`,
+        `UI.SHEETMODES.${toggle.checked ? "edit" : "play"}`,
       );
       toggle.dataset.tooltip = label;
       toggle.setAttribute("aria-label", label);
       this._mode = toggle.checked ? MODES.EDIT : MODES.PLAY;
-      // await this.submit();
+
       this.render();
     }
 
     _disableFields(form) {
       super._disableFields(form);
     }
+
     /* ---------------------------------- */
     /*               Events               */
     /* ---------------------------------- */
 
     /** Events handling */
-    /** Dropdown sections handling  */
-
-    _onDropdownToggle(event) {
-      try {
-        let target = event.currentTarget;
-        let dropdown = target.dataset.dropdown;
-
-        console.log(target.attributes);
-      } catch (err) {
-        console.log(err);
-      }
-    }
   };
 }

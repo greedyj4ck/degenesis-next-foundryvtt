@@ -5,6 +5,8 @@
 //@use "tables/";
 @use "../components/document.table";
 
+@use "../mixins/controls" as controls;
+
 @layer dgns.sheets.character {
   /* -------------------------------------------------------------------------- */
   /*                             Character sheet                                */
@@ -81,6 +83,61 @@
           flex: 1;
           display: flex;
           align-items: center;
+        }
+
+        .currency-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 5px;
+          flex: 1;
+
+          i {
+            font-size: 32px;
+          }
+
+          .currency-group {
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
+          }
+
+          .currency-row {
+            input {
+              text-align: center;
+            }
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+
+            label {
+              font-family: var(--font-serif);
+              font-size: var(--font-size-14);
+              text-transform: uppercase;
+            }
+          }
+        }
+
+        .xp-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 5px;
+          flex: 1;
+        }
+
+        .field-row {
+          input {
+            width: unset;
+            min-width: 100px;
+            field-sizing: content;
+            padding: 0px 10px !important;
+          }
         }
       }
       .container-middle {
@@ -184,6 +241,7 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      gap: 5px;
     }
 
     .ccc-container {
@@ -454,6 +512,7 @@
 
   hr {
     margin: 10px 0px;
+    min-height: 1px;
     height: var(--dgns-line-width);
   }
 
@@ -490,6 +549,63 @@
   /* --------------------------------- Effects -------------------------------- */
 
   section.effects {
+  }
+
+  /* --------------------------------- Combat -------------------------------- */
+
+  section.combat {
+    fieldset {
+      @include controls.fieldset;
+
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .state,
+    .action {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 0;
+      min-width: 0;
+
+      .label {
+        font-family: var(--font-serif);
+        text-transform: uppercase;
+
+        line-height: 1;
+        min-height: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+      }
+
+      .value {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 30px;
+      }
+
+      button {
+        aspect-ratio: 1;
+        min-width: 48px;
+        min-height: 48px;
+      }
+    }
+
+    .items {
+      display: flex;
+      align-items: flex-start;
+
+      .weapons {
+        flex: 2;
+      }
+
+      .armor {
+        flex: 1;
+      }
+    }
   }
 
   /* -------------------------------- Inventory ------------------------------- */

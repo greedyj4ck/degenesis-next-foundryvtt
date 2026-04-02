@@ -4,11 +4,18 @@ export async function preloadHandlebarsTemplates() {
   const partials = [
     // Shared partials
     "systems/degenesisnext/templates/shared/group/header.hbs",
+    "systems/degenesisnext/templates/shared/item/summary.hbs",
 
     // Actor Partials
+    // Culture, Concept, Cult / Clan
     "systems/degenesisnext/templates/shared/actor/culture.hbs",
     "systems/degenesisnext/templates/shared/actor/concept.hbs",
     "systems/degenesisnext/templates/shared/actor/cult.hbs",
+
+    // Tables and lists
+    "systems/degenesisnext/templates/shared/actor/potentials.hbs",
+
+    //
   ];
 
   const paths = {};
@@ -18,6 +25,8 @@ export async function preloadHandlebarsTemplates() {
     const folderName = parts.pop();
     paths[`dgns.${folderName}.${fileName}`] = path;
   }
+
+  console.log(paths);
 
   return await foundry.applications.handlebars.loadTemplates(paths);
 }

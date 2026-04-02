@@ -1,0 +1,22 @@
+{{! Used for both chat items and dropdown sections on sheets. }}
+
+<div class="item-summary {{#if collapsible}}collapsible-content{{/if}}" {{~#if collapsible-content}}
+    data-expand-id="{{id}}" {{/if}}>
+
+    <div class="item-description">
+        {{{ctx.description}}}
+        <div class="item-properties">
+            {{#if encumbrance}}
+                <span><strong>Waga:</strong> {{encumbrance}}</span>
+            {{/if}}
+            {{#if tech}}
+                <span><strong>Tech:</strong> {{tech}}</span>
+            {{/if}}
+        </div>
+    </div>
+
+    <div class="item-qualities tags">
+        {{#each ctx.qualities}}<span class="tag badge">{{this.key}}</span>{{/each}}
+    </div>
+
+</div>

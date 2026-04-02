@@ -1,6 +1,6 @@
 /**
- * Mixin obsługujący dynamiczne tło arkusza dla systemu Degenesis.
- * @param {Function} Base - Klasa bazowa (np. ItemSheetV2)
+ * Mixin for customizable background images
+ * @param {Function} Base - Base class
  */
 export default function BackgroundSheetMixin(Base) {
   return class extends Base {
@@ -41,7 +41,7 @@ export default function BackgroundSheetMixin(Base) {
               ui.notifications.info(
                 game.i18n.format("DGNS.Notifications.BackgroundUpdated", {
                   path,
-                })
+                }),
               );
             } catch (error) {
               console.error("Degenesis | Background Update Error:", error);
