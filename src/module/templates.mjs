@@ -15,7 +15,9 @@ export async function preloadHandlebarsTemplates() {
     // Tables and lists
     "systems/degenesisnext/templates/shared/actor/potentials.hbs",
 
-    //
+    // Combat specific templates
+    "systems/degenesisnext/templates/shared/actor/combat/weapon.hbs",
+    "systems/degenesisnext/templates/shared/actor/combat/armor.hbs",
   ];
 
   const paths = {};

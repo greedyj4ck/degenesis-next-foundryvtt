@@ -1,24 +1,29 @@
 /** @import HandlebarsApplicationMixin from '@client/applications/api/handlebars-application.mjs*/
 
-import DGNSRoll from "../../dice/base.roll.mjs";
-
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 const { FormDataExtended } = foundry.applications.ux;
+const { deepClone } = foundry.utils;
+/**
+ * Application: Action roll dialog
+ * Used for setting up data for rolls. Main execution still lies within
+ * Actor document - need to be set up this way due to future data inheritance
+ * and automation systems.
+ */
 
-// default action roll dialog
 /** @inheritdoc */
 export default class DGNSActionRollDialog extends HandlebarsApplicationMixin(
-  ApplicationV2
+  ApplicationV2,
 ) {
   constructor(rollConfig, options = {}) {
     super(rollConfig, options);
     this._actor = rollConfig.actor;
     this._rollDefinition = foundry.utils.mergeObject(
       this._rollDefinition,
-      rollConfig.definiton
+      rollConfig.definition,
     );
   }
 
+  // Template for roll definition
   _rollDefinition = {
     attribute: null,
     skill: null,
@@ -128,7 +133,7 @@ export default class DGNSActionRollDialog extends HandlebarsApplicationMixin(
       this._rollDefinition.difficulty = Math.clamp(
         this._rollDefinition.difficulty,
         1,
-        12
+        12,
       );
     }
     this.render();
@@ -174,17 +179,16 @@ export default class DGNSActionRollDialog extends HandlebarsApplicationMixin(
     return (Number(data.triggers) || 0) + (Number(data.modifiers?.t) || 0);
   }
 
-  // *----- Main Methods -----*
+  /* ---------------------------------- */
+  /*           Roll execution           */
+  /* ---------------------------------- */
 
   async preformRoll() {
-    const roll = new DGNSRoll(this._rollDefinition);
-    await roll.evaluate();
-    roll.toMessage();
+    this.config = deepClone(this._rollDefinition);
     this.close();
   }
 
-  /** Submit Handler  */
   static async #submitHandler(event, form, formData) {
-    this.preformRoll(this.roll);
+    this.preformRoll();
   }
 }

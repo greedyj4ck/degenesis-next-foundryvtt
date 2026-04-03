@@ -8,6 +8,13 @@
 @forward "colors";
 
 /* ---------------------------------- */
+/*      Vendor styles (3rd party)     */
+/* ---------------------------------- */
+
+@use "vendor/foundry"; // foundry ui styling
+// @use "vendor/prosemirror"; // !fix before implementing
+
+/* ---------------------------------- */
 /*            // Abstracts            */
 /* ---------------------------------- */
 
@@ -43,12 +50,5 @@
 
 @use "apps/rolls";
 @use "apps/chat";
-
-/* ---------------------------------- */
-/*      Vendor styles (3rd party)     */
-/* ---------------------------------- */
-
-@use "vendor/foundry"; // foundry ui styling
-// @use "vendor/prosemirror"; // !fix before implementing
 
 @layer foundry, dgns;

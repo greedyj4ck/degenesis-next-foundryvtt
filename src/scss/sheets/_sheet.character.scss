@@ -132,11 +132,17 @@
         }
 
         .field-row {
+          flex-direction: row-reverse;
+
           input {
             width: unset;
             min-width: 100px;
             field-sizing: content;
             padding: 0px 10px !important;
+          }
+
+          label {
+            text-align: end;
           }
         }
       }
@@ -559,6 +565,7 @@
 
       display: flex;
       justify-content: space-between;
+      align-items: start;
     }
 
     .state,
@@ -596,7 +603,8 @@
 
     .items {
       display: flex;
-      align-items: flex-start;
+      min-height: 0;
+      height: 100%;
 
       .weapons {
         flex: 2;

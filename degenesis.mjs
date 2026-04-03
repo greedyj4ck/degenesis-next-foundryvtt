@@ -19,7 +19,9 @@ async function preloadHandlebarsTemplates() {
 		"systems/degenesisnext/templates/shared/actor/culture.hbs",
 		"systems/degenesisnext/templates/shared/actor/concept.hbs",
 		"systems/degenesisnext/templates/shared/actor/cult.hbs",
-		"systems/degenesisnext/templates/shared/actor/potentials.hbs"
+		"systems/degenesisnext/templates/shared/actor/potentials.hbs",
+		"systems/degenesisnext/templates/shared/actor/combat/weapon.hbs",
+		"systems/degenesisnext/templates/shared/actor/combat/armor.hbs"
 	];
 	const paths = {};
 	for (const path of partials) {
@@ -755,13 +757,25 @@ var Qualities = {
 };
 //#endregion
 //#region src/module/logic/condition.mjs
-/** @import DegenesisActor from '../documents/actor.mjs'  */
 var Condition = {
-	calculateMaxTrauma: (actor) => {},
-	calculateMaxFleshwounds: (actor) => {},
-	calculateMaxEgo: (actor) => {},
-	calculateMaxSpore: (actor) => {},
-	calculateMovement: (actor) => {}
+	calculateMaxTrauma: (bodyValue, psycheValue) => {
+		return bodyValue + psycheValue;
+	},
+	calculateMaxFleshwounds: (bodyValue, toughnessValue) => {
+		return (bodyValue + toughnessValue) * 2;
+	},
+	calculateMaxEgo: (attributeValue, skillValue) => {
+		return (attributeValue + skillValue) * 2;
+	},
+	calculateMaxSpore: (psycheValue, skillValue) => {
+		return (psycheValue + skillValue) * 2;
+	},
+	calculateMovement: (bodyValue, athelticsValue) => {
+		return bodyValue + athelticsValue;
+	},
+	calculateMaxEncumbrance: (bodyValue, forceValue) => {
+		return bodyValue + forceValue;
+	}
 };
 //#endregion
 //#region src/module/logic/modification.mjs
@@ -1475,6 +1489,9 @@ function sidebar_default() {
 	});
 	Hooks.on("renderChatLog", (application, element) => {
 		element.querySelector(".chat-log").classList.remove("theme-light");
+	});
+	Hooks.on("renderNotifications", (application, element) => {
+		console.log(`renderChatLogNotifications`);
 	});
 }
 //#endregion
@@ -4074,125 +4091,23 @@ var CachedReferenceField = class extends SchemaField$28 {
 	}
 };
 //#endregion
-//#region src/module/dice/base.roll.mjs
-/** @import Roll from '@client/dice/roll.mjs*/
-var { Roll: Roll$1 } = foundry.dice;
-var { renderTemplate: renderTemplate$2 } = foundry.applications.handlebars;
-/**
-* Default roll class. Use it for building variations (like action roll,
-* complex roll etc.)
-*/
-/** @inheritdoc */
-var DGNSRoll = class extends Roll$1 {
-	static CHAT_TEMPLATE = "systems/degenesisnext/templates/chat/action.roll.hbs";
-	/** Parsing options  */
-	constructor(rollDefinition, data, options = {}) {
-		const { actionNumber = 0, difficulty = 0, modifiers = {} } = rollDefinition;
-		const diceMod = modifiers.d || 0;
-		const totalActionNumber = Math.max(0, actionNumber + diceMod);
-		const rolledDice = Math.min(totalActionNumber, 12);
-		const autoSuccesses = Math.max(0, totalActionNumber - 12);
-		const formula = `${rolledDice}d6`;
-		super(formula, data, options);
-		this.definition = rollDefinition;
-		this.actionNumber = totalActionNumber;
-		this.rolledDice = rolledDice;
-		this.autoSuccesses = autoSuccesses;
-		this.difficulty = Number(difficulty);
-		this.modifiers = rollDefinition.modifiers;
-		this._outcome = null;
-	}
-	/**
-	* Is the result of this roll a success? Returns `undefined` if roll isn't evaluated.
-	* @type {boolean|void}
-	*/
-	get sucess() {
-		if (!this._evaluated) return;
-		if (!Number.isNumeric(this.difficulty)) return false;
-		return this.total >= this.difficulty;
-	}
-	/**
-	* Is the result of this roll a failure? Returns `undefined` if roll isn't evaluated.
-	* @type {boolean|void}
-	*/
-	get failure() {
-		if (!this._evaluated) return;
-		if (!Number.isNumeric(this.options.difficulty)) return false;
-		return this.total < this.difficulty;
-	}
-	/**
-	* Is the result of this roll a botch? Returns `undefined` if roll isn't evaluated.
-	* @type {boolean|void}
-	*/
-	get botch() {
-		if (!this._evaluated) return;
-		if (!Number.isNumeric(this.options.difficulty)) return false;
-		return this.total < this.difficulty;
-	}
-	/** @inheritDoc */
-	async evaluate(options = {}) {
-		await super.evaluate(options);
-		this._evaluateSuccess();
-		return this;
-	}
-	/** @inheritDoc */
-	evaluateSync(options = {}) {
-		return super.evaluateSync(options);
-	}
-	_evaluateSuccess() {
-		this.successes = this.dice[0].results.filter((r) => r.result >= 4).length + this.modifiers.s + this.autoSuccesses;
-		this.ones = this.dice[0].results.filter((r) => r.result === 1).length;
-		this.triggers = this.dice[0].results.filter((r) => r.result === 6).length + this.modifiers.t;
-		if (this.difficulty) if (this.successes < this.ones) this._outcome = "botch";
-		else if (this.successes >= this.difficulty) this._outcome = "success";
-		else this._outcome = "failure";
-		else this._outcome = null;
-	}
-	/** Display result to chat  */
-	async toMessage(messageData = {}, { rollMode = null, create = true } = {}) {
-		rollMode = rollMode || game.settings.get("core", "rollMode");
-		console.log(rollMode);
-		const speaker = ChatMessage.getSpeaker();
-		const chatData = {
-			title: game.i18n.localize(`DGNS.ROLL.actionRoll`),
-			attribute: game.i18n.localize(`DGNS.ATTRIBUTE.${this.definition.attribute}`),
-			skill: game.i18n.localize(`DGNS.SKILL.${this.definition.skill}`),
-			difficulty: this.difficulty,
-			successes: this.successes,
-			triggers: this.triggers,
-			ones: this.ones,
-			dice: this.dice[0].results,
-			result: this.result,
-			resultLabel: game.i18n.localize(`DGNS.ROLL.${this.result}`)
-		};
-		const template = this.constructor.CHAT_TEMPLATE;
-		const content = await renderTemplate$2(template, chatData);
-		const messageOptions = foundry.utils.mergeObject({
-			user: game.user.id,
-			style: CONST.CHAT_MESSAGE_STYLES ? CONST.CHAT_MESSAGE_STYLES.ROLL : void 0,
-			content,
-			rolls: [this],
-			speaker,
-			flags: { "core.rollMode": rollMode }
-		}, messageData);
-		ChatMessage.applyRollMode(messageOptions, rollMode);
-		return create ? ChatMessage.create(messageOptions) : messageOptions;
-	}
-	get result() {
-		return this._outcome;
-	}
-};
-//#endregion
 //#region src/module/applications/roll/action.dialog.mjs
 /** @import HandlebarsApplicationMixin from '@client/applications/api/handlebars-application.mjs*/
 var { HandlebarsApplicationMixin: HandlebarsApplicationMixin$1, ApplicationV2: ApplicationV2$1 } = foundry.applications.api;
 var { FormDataExtended: FormDataExtended$1 } = foundry.applications.ux;
+var { deepClone: deepClone$1 } = foundry.utils;
+/**
+* Application: Action roll dialog
+* Used for setting up data for rolls. Main execution still lies within
+* Actor document - need to be set up this way due to future data inheritance
+* and automation systems.
+*/
 /** @inheritdoc */
 var DGNSActionRollDialog = class extends HandlebarsApplicationMixin$1(ApplicationV2$1) {
 	constructor(rollConfig, options = {}) {
 		super(rollConfig, options);
 		this._actor = rollConfig.actor;
-		this._rollDefinition = foundry.utils.mergeObject(this._rollDefinition, rollConfig.definiton);
+		this._rollDefinition = foundry.utils.mergeObject(this._rollDefinition, rollConfig.definition);
 	}
 	_rollDefinition = {
 		attribute: null,
@@ -4308,61 +4223,24 @@ var DGNSActionRollDialog = class extends HandlebarsApplicationMixin$1(Applicatio
 		return (Number(data.triggers) || 0) + (Number(data.modifiers?.t) || 0);
 	}
 	async preformRoll() {
-		const roll = new DGNSRoll(this._rollDefinition);
-		await roll.evaluate();
-		roll.toMessage();
+		this.config = deepClone$1(this._rollDefinition);
 		this.close();
 	}
-	/** Submit Handler  */
 	static async #submitHandler(event, form, formData) {
-		this.preformRoll(this.roll);
-	}
-};
-//#endregion
-//#region src/module/dice/combination.roll.mjs
-var { renderTemplate: renderTemplate$1 } = foundry.applications.handlebars;
-/**
-* Combination roll class - using two instances of basic rolls.
-*/
-var DGNSCombinationRoll = class {
-	constructor(data) {
-		this.primary = new DGNSRoll(data.primary);
-		this.secondary = new DGNSRoll(data.secondary);
-		this.transferTriggers = data.transferTriggers ?? true;
-	}
-	async evaluate() {
-		await this.primary.evaluate();
-		if (this.primary.result === "failure") {}
-		if (this.transferTriggers && this.primary.triggers > 0) this.secondary.modifiers.t += this.primary.triggers;
-		await this.secondary.evaluate();
-		return this;
-	}
-	async toMessage(messageData = {}) {
-		const content = await renderTemplate$1("systems/degenesisnext/templates/chat/combination.roll.hbs", {
-			primary: this.primary,
-			secondary: this.secondary,
-			totalTriggers: this.primary.triggers + this.secondary.triggers
-		});
-		return ChatMessage.create({
-			user: game.user.id,
-			content,
-			rolls: [this.primary, this.secondary],
-			speaker: ChatMessage.getSpeaker(),
-			...messageData
-		});
+		this.preformRoll();
 	}
 };
 //#endregion
 //#region src/module/applications/roll/combination.dialog.mjs
 var { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 var { FormDataExtended } = foundry.applications.ux;
+var { deepClone } = foundry.utils;
 /** @inheritdoc */
 var DGNSCombinationRollDialog = class extends HandlebarsApplicationMixin(ApplicationV2) {
 	constructor(rollConfig, options = {}) {
 		super(rollConfig, options);
-		console.log(rollConfig);
 		this._actor = rollConfig.actor;
-		this._rollDefinition = foundry.utils.mergeObject(this._rollDefinition, rollConfig.definiton);
+		this._rollDefinition = foundry.utils.mergeObject(this._rollDefinition, rollConfig.definition);
 	}
 	_rollDefinition = {
 		primary: {
@@ -4544,14 +4422,154 @@ var DGNSCombinationRollDialog = class extends HandlebarsApplicationMixin(Applica
 		return (Number(data.triggers) || 0) + (Number(data.modifiers?.t) || 0);
 	}
 	async preformRoll() {
-		const roll = new DGNSCombinationRoll(this._rollDefinition);
-		await roll.evaluate();
-		roll.toMessage();
+		this.config = deepClone(this._rollDefinition);
 		this.close();
 	}
-	/** Submit Handler  */
 	static async #submitHandler(event, form, formData) {
-		this.preformRoll(this.roll);
+		this.preformRoll();
+	}
+};
+//#endregion
+//#region src/module/dice/base.roll.mjs
+/** @import Roll from '@client/dice/roll.mjs*/
+var { Roll: Roll$1 } = foundry.dice;
+var { renderTemplate: renderTemplate$2 } = foundry.applications.handlebars;
+/**
+* Default roll class. Use it for building variations (like action roll,
+* complex roll etc.)
+*/
+/** @inheritdoc */
+var DGNSRoll = class extends Roll$1 {
+	static CHAT_TEMPLATE = "systems/degenesisnext/templates/chat/action.roll.hbs";
+	/** Parsing options  */
+	constructor(rollDefinition, data, options = {}) {
+		const { actionNumber = 0, difficulty = 0, modifiers = {} } = rollDefinition;
+		const diceMod = modifiers.d || 0;
+		const totalActionNumber = Math.max(0, actionNumber + diceMod);
+		const rolledDice = Math.min(totalActionNumber, 12);
+		const autoSuccesses = Math.max(0, totalActionNumber - 12);
+		const formula = `${rolledDice}d6`;
+		super(formula, data, options);
+		this.definition = rollDefinition;
+		this.actionNumber = totalActionNumber;
+		this.rolledDice = rolledDice;
+		this.autoSuccesses = autoSuccesses;
+		this.difficulty = Number(difficulty);
+		this.modifiers = rollDefinition.modifiers;
+		this._outcome = null;
+	}
+	/**
+	* Is the result of this roll a success? Returns `undefined` if roll isn't evaluated.
+	* @type {boolean|void}
+	*/
+	get sucess() {
+		if (!this._evaluated) return;
+		if (!Number.isNumeric(this.difficulty)) return false;
+		return this.total >= this.difficulty;
+	}
+	/**
+	* Is the result of this roll a failure? Returns `undefined` if roll isn't evaluated.
+	* @type {boolean|void}
+	*/
+	get failure() {
+		if (!this._evaluated) return;
+		if (!Number.isNumeric(this.options.difficulty)) return false;
+		return this.total < this.difficulty;
+	}
+	/**
+	* Is the result of this roll a botch? Returns `undefined` if roll isn't evaluated.
+	* @type {boolean|void}
+	*/
+	get botch() {
+		if (!this._evaluated) return;
+		if (!Number.isNumeric(this.options.difficulty)) return false;
+		return this.total < this.difficulty;
+	}
+	/** @inheritDoc */
+	async evaluate(options = {}) {
+		await super.evaluate(options);
+		this._evaluateSuccess();
+		return this;
+	}
+	/** @inheritDoc */
+	evaluateSync(options = {}) {
+		return super.evaluateSync(options);
+	}
+	_evaluateSuccess() {
+		this.successes = this.dice[0].results.filter((r) => r.result >= 4).length + this.modifiers.s + this.autoSuccesses;
+		this.ones = this.dice[0].results.filter((r) => r.result === 1).length;
+		this.triggers = this.dice[0].results.filter((r) => r.result === 6).length + this.modifiers.t;
+		if (this.difficulty) if (this.successes < this.ones) this._outcome = "botch";
+		else if (this.successes >= this.difficulty) this._outcome = "success";
+		else this._outcome = "failure";
+		else this._outcome = null;
+	}
+	/** Display result to chat  */
+	async toMessage(messageData = {}, { rollMode = null, create = true } = {}) {
+		rollMode = rollMode || game.settings.get("core", "rollMode");
+		console.log(rollMode);
+		const speaker = ChatMessage.getSpeaker();
+		const chatData = {
+			title: game.i18n.localize(`DGNS.ROLL.actionRoll`),
+			attribute: game.i18n.localize(`DGNS.ATTRIBUTE.${this.definition.attribute}`),
+			skill: game.i18n.localize(`DGNS.SKILL.${this.definition.skill}`),
+			difficulty: this.difficulty,
+			successes: this.successes,
+			triggers: this.triggers,
+			ones: this.ones,
+			dice: this.dice[0].results,
+			result: this.result,
+			resultLabel: game.i18n.localize(`DGNS.ROLL.${this.result}`)
+		};
+		const template = this.constructor.CHAT_TEMPLATE;
+		const content = await renderTemplate$2(template, chatData);
+		const messageOptions = foundry.utils.mergeObject({
+			user: game.user.id,
+			style: CONST.CHAT_MESSAGE_STYLES ? CONST.CHAT_MESSAGE_STYLES.ROLL : void 0,
+			content,
+			rolls: [this],
+			speaker,
+			flags: { "core.rollMode": rollMode }
+		}, messageData);
+		ChatMessage.applyRollMode(messageOptions, rollMode);
+		return create ? ChatMessage.create(messageOptions) : messageOptions;
+	}
+	get result() {
+		return this._outcome;
+	}
+};
+//#endregion
+//#region src/module/dice/combination.roll.mjs
+var { renderTemplate: renderTemplate$1 } = foundry.applications.handlebars;
+/**
+* Combination roll class - using two instances of basic rolls.
+*/
+var DGNSCombinationRoll = class {
+	constructor(data) {
+		this.primary = new DGNSRoll(data.primary);
+		this.secondary = new DGNSRoll(data.secondary);
+		this.transferTriggers = data.transferTriggers ?? true;
+	}
+	async evaluate() {
+		await this.primary.evaluate();
+		if (this.primary.result === "failure") {}
+		if (this.transferTriggers && this.primary.triggers > 0) this.secondary.modifiers.t += this.primary.triggers;
+		await this.secondary.evaluate();
+		return this;
+	}
+	async toMessage(messageData = {}) {
+		const content = await renderTemplate$1("systems/degenesisnext/templates/chat/combination.roll.hbs", {
+			primary: this.primary,
+			secondary: this.secondary,
+			totalTriggers: this.primary.triggers + this.secondary.triggers
+		});
+		return ChatMessage.create({
+			user: game.user.id,
+			content,
+			rolls: [this.primary, this.secondary],
+			speaker: ChatMessage.getSpeaker(),
+			...messageData
+		});
 	}
 };
 //#endregion
@@ -4657,6 +4675,16 @@ var EffectHelper = {
 	}
 };
 //#endregion
+//#region src/module/logic/penalties.mjs
+var Penalty = {
+	fromTrauma: (traumaValue) => {
+		return traumaValue ?? 0;
+	},
+	fromEncumbrance: (current, max) => {
+		return current > max ? current - max : 0;
+	}
+};
+//#endregion
 //#region src/module/documents/actor.mjs
 /** @import Actor from '@common/documents/actor.mjs*/
 /** Required field Classes */
@@ -4671,8 +4699,39 @@ var EffectHelper = {
 */
 var DGNSActor = class extends Actor {
 	static DEFAULT_ICON = "systems/degenesisnext/assets/tokens/default.png";
+	static ROLL_CLASSES = {
+		action: DGNSRoll,
+		combination: DGNSCombinationRoll,
+		complex: null
+	};
+	/**
+	* Basic data preparation for actor document.
+	* @inheritdoc
+	*/
 	prepareData() {
 		super.prepareData();
+	}
+	/**
+	* Dervied data preparation - all the values that are need to be calcualted
+	* and are not stored since they base on other values.
+	*/
+	prepareDerivedData() {
+		try {
+			const type = this.type.charAt(0).toUpperCase() + this.type.slice(1);
+			this[`_prepare${type}DerivedData`]?.();
+		} catch (e) {
+			console.error(`DGNS | prepareDerivedData failed for "${this.type}":`, e);
+		}
+	}
+	/**
+	* Data preparation for Character type.
+	*/
+	_prepareCharacterDerivedData() {
+		console.log(`Character derived data preparations...`);
+		this._prepareConditionMaxima();
+		this._prepareEncumbrance();
+		this._prepareMovement();
+		this._applyPenalties();
 	}
 	prepareEmbeddedDocuments() {
 		super.prepareEmbeddedDocuments();
@@ -4700,6 +4759,47 @@ var DGNSActor = class extends Actor {
 			if (cacheUpdates) foundry.utils.mergeObject(data, cacheUpdates);
 		}
 		return super.update(data, options);
+	}
+	/**
+	* Calculate basic condition maximas for standard properties.
+	* todo: add override mode.
+	* !remember to use base attributes / skills values for calculations, since action number
+	* !can be influenced by other modifiers
+	*/
+	_prepareConditionMaxima() {
+		console.log(`prepareConditionMaxima`);
+		const { attributes, condition, modes, actionNumbers } = this.system;
+		const primalFocusSkill = modes.primalFocus;
+		const faithWillpowerSkill = modes.faithWillpower;
+		const egoAttribute = primalFocusSkill === "primal" ? "instinct" : "intellect";
+		condition.ego.max = Condition.calculateMaxEgo(attributes[egoAttribute].value, attributes[egoAttribute].skills[primalFocusSkill].value);
+		condition.spore.max = Condition.calculateMaxSpore(attributes.psyche.value, attributes.psyche.skills[faithWillpowerSkill].value);
+		condition.fleshwounds.max = Condition.calculateMaxFleshwounds(attributes.body.value, attributes.body.skills.toughness.value);
+		condition.trauma.max = Condition.calculateMaxTrauma(attributes.body.value, attributes.psyche.value);
+	}
+	_prepareEncumbrance() {
+		const { general, attributes, actionNumbers } = this.system;
+		const enc = general.encumbrance;
+		enc.current = 0;
+		enc.max = Condition.calculateMaxEncumbrance(attributes.body.value, attributes.body.skills.force.value);
+		for (const item of this.items) if (item.system?.encumbrance && !item.system?.location) enc.current += item.system.encumbrance * (item.system.quantity ?? 1);
+		enc.over = enc.current > enc.max;
+		enc.pct = Math.round(Math.min(enc.current / enc.max * 100, 100));
+	}
+	/**
+	* todo: consider moving this to other method
+	*/
+	_prepareMovement() {
+		const { general, attributes } = this.system;
+		general.movement = Condition.calculateMovement(attributes.body.value, attributes.body.skills.athletics.value);
+	}
+	_applyPenalties() {
+		const { condition, general } = this.system;
+		let totalPenalty = 0;
+		totalPenalty += Penalty.fromTrauma(condition.trauma.value);
+		totalPenalty += Penalty.fromEncumbrance(general.encumbrance.current, general.encumbrance.max);
+		console.log(`Calculated total penalty`);
+		console.log(totalPenalty);
 	}
 	/**
 	* Set actor's group (ForeignField link) and reverse link
@@ -4863,38 +4963,68 @@ var DGNSActor = class extends Actor {
 		return ItemHelper.createActorItem(this, "", itemType, {});
 	}
 	/**
-	*
+	* Data for rolls is beeing prepared inside Roll Dialog epplications, and move back
+	* to actor entity. Main execution lies here.
+	*/
+	/**
+	* todo: method description
 	* @param {*} attribute
 	* @param {*} skill
 	*/
 	async actionRoll(attribute, skill) {
-		let actionNumber = this.system.actionNumbers[skill];
-		let rollConfig = {
+		const definition = await DGNSActionRollDialog.create({
 			actor: this,
-			definiton: {
+			definition: {
 				attribute,
 				skill,
-				actionNumber
+				actionNumber: this.system.actionNumbers[skill]
 			}
-		};
-		await DGNSActionRollDialog.create(rollConfig);
+		});
+		if (!definition) return;
+		return this._executeRoll({
+			type: "action",
+			definition
+		});
 	}
 	/**
-	*
+	*todo: method description
 	* @param {*} attribute
 	* @param {*} skill
 	*/
 	async combinationRoll(attribute, skill) {
-		let actionNumber = this.system.actionNumbers[skill];
-		let rollConfig = {
+		const definition = await DGNSCombinationRollDialog.create({
 			actor: this,
-			definiton: { primary: {
+			definition: { primary: {
 				attribute,
 				skill,
-				actionNumber
+				actionNumber: this.system.actionNumbers[skill]
 			} }
-		};
-		await DGNSCombinationRollDialog.create(rollConfig);
+		});
+		if (!definition) return;
+		return this._executeRoll({
+			type: "combination",
+			definition
+		});
+	}
+	/**
+	* Core roll pipeline. All roll types pass through here
+	* after configuration dialog resolves.
+	*/
+	async _executeRoll({ type, definition }) {
+		const RollClass = this.constructor.ROLL_CLASSES[type];
+		if (!RollClass) return null;
+		const roll = new RollClass(definition);
+		await roll.evaluate();
+		await this._postRollEffects(type, roll);
+		await roll.toMessage();
+		return roll;
+	}
+	/**
+	* Post roll pipeline. Handling all side effects for actor entity.
+	*/
+	async _postRollEffects(type, roll) {
+		console.log(`_postRollEffects pipline:`);
+		console.dir(type, roll);
 	}
 };
 //#endregion

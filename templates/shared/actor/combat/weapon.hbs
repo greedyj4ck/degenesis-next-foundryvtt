@@ -1,0 +1,57 @@
+<div class="entry item collapsible" data-drag data-item-id="{{weapon.id}}" data-expand-id="{{weapon.id}}"
+    data-action="openItemContextMenu">
+
+    <div class="entry-row">
+        <div class="field image">
+            <img src="{{weapon.img}}">
+        </div>
+        <div class="field name">
+            <a class="caption" data-action="editItem">{{weapon.name}}</a>
+            <div class="subcaption">{{localizeConcat "DGNS.WEAPON." weapon.system.group}}</div>
+        </div>
+
+
+        <div class="field encumbrance">
+            {{weapon.system.encumbrance}}
+        </div>
+        <div class="field controls">
+
+            <a data-action="toggleEquipped">
+                <i class="fa-solid fa-shield-halved {{#if weapon.system.equipped}}active{{/if}}"></i>
+            </a>
+            <a data-action="toggleDropped">
+                <i class="fa-solid fa-sack-xmark {{#if weapon.system.dropped}}active{{/if}}"></i></a>
+            <a data-action="toggleExpanded"><i class="fa-solid fa-square-caret-down"></i></a>
+            <a data-action="openItemMenu"> <i class="fa-solid fa-ellipsis-vertical"></i></a>
+
+        </div>
+
+    </div>
+
+
+
+
+    {{#if weapon.isMelee}}
+        <div class="entry-row actions melee">
+            <div class=""><i class="fa fa-sword"></i> Attack (2D)</div>
+            <div class=""><i class="fa fa-shield"></i> PArry (2D)</div>
+        </div>
+    {{/if}}
+
+    {{#if weapon.isRanged}}
+        <div class="entry-row actions ranged">
+            <div class=""> 20m (4D) </div>
+            <div class=""> 40m (2D) </div>
+            <div class=""> 60m (0D) </div>
+            <div class=""><i class="fa fa-bullet"></i>Reload (2/10) </div>
+        </div>
+    {{/if}}
+
+
+    <div class="entry-row entry-dropdown collapsible-content">
+        {{> "dgns.item.summary" ctx=weapon.expanded }}
+    </div>
+
+
+
+</div>

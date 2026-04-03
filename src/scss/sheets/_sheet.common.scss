@@ -36,7 +36,25 @@
       }
     }
 
-    // TABS
+    nav.tabs {
+      [data-tab] {
+        color: var(--dgns-ui-control-content);
+
+        &.active {
+          color: var(--dgns-ui-active-control-content);
+          background: none;
+          border-color: var(--dgns-ui-active-control-border);
+
+          span.count {
+            color: var(--dgns-ui-active-control-content);
+          }
+        }
+
+        span.count {
+          color: var(--dgns-ui-control-content);
+        }
+      }
+    }
 
     .tabs {
       display: flex;
@@ -105,11 +123,6 @@
         &.active::after {
           opacity: 0.5;
         }
-
-        /*  &.active {
-          background-color: var(--dgns-ui-primary);
-          color: var(--dgns-ui-background);
-        } */
       }
 
       &.vertical {

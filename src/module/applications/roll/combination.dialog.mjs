@@ -1,25 +1,20 @@
-import DGNSRoll from "../../dice/base.roll.mjs";
-import DGNSCombinationRoll from "../../dice/combination.roll.mjs";
-
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 const { FormDataExtended } = foundry.applications.ux;
-
+const { deepClone } = foundry.utils;
 // default action roll dialog
 /** @inheritdoc */
 
 export default class DGNSCombinationRollDialog extends HandlebarsApplicationMixin(
-  ApplicationV2
+  ApplicationV2,
 ) {
   constructor(rollConfig, options = {}) {
     super(rollConfig, options);
-
-    console.log(rollConfig);
 
     this._actor = rollConfig.actor;
 
     this._rollDefinition = foundry.utils.mergeObject(
       this._rollDefinition,
-      rollConfig.definiton
+      rollConfig.definition,
     );
   }
 
@@ -90,7 +85,7 @@ export default class DGNSCombinationRollDialog extends HandlebarsApplicationMixi
       skillMap[s.id] = s.label;
     });
 
-    (context.primary = {
+    ((context.primary = {
       ...this._rollDefinition.primary,
       skills: skillMap,
       totals: {
@@ -107,7 +102,7 @@ export default class DGNSCombinationRollDialog extends HandlebarsApplicationMixi
           successes: this.getTotalSuccesses("secondary"),
           triggers: this.getTotalTriggers("secondary"),
         },
-      });
+      }));
 
     context.roll = this._rollDefinition;
 
@@ -166,7 +161,7 @@ export default class DGNSCombinationRollDialog extends HandlebarsApplicationMixi
       this._rollDefinition.primary.difficulty = Math.clamp(
         this._rollDefinition.primary.difficulty,
         0,
-        12
+        12,
       );
     }
 
@@ -174,7 +169,7 @@ export default class DGNSCombinationRollDialog extends HandlebarsApplicationMixi
       this._rollDefinition.secondary.difficulty = Math.clamp(
         this._rollDefinition.secondary.difficulty,
         0,
-        12
+        12,
       );
     }
 
@@ -232,7 +227,7 @@ export default class DGNSCombinationRollDialog extends HandlebarsApplicationMixi
           skills.push({
             id: skillKey,
             label: `${game.i18n.localize(
-              `DGNS.ATTRIBUTE.${attrKey}`
+              `DGNS.ATTRIBUTE.${attrKey}`,
             )} + ${game.i18n.localize(`DGNS.SKILL.${skillKey}`)}`,
             attribute: attrKey,
           });
@@ -264,15 +259,16 @@ export default class DGNSCombinationRollDialog extends HandlebarsApplicationMixi
     return (Number(data.triggers) || 0) + (Number(data.modifiers?.t) || 0);
   }
 
+  /* ---------------------------------- */
+  /*           Roll execution           */
+  /* ---------------------------------- */
+
   async preformRoll() {
-    const roll = new DGNSCombinationRoll(this._rollDefinition);
-    await roll.evaluate();
-    roll.toMessage();
+    this.config = deepClone(this._rollDefinition);
     this.close();
   }
 
-  /** Submit Handler  */
   static async #submitHandler(event, form, formData) {
-    this.preformRoll(this.roll);
+    this.preformRoll();
   }
 }

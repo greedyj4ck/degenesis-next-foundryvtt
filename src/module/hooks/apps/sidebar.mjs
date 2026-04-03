@@ -50,8 +50,14 @@ export default function () {
 
   Hooks.on("renderChatLog", (application, element) => {
     // fixing light-theme on chat
+    // const notifications = application.notificationsElement;
     const chatLog = element.querySelector(".chat-log");
+
     chatLog.classList.remove("theme-light");
+  });
+
+  Hooks.on("renderNotifications", (application, element) => {
+    console.log(`renderChatLogNotifications`);
   });
 }
 
