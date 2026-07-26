@@ -12,11 +12,24 @@ const {
   IntegerSortField,
   DocumentIdField,
   FilePathField,
+  DocumentUUIDField,
 } = foundry.data.fields;
 
 const { BaseItem } = foundry.documents;
 
 export default class GeneralFields {
+  static get dgnsid() {
+    // Special class for uniqe string identifiers
+    return {
+      dgnsid: new StringField({
+        label: "DGNS.GENERAL.ID",
+        required: true,
+        nullable: true,
+        initial: "",
+      }),
+    };
+  }
+
   static get subtitle() {
     return {
       subtitle: new StringField({ label: "DGNS.Subtitle" }),
@@ -116,6 +129,10 @@ export default class GeneralFields {
           key: new StringField({ required: true }), //quality object key
           enabled: new BooleanField({ initial: true }), // toggling state
           values: new ObjectField({ initial: {} }),
+          /* injectedFrom: new DocumentUUIDField({
+            nullable: true,
+          }),
+          injectedFromName: new StringField({ nullable: true, initial: null }), //quality object key */
         }),
         { initial: [] },
       ),
@@ -179,7 +196,7 @@ export default class GeneralFields {
   static get cult() {
     return {
       cult: new StringField({
-        label: "DGNS.Cult",
+        label: "DGNS.GENERAL.cult",
       }),
     };
   }
@@ -200,11 +217,18 @@ export default class GeneralFields {
     return {
       modifications: new SchemaField({
         slots: new NumberField({ min: 0, integer: true, initial: 0 }), // amount of slots for an object
+        used: new NumberField({
+          required: false,
+          integer: true,
+          min: 0,
+          initial: 0,
+        }),
+
+        // switching from ForeignDocumentField to DocumentUUIDField
         installed: new ArrayField(
-          new ForeignDocumentField(BaseItem, {
-            idOnly: false,
-            required: false,
-            nullable: true,
+          new DocumentUUIDField({
+            nullable: false,
+            type: "Item", // optional type hint for validation
           }),
           { initial: [] },
         ),

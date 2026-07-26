@@ -1,7 +1,7 @@
 import StyleSheetMixin from "./stylesheet-mixin.mjs";
 
 export default class CheckboxElement extends StyleSheetMixin(
-  foundry.applications.elements.AbstractFormInputElement
+  foundry.applications.elements.AbstractFormInputElement,
 ) {
   constructor(...args) {
     super(...args);
@@ -183,6 +183,10 @@ export default class CheckboxElement extends StyleSheetMixin(
   /* -------------------------------------------- */
 
   /** @override */
+  /**
+   * todo: cleanup!
+   * @returns
+   */
   _buildElements() {
     const container = document.createElement("div");
     container.innerHTML = `
@@ -220,7 +224,7 @@ export default class CheckboxElement extends StyleSheetMixin(
     this.addEventListener(
       "keydown",
       (event) => (event.key === " " ? this._onClick(event) : null),
-      { signal }
+      { signal },
     );
   }
 
@@ -240,7 +244,7 @@ export default class CheckboxElement extends StyleSheetMixin(
     this.checked = !this.checked;
     this.dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
     this.dispatchEvent(
-      new Event("change", { bubbles: true, cancelable: true })
+      new Event("change", { bubbles: true, cancelable: true }),
     );
   }
 }

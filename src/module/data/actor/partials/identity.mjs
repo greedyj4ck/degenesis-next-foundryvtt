@@ -17,7 +17,7 @@ export default class IdentityFields {
       conceptItem: new CachedReferenceField(BaseItem),
       cultItem: new CachedReferenceField(BaseItem),
       group: new ForeignDocumentField(BaseActor),
-      rank: new StringField({ label: "DGNS.Rank" }),
+      rank: new StringField({ label: "DGNS.GENERAL.rank" }),
     };
   }
 }

@@ -7,7 +7,7 @@
 
 An unoffical, community-supported system for playing [Degenesis](https://degenesis.com/) on [Foundry VTT](http://foundryvtt.com/).
 
-Degenesis® is ™ SIXMOREVODKA Studio GmbH. All rights reserved. This module contains information and graphics from Katharsys that have been used with permission from the publisher. All used content from the handbook belong to the respective authors.
+Degenesis® is ™ SIXMOREVODKA Studio GmbH. All rights reserved. This module contains information and graphics from Primal Punk, Katharsys and Artifacts, that have been used with permission from the publisher. All used content from the handbook belong to the respective authors.
 
 Special thanks to all teams working on other Foundry's systems implementations which code I could use as a foundation, like foundryvtt/dnd5e, MetaMorphic-Digital/draw-steel,
 
@@ -93,6 +93,7 @@ npm run watch
 Default world background **Potentials** by **Claudiu-Antoniu Magherusan** https://www.artstation.com/artwork/PmA5aB  
 Github banner **Homo Degenesis** by **Marko Djurdjevic** https://www.sixmorevodka.com/  
 Skull from THE JACKAL'S PROPHECY https://www.youtube.com/watch?v=6y1kQFN5zB0
+Subliminal Messages from **https://www.sixmorevodka.com/**
 
 ###### COMPENDIUM BANNERS
 

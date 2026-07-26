@@ -3,24 +3,28 @@
 const { api, sheets } = foundry.applications;
 const { DragDrop, TextEditor } = foundry.applications.ux;
 
+// Sorting utilities
+const { performIntegerSort } = foundry.utils;
+
 /* ---------------------------------- */
 /*     Helper Functions for Mixin     */
 /* ---------------------------------- */
 
 const getSheetPrefs = (doc) => {
   const key = `${doc.type}${doc.limited ? ":limited" : ""}`;
-  return game.user.getFlag("degenesisnext", `actorSheetPrefs.${key}`) ?? {};
+  return game.user.getFlag(CONFIG.DEGENESIS.id, `actorSheetPrefs.${key}`) ?? {};
 };
 
 /* ---------------------------------- */
 /*             Main Class             */
 /* ---------------------------------- */
 
-/** Class extending HandlebarsApplicationMixin */
+/**
+ * Class extending HandlebarsApplicationMixin.
+ * @param {*} Base
+ */
 export default function ActorSheetMixin(Base) {
-  return class DegenesisActorSheet extends api.HandlebarsApplicationMixin(
-    Base,
-  ) {
+  return class DGNSActorSheet extends api.HandlebarsApplicationMixin(Base) {
     static TABS = [];
 
     static MODES = {
@@ -32,8 +36,46 @@ export default function ActorSheetMixin(Base) {
 
     static DEFAULT_OPTIONS = {
       actions: {
-        toggleExpanded: DegenesisActorSheet.#toggleExpanded,
+        // General UI actions
+        toggleExpanded: DGNSActorSheet.#toggleExpanded,
+        showLinkedItem: DGNSActorSheet.#showLinkedItem,
+        removeLinkedItem: DGNSActorSheet.#removeLinkedItem,
+        // Inventory related actions
+        toggleSort: DGNSActorSheet.#toggleSort,
+        toggleEquipped: DGNSActorSheet.#toggleItemProp("system.equipped"),
+        toggleDropped: DGNSActorSheet.#toggleItemProp("system.dropped"),
+        createItem: DGNSActorSheet.#createItem,
+
+        editItem: DGNSActorSheet.prototype._onEditItem,
+        deleteItem: DGNSActorSheet.prototype._onDeleteItem,
+        // Standard rolls
+        rollAction: DGNSActorSheet.prototype._onActionRoll,
+        rollCombination: DGNSActorSheet.prototype._onCombinationRoll,
+        // Active effects
+        manageEffect: DGNSActorSheet.prototype._onManageEffect,
       },
+
+      contextMenus: [
+        {
+          handler: DGNSActorSheet.#getActionRollContextOptions,
+          selector: "[data-action=rollAction]",
+          options: {
+            parentClassHooks: false,
+            fixed: true,
+          },
+        },
+
+        {
+          handler: DGNSActorSheet.#getInventoryContextOptions,
+          selector: "[data-action=openItemMenu]",
+          options: {
+            eventName: "click",
+            parentClassHooks: false,
+            fixed: true,
+          },
+        },
+      ],
+
       dragDrop: [{ dragSelector: "[data-drag]", dropSelector: null }],
     };
 
@@ -54,6 +96,178 @@ export default function ActorSheetMixin(Base) {
       this.#dragDrop = this.#createDragDropHandlers();
     }
 
+    /* ---------------------------------- */
+    /*    Rendering and Window Controls   */
+    /* ---------------------------------- */
+
+    /** @inheritdoc */
+    async close(options) {
+      options = { animate: false }; // disabling window slow animation
+      await super.close(options);
+    }
+
+    /** @inheritdoc */
+    async _render(force, { mode, ...options } = {}) {
+      return super._render(force, ({ mode, ...options } = {}));
+    }
+
+    async _onFirstRender(context, options) {
+      await super._onFirstRender(context, options);
+      if (!!this.options.contextMenus.length) this._createContextMenus();
+    }
+
+    /* ---------------------------------- */
+
+    /** @inheritdoc */
+    async _renderHTML(context, options) {
+      return super._renderHTML(context, options);
+    }
+
+    /* ---------------------------------- */
+
+    async _renderFrame(options) {
+      const html = await super._renderFrame(options);
+
+      // Adding edit mode toggle slider
+      const header = html.children[0];
+
+      if (this.isEditable) {
+        const modeIcon = document.createElement("i");
+        modeIcon.classList.add("mode-icon");
+
+        const toggle = document.createElement("dgns-slidetoggle");
+        toggle.checked = this._mode === this.constructor.MODES.EDIT;
+
+        modeIcon.classList.add("fa-solid");
+        modeIcon.classList.add(toggle.checked ? "fa-pen" : "fa-play");
+
+        toggle.classList.add("mode-slider");
+        toggle.dataset.tooltip = "DGNS.UISHEETMODES.play";
+        toggle.setAttribute(
+          "aria-label",
+          game.i18n.localize("DGNS.UISHEETMODES.play"),
+        );
+
+        // toggle.addEventListener("change", this._onChangeSheetMode.bind(this));
+        toggle.addEventListener("change", (event) => {
+          event.stopPropagation();
+          event.stopImmediatePropagation();
+
+          modeIcon.classList.toggle("fa-pen", toggle.checked);
+          modeIcon.classList.toggle("fa-play", !toggle.checked);
+
+          this._onChangeSheetMode(event);
+        });
+        toggle.addEventListener("dblclick", (event) => event.stopPropagation());
+        header.insertAdjacentElement("afterbegin", modeIcon);
+        header.insertAdjacentElement("afterbegin", toggle);
+      }
+
+      // Adding resize handler
+      let resizeHandle = html.lastChild;
+      resizeHandle.innerHTML = `<svg><path d="M0,11L11,0L11,11L0,11Z"/></svg>`;
+
+      return html;
+    }
+
+    /* ---------------------------------- */
+
+    async _prepareContext(options) {
+      const context = await super._prepareContext(options);
+
+      if (!this._dropdownState) {
+        this._dropdownState = {};
+      }
+
+      context.editable =
+        this.isEditable && this._mode === this.constructor.MODES.EDIT;
+      context.cssClass = context.editable
+        ? "editable"
+        : this.isEditable
+          ? "interactable"
+          : "locked";
+      context.isEditMode = this._mode === 2;
+
+      return context;
+    }
+
+    /* ---------------------------------- */
+
+    /** @inheritdoc */
+    _replaceHTML(result, content, options) {
+      /**
+       * Function used for restoring state of collapsible containers.
+       */
+      for (const part of Object.values(result)) {
+        for (const element of part.querySelectorAll("[data-expand-id]")) {
+          const isExpanded = this.#expandedSections.get(
+            element.dataset.expandId,
+          );
+
+          const collapsible = element.classList.contains("collapsible")
+            ? element
+            : element.querySelector(".collapsible");
+
+          collapsible?.classList.toggle("expanded", isExpanded ?? false);
+          collapsible?.classList.toggle(
+            "expanded--restored",
+            isExpanded ?? false,
+          );
+        }
+      }
+
+      super._replaceHTML(result, content, options);
+    }
+
+    /* ---------------------------------- */
+
+    activateListeners(html) {
+      // Binding dragndrop
+      this.#dragDrop.forEach((d) => d.bind(this.element));
+    }
+
+    /* ---------------------------------- */
+
+    _onRender(context, options) {
+      super._onRender(context, options);
+      this.activateListeners(this.element);
+    }
+
+    /* ---------------------------------- */
+
+    _onResize(event) {
+      super._onResize(event);
+
+      const { width, height } = this.position;
+      const key = `${this.actor.type}${this.actor.limited ? ":limited" : ""}`;
+      game.user.setFlag("degenesis", `actorSheetPrefs.${key}`, {
+        width,
+        height,
+      });
+    }
+
+    /* ---------------------------------- */
+
+    async _onChangeSheetMode(event) {
+      const { MODES } = this.constructor;
+      const toggle = event.currentTarget;
+
+      const label = game.i18n.localize(
+        `DGNS.UI.SHEETMODES.${toggle.checked ? "edit" : "play"}`,
+      );
+      toggle.dataset.tooltip = label;
+      toggle.setAttribute("aria-label", label);
+      this._mode = toggle.checked ? MODES.EDIT : MODES.PLAY;
+
+      this.render();
+    }
+
+    /* ---------------------------------- */
+
+    _disableFields(form) {
+      super._disableFields(form);
+    }
+
     // Based on dnd5e implementation
     /* -------------------------------------------- */
     /*  Properties                                  */
@@ -69,8 +283,11 @@ export default function ActorSheetMixin(Base) {
       return this.#expandedSections;
     }
 
+    /* ---------------------------------- */
+    /*                 UI                 */
+    /* ---------------------------------- */
+
     /**
-     *
      * Handling collapsible sections. Based on dnd5e implementation, but items are hidden
      * on defautl and we are toggling 'Expanded' instead 'Collapsed' to not confuse
      * future generation of programmer`s.
@@ -100,9 +317,106 @@ export default function ActorSheetMixin(Base) {
     }
 
     /* ---------------------------------- */
-    /*             DragAndDrop            */
+
+    /**
+     * Display linked Item, and fallback to cached one if main do not exist anymore.
+     * Mainly used with Culture / Concept / Cult
+     * @param {*} event
+     * @param {*} target
+     */
+    static async #showLinkedItem(event, target) {
+      const itemType = target.dataset.itemType;
+      const itemId = this.actor.system[itemType].id;
+      const item =
+        itemId === this.actor.system[`${itemType}Item`].linked.id
+          ? game.items.get(itemId)
+          : this.actor.items.get(itemId);
+      if (item) {
+        item.sheet.render(true);
+      }
+    }
+
     /* ---------------------------------- */
 
+    static async #removeLinkedItem(event, target) {
+      const itemType = target.dataset.itemType;
+      await this.actor.system.removeLinkedItem(itemType);
+    }
+
+    /* ---------- Context Menus --------- */
+
+    // Switched to universal handler Daggerheart style.
+
+    _createContextMenus() {
+      for (const config of this.options.contextMenus) {
+        const { handler, selector, options } = config;
+        this._createContextMenu(handler.bind(this), selector, options);
+      }
+    }
+
+    /* ---------------------------------- */
+
+    /**
+     * Preparing standard context menu options
+     * @returns
+     */
+
+    static #getInventoryContextOptions() {
+      const options = [
+        {
+          label: "itemEdit",
+          icon: "fas fa-edit",
+          callback: async (target) => {
+            await this._onEditItem(null, target);
+          },
+          /*   condition: (element) => {
+            
+          }, */
+        },
+        {
+          label: "itemDelete",
+          icon: "fas fa-trash",
+          callback: async (target) => {
+            await this._onDeleteItem(null, target);
+          },
+        },
+      ].map((option) => ({
+        ...option,
+        label: `DGNS.UI.CONTEXT.${option.label}`,
+        icon: `<i class="${option.icon}"></i>`,
+      }));
+
+      return [...options];
+    }
+
+    /* ---------------------------------- */
+
+    static #getActionRollContextOptions() {
+      const options = [
+        {
+          label: "actionRoll",
+          icon: "",
+          callback: async (target) => {
+            await this._onActionRoll(null, target);
+          },
+        },
+        {
+          label: "combinationRoll",
+          icon: "",
+          callback: async (target) => {
+            await this._onCombinationRoll(null, target);
+          },
+        },
+      ].map((option) => ({
+        ...option,
+        label: `DGNS.UI.CONTEXT.${option.label}`,
+        icon: `<i class="${option.icon}"></i>`,
+      }));
+
+      return [...options];
+    }
+
+    /* ----------- Drag & Drop ---------- */
     /* Based on community Wiki example. */
 
     /* Private property. */
@@ -112,10 +426,11 @@ export default function ActorSheetMixin(Base) {
      * Returns an array of DragDrop instances
      * @type {DragDrop[]}
      */
-
     get dragDrop() {
       return this.#dragDrop;
     }
+
+    /* ---------------------------------- */
 
     /**
      * Create drag-and-drop workflow handlers for this Application
@@ -138,10 +453,7 @@ export default function ActorSheetMixin(Base) {
       });
     }
 
-    /**
-     * Returns an array of DragDrop instances
-     * @type {DragDrop[]}
-     */
+    /* ---------------------------------- */
 
     /**
      * Define whether a user is able to begin a dragstart workflow for a given drag selector
@@ -151,9 +463,11 @@ export default function ActorSheetMixin(Base) {
      */
     _canDragStart(selector) {
       // game.user fetches the current user
-      console.log(`canDragStart`);
+      //console.log(`canDragStart`);
       return this.isEditable;
     }
+
+    /* ---------------------------------- */
 
     /**
      * Define whether a user is able to conclude a drag-and-drop workflow for a given drop selector
@@ -163,20 +477,20 @@ export default function ActorSheetMixin(Base) {
      */
     _canDragDrop(selector) {
       // game.user fetches the current user
-      console.log(`canDragDrop`);
+      //console.log(`canDragDrop`);
       return this.isEditable;
     }
+
+    /* ---------------------------------- */
 
     /**
      * Callback actions which occur at the beginning of a drag start workflow.
      * @param {DragEvent} event       The originating DragEvent
      * @protected
      */
+
     _onDragStart(event) {
       const el = event.currentTarget;
-
-      console.log(`Element`);
-      console.log(el);
 
       if ("link" in event.target.dataset) return;
 
@@ -229,151 +543,204 @@ export default function ActorSheetMixin(Base) {
     }
 
     /* ---------------------------------- */
-    /*    Rendering and Window Controls   */
-    /* ---------------------------------- */
 
-    /** @inheritdoc */
-    async close(options) {
-      options = { animate: false }; // disabling window slow animation
-      await super.close(options);
-    }
+    //todo: cleanup, move ccc related stuff to other functions ?
+    async _onDropItem(event, data) {
+      const item = await Item.implementation.fromDropData(data);
+      if (!item) return false;
 
-    /** @inheritdoc */
-    async _render(force, { mode, ...options } = {}) {
-      return super._render(force, ({ mode, ...options } = {}));
-    }
+      const targetElement = event.target.closest(".entry");
+      const targetId = targetElement?.dataset.itemId;
+      const targetItem = targetId ? this.actor.items.get(targetId) : null;
 
-    /** @inheritdoc */
-    async _renderHTML(context, options) {
-      return super._renderHTML(context, options);
-    }
-
-    async _renderFrame(options) {
-      const html = await super._renderFrame(options);
-
-      // Adding edit mode toggle slider
-      const header = html.children[0];
-
-      if (this.isEditable) {
-        const modeIcon = document.createElement("i");
-        modeIcon.classList.add("mode-icon");
-
-        const toggle = document.createElement("dgns-slidetoggle");
-        toggle.checked = this._mode === this.constructor.MODES.EDIT;
-
-        modeIcon.classList.add("fa-solid");
-        modeIcon.classList.add(toggle.checked ? "fa-pen" : "fa-play");
-
-        toggle.classList.add("mode-slider");
-        toggle.dataset.tooltip = "UI.SHEETMODES.play";
-        toggle.setAttribute(
-          "aria-label",
-          game.i18n.localize("UI.SHEETMODES.play"),
-        );
-
-        // toggle.addEventListener("change", this._onChangeSheetMode.bind(this));
-        toggle.addEventListener("change", (event) => {
-          event.stopPropagation();
-          event.stopImmediatePropagation();
-
-          modeIcon.classList.toggle("fa-pen", toggle.checked);
-          modeIcon.classList.toggle("fa-play", !toggle.checked);
-
-          this._onChangeSheetMode(event);
-        });
-        toggle.addEventListener("dblclick", (event) => event.stopPropagation());
-        header.insertAdjacentElement("afterbegin", modeIcon);
-        header.insertAdjacentElement("afterbegin", toggle);
+      // Handling Culture / Concept / Cult
+      if (item.type === "culture" && !item.actor) {
+        await this.actor.system.setCulture(item.id);
+        return false;
+      }
+      if (item.type === "cult" && !item.actor) {
+        await this.actor.system.setCult(item.id);
+        return false;
+      }
+      if (item.type === "concept" && !item.actor) {
+        await this.actor.system.setConcept(item.id);
+        return false;
       }
 
-      // Adding resize handler
-      let resizeHandle = html.lastChild;
-      resizeHandle.innerHTML = `<svg><path d="M0,11L11,0L11,11L0,11Z"/></svg>`;
+      const isSameActor = item.actor?.id === this.actor.id;
+      const isFromSidebar = !item.actor;
+      const isFromOtherActor = item.actor && item.actor.id !== this.actor.id;
 
-      return html;
-    }
+      if (isSameActor) {
+        if (targetItem) {
+          if (item.id === targetItem.id) return false;
 
-    async _prepareContext(options) {
-      const context = await super._prepareContext(options);
+          const sortModes =
+            this.actor.getFlag(CONFIG.DEGENESIS.id, "inventorySortModes") || {};
+          const sortMode = sortModes[targetItem.type] || "manual";
 
-      if (!this._dropdownState) {
-        this._dropdownState = {};
-      }
-
-      context.editable =
-        this.isEditable && this._mode === this.constructor.MODES.EDIT;
-      context.cssClass = context.editable
-        ? "editable"
-        : this.isEditable
-          ? "interactable"
-          : "locked";
-      return context;
-    }
-
-    /** @inheritdoc */
-    _replaceHTML(result, content, options) {
-      /**
-       * Function used for restoring state of collapsible containers.
-       */
-      for (const part of Object.values(result)) {
-        for (const element of part.querySelectorAll("[data-expand-id]")) {
-          const isExpanded = this.#expandedSections.get(
-            element.dataset.expandId,
-          );
-
-          const collapsible = element.classList.contains("collapsible")
-            ? element
-            : element.querySelector(".collapsible");
-
-          collapsible?.classList.toggle("expanded", isExpanded ?? false);
-          collapsible?.classList.toggle(
-            "expanded--restored",
-            isExpanded ?? false,
-          );
+          console.log(sortMode);
+          if (sortMode === "manual") {
+            return this._handleInventorySort(item, targetItem);
+          } else {
+            ui.notifications.warn("Disable alphabetical sorting first. ");
+            return false;
+          }
         }
       }
 
-      super._replaceHTML(result, content, options);
+      if (isFromSidebar) {
+        return super._onDropItem(event, item);
+      }
     }
 
-    activateListeners(html) {
-      // Binding dragndrop
-      this.#dragDrop.forEach((d) => d.bind(this.element));
+    /* ---------------------------------- */
+    /*       FUNCIONALITY: INVENTORY      */
+    /* ---------------------------------- */
+
+    // #region Inventory
+
+    static async #createItem(event, target) {
+      const itemType = target.closest("[data-item-type")?.dataset.itemType;
+      await this.actor._createItem(itemType);
     }
 
-    _onRender(context, options) {
-      super._onRender(context, options);
-      this.activateListeners(this.element);
+    /* ---------------------------------- */
+
+    static async #onCreateItem() {}
+
+    /* ---------------------------------- */
+
+    async _onEditItem(event, target) {
+      const itemId = target.closest("[data-item-id]")?.dataset.itemId;
+      const item = this.actor.items.get(itemId);
+      if (item) item.sheet.render(true);
     }
 
-    _onResize(event) {
-      super._onResize(event);
+    /* ---------------------------------- */
 
-      const { width, height } = this.position;
-      const key = `${this.actor.type}${this.actor.limited ? ":limited" : ""}`;
-      game.user.setFlag("degenesis", `actorSheetPrefs.${key}`, {
-        width,
-        height,
-      });
+    async _onDeleteItem(event, target) {
+      const itemId = target.closest("[data-item-id]")?.dataset.itemId;
+      const item = this.actor.items.get(itemId);
+      if (item) item.delete();
     }
 
-    async _onChangeSheetMode(event) {
-      const { MODES } = this.constructor;
-      const toggle = event.currentTarget;
+    /* ---------------------------------- */
 
-      // TODO: Change the localization strings
-      const label = game.i18n.localize(
-        `UI.SHEETMODES.${toggle.checked ? "edit" : "play"}`,
+    static #toggleItemProp(propPath) {
+      return async function (event, target) {
+        const itemId = target.closest("[data-item-id]").dataset.itemId;
+        const item = this.document.items.get(itemId);
+        console.log(`Toggle item prop`);
+        console.log(item);
+        console.log(propPath);
+        const currentValue = foundry.utils.getProperty(item, propPath);
+        console.log(currentValue);
+        await item.update({ [propPath]: !currentValue });
+      };
+    }
+
+    /* ---------------------------------- */
+
+    static async #toggleSort(event, target) {
+      const group = target.dataset.group;
+      const currentMode =
+        this.actor.getFlag(
+          CONFIG.DEGENESIS.id,
+          `inventorySortModes.${group}`,
+        ) || "manual";
+      const newMode = currentMode === "manual" ? "alpha" : "manual";
+      await this.actor.setFlag(
+        "degenesisnext",
+        `inventorySortModes.${group}`,
+        newMode,
       );
-      toggle.dataset.tooltip = label;
-      toggle.setAttribute("aria-label", label);
-      this._mode = toggle.checked ? MODES.EDIT : MODES.PLAY;
-
-      this.render();
     }
 
-    _disableFields(form) {
-      super._disableFields(form);
+    /* ---------------------------------- */
+
+    async _handleInventorySort(source, target) {
+      const siblings = this.actor.items.filter(
+        (i) => i.type === target.type && i.id !== source.id,
+      );
+
+      const sortUpdates = performIntegerSort(source, {
+        target: target,
+        siblings: siblings,
+      });
+
+      const updates = sortUpdates.map((u) => ({
+        _id: u.target.id,
+        sort: u.update.sort,
+      }));
+
+      return this.actor.updateEmbeddedDocuments("Item", updates);
+    }
+
+    //#endregion
+
+    /* --------------------------------------- */
+    /*       FUNCIONALITY: STANDARD ROLLS      */
+    /* --------------------------------------- */
+    // #region Standard Roll
+
+    async _onCombinationRoll(event, target) {
+      if (event) event.preventDefault();
+      const skill = target.dataset.skill;
+      const attribute = target.dataset.attribute;
+      await this.actor.combinationRoll(attribute, skill);
+    }
+
+    /* ---------------------------------- */
+
+    async _onActionRoll(event, target) {
+      if (event) event.preventDefault();
+      const skill = target.dataset.skill;
+      const attribute = target.dataset.attribute;
+      await this.actor.actionRoll(attribute, skill);
+    }
+
+    /* ---------------------------------- */
+    /*               Effects              */
+    /* ---------------------------------- */
+
+    /**
+     * Manage effect on Actor's side.
+     * @param {*} event
+     * @param {*} target
+     * @returns
+     */
+    async _onManageEffect(event, target) {
+      if (event) event.preventDefault();
+      const action = target.dataset.type;
+      const effectId = target.closest(".effect")?.dataset.effectId;
+      return await this.actor._manageEffect(action, effectId);
+    }
+
+    /* ---------------------------------- */
+
+    /**
+     * todo: effects sorting need to be implemented yet
+     * @param {*} source
+     * @param {*} target
+     * @returns
+     */
+    async _handleEffectsSort(source, target) {
+      const siblings = this.actor.items.filter(
+        (i) => i.type === target.type && i.id !== source.id,
+      );
+
+      const sortUpdates = performIntegerSort(source, {
+        target: target,
+        siblings: siblings,
+      });
+
+      const updates = sortUpdates.map((u) => ({
+        _id: u.target.id,
+        sort: u.update.sort,
+      }));
+
+      return this.actor.updateEmbeddedDocuments("Effect", updates);
     }
 
     /* ---------------------------------- */

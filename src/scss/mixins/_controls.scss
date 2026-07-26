@@ -59,9 +59,9 @@
 // Pass the maximum element height - math will autommatically calculate
 // required side-length
 
-@mixin checkbox($s: 26px) {
-  $calculated-scale: calc((#{$s} - 18px) / #{$s});
-  $calculated-border: calc(#{$s} / 10 + 1px);
+@mixin checkbox($s: 24px) {
+  $calculated-scale: calc((#{$s} - 16px) / #{$s});
+  $calculated-border: calc(#{$s} / 14 + 1px);
 
   $side-length: calc(#{$s} / sqrt(2));
 

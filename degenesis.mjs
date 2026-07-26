@@ -10,8 +10,181 @@ var __exportAll = (all, no_symbols) => {
 	return target;
 };
 //#endregion
+//#region src/module/data/settings/subliminals.mjs
+var { SchemaField: SchemaField$29, NumberField: NumberField$29, StringField: StringField$31, BooleanField: BooleanField$26, ArrayField: ArrayField$26, IntegerSortField: IntegerSortField$26 } = foundry.data.fields;
+var SubliminalsSettingsData = class extends foundry.abstract.DataModel {
+	static defineSchema() {
+		foundry.data.fields;
+		return { show: new BooleanField$26({
+			label: "Show Subliminals during scene transitions.",
+			initial: false
+		}) };
+	}
+};
+//#endregion
+//#region src/module/applications/settings/rules.settings.mjs
+var { HandlebarsApplicationMixin: HandlebarsApplicationMixin$4, ApplicationV2: ApplicationV2$3 } = foundry.applications.api;
+(class extends HandlebarsApplicationMixin$4(ApplicationV2$3) {
+	constructor() {
+		super({});
+		this.settings = new SubliminalsSettingsData(game.settings.get(CONFIG.DEGENESIS.id, CONFIG.DH.SETTINGS.gameSettings.Automation).toObject());
+	}
+	get title() {
+		return game.i18n.localize("DAGGERHEART.SETTINGS.Menu.title");
+	}
+	static DEFAULT_OPTIONS = {
+		tag: "form",
+		id: "daggerheart-automation-settings",
+		classes: [
+			"daggerheart",
+			"dh-style",
+			"dialog",
+			"setting"
+		],
+		position: {
+			width: "600",
+			height: "auto"
+		},
+		window: { icon: "fa-solid fa-gears" },
+		actions: {
+			reset: this.reset,
+			save: this.save
+		},
+		form: {
+			handler: this.updateData,
+			submitOnChange: true
+		}
+	};
+	static PARTS = {
+		header: { template: "systems/daggerheart/templates/settings/automation-settings/header.hbs" },
+		tabs: { template: "systems/daggerheart/templates/sheets/global/tabs/tab-navigation.hbs" },
+		general: { template: "systems/daggerheart/templates/settings/automation-settings/general.hbs" },
+		rules: { template: "systems/daggerheart/templates/settings/automation-settings/deathMoves.hbs" },
+		roll: { template: "systems/daggerheart/templates/settings/automation-settings/roll.hbs" },
+		footer: { template: "systems/daggerheart/templates/settings/automation-settings/footer.hbs" }
+	};
+	/** @inheritdoc */
+	static TABS = { main: {
+		tabs: [
+			{ id: "general" },
+			{ id: "deathMoves" },
+			{ id: "roll" }
+		],
+		initial: "general",
+		labelPrefix: "DAGGERHEART.GENERAL.Tabs"
+	} };
+	async _prepareContext(_options) {
+		const context = await super._prepareContext(_options);
+		context.settingFields = this.settings;
+		return context;
+	}
+	static async updateData(event, element, formData) {
+		const updatedSettings = foundry.utils.expandObject(formData.object);
+		await this.settings.updateSource(updatedSettings);
+		this.render();
+	}
+	static async reset() {
+		this.settings = new DhAutomation();
+		this.render();
+	}
+	static async save() {
+		await game.settings.set(CONFIG.DH.id, CONFIG.DH.SETTINGS.gameSettings.Automation, this.settings.toObject());
+		this.close();
+	}
+});
+//#endregion
+//#region src/module/applications/settings/subliminals.settings.mjs
+var { HandlebarsApplicationMixin: HandlebarsApplicationMixin$3, ApplicationV2: ApplicationV2$2 } = foundry.applications.api;
+var DGNSSubliminalsSettings = class extends HandlebarsApplicationMixin$3(ApplicationV2$2) {
+	constructor() {
+		super({});
+		this.settings = new SubliminalsSettingsData(game.settings.get(CONFIG.DEGENESIS.id, CONFIG.DEGENESIS.settings.gameConfig.subliminals).toObject());
+	}
+	get title() {
+		return game.i18n.localize("SETTINGS.APP.title");
+	}
+	static DEFAULT_OPTIONS = {
+		tag: "form",
+		id: "dgns-settings-subliminals",
+		classes: [
+			"dgns-settings",
+			"dialog",
+			"setting"
+		],
+		position: {
+			width: "600",
+			height: "auto"
+		},
+		window: { icon: "fa-solid fa-gears" },
+		actions: {
+			reset: this.reset,
+			save: this.save
+		},
+		form: {
+			handler: this.updateData,
+			submitOnChange: true
+		}
+	};
+	static PARTS = {
+		sheetTitle: { template: "systems/degenesisnext/templates/shared/sheet/title.bar.hbs" },
+		subliminals: { template: "systems/degenesisnext/templates/settings/subliminals.hbs" },
+		sheetFooter: { template: "systems/degenesisnext/templates/shared/sheet/footer.hbs" }
+	};
+	/** @inheritdoc */
+	static TABS = {};
+	async _prepareContext(_options) {
+		const context = await super._prepareContext(_options);
+		context.settingFields = this.settings;
+		console.log(`Settings context:`);
+		console.dir(context);
+		return context;
+	}
+	static async updateData(event, element, formData) {
+		const updatedSettings = foundry.utils.expandObject(formData.object);
+		await this.settings.updateSource(updatedSettings);
+		this.render();
+	}
+	static async reset() {
+		this.settings = new SubliminalsSettingsData();
+		this.render();
+	}
+	static async save() {
+		await game.settings.set(CONFIG.DEGENESIS.id, CONFIG.DEGENESIS.settings.gameConfig.subliminals, this.settings.toObject());
+		this.close();
+	}
+};
+//#endregion
+//#region src/module/settings.mjs
+function registerSystemSettings() {
+	game.settings.register(CONFIG.DEGENESIS.id, CONFIG.DEGENESIS.settings.gameConfig.subliminals, {
+		scope: "world",
+		type: SubliminalsSettingsData,
+		config: false
+	});
+	game.settings.registerMenu(CONFIG.DEGENESIS.id, "DGNSRulesSettings", {
+		name: "Rules",
+		label: "Katharsys",
+		hint: "Tinker with core Katharsys settings, enable / disable basic automations.",
+		icon: "fa-cog",
+		type: DGNSSubliminalsSettings,
+		restricted: true
+	});
+	game.settings.registerMenu(CONFIG.DEGENESIS.id, "DGNSSubliminalMessages", {
+		name: "Subliminals",
+		label: "Subliminals",
+		hint: "Core module for displaying random subliminal messages during scene transitions.",
+		icon: "fa-cog",
+		type: DGNSSubliminalsSettings,
+		restricted: true
+	});
+	console.log("%cDEGENESIS NEXT%c | Settings registered.", "color: #ed1d27", "color: unset");
+}
+//#endregion
 //#region src/module/templates.mjs
-/** Function that preload necessary templates */
+/**
+* Helper function for preloading all necessary handlebars templates.
+* @returns {function} foundry.applications.handlebars.loadTemplates
+*/
 async function preloadHandlebarsTemplates() {
 	const partials = [
 		"systems/degenesisnext/templates/shared/group/header.hbs",
@@ -21,7 +194,8 @@ async function preloadHandlebarsTemplates() {
 		"systems/degenesisnext/templates/shared/actor/cult.hbs",
 		"systems/degenesisnext/templates/shared/actor/potentials.hbs",
 		"systems/degenesisnext/templates/shared/actor/combat/weapon.hbs",
-		"systems/degenesisnext/templates/shared/actor/combat/armor.hbs"
+		"systems/degenesisnext/templates/shared/actor/combat/armor.hbs",
+		"systems/degenesisnext/templates/actor/group/milestone.hbs"
 	];
 	const paths = {};
 	for (const path of partials) {
@@ -36,6 +210,7 @@ async function preloadHandlebarsTemplates() {
 //#endregion
 //#region src/module/handlebars.mjs
 async function registerHandlebarsHelpers() {
+	Handlebars.registerHelper("eq", (a, b) => a == b);
 	Handlebars.registerHelper("sheetEditMode", function(mode) {
 		return mode === 2 ? true : false;
 	});
@@ -70,64 +245,16 @@ async function registerHandlebarsHelpers() {
 	});
 }
 //#endregion
-//#region src/module/logic/config/items.mjs
-var WEAPON_GROUPS = {
-	brawl: "DGNS.WEAPON.brawl",
-	armedMelee: "DGNS.WEAPON.armedMelee",
-	thrown: "DGNS.WEAPON.thrown",
-	projectiles: "DGNS.WEAPON.projectiles",
-	handguns: "DGNS.WEAPON.handguns",
-	rifles: "DGNS.WEAPON.rifles",
-	heavy: "DGNS.WEAPON.heavy",
-	explosives: "DGNS.WEAPON.explosives",
-	sonic: "DGNS.WEAPON.sonic",
-	custom: "DGNS.WEAPON.custom"
-};
-var WEAPON_GROUPS_SKILLS = {
-	brawl: "brawl",
-	armedMelee: "melee",
-	thrown: "projectiles",
-	projectiles: "projectiles",
-	handguns: "projectiles",
-	rifles: "projectiles",
-	heavy: "projectiles",
-	explosives: "projectiles",
-	sonic: "engineering",
-	custom: ""
-};
-var CALIBERS = {
-	"50gl": "DGNS.CALIBER.50gl",
-	357: "DGNS.CALIBER.357",
-	44: "DGNS.CALIBER.44",
-	"410sh": "DGNS.CALIBER.410sh",
-	"410sl": "DGNS.CALIBER.410sl",
-	556: "DGNS.CALIBER.556",
-	jacket: "DGNS.CALIBER.jacket",
-	hollowPoint: "DGNS.CALIBER.hollowPoint",
-	flechette: "DGNS.CALIBER.flechette",
-	"46x30": "DGNS.CALIBER.46x30",
-	"9mm": "DGNS.CALIBER.9mm",
-	"5x30": "DGNS.CALIBER.5x30",
-	762: "DGNS.CALIBER.762",
-	14: "DGNS.CALIBER.14",
-	buckshot: "DGNS.CALIBER.buckshot",
-	rifleBarrel: "DGNS.CALIBER.rifleBarrel",
-	cartridge: "DGNS.CALIBER.cartridge",
-	grenade: "DGNS.CALIBER.grenade",
-	missile: "DGNS.CALIBER.missile",
-	fragger: "DGNS.CALIBER.fragger",
-	blackpowder: "DGNS.CALIBER.blackpowder",
-	leadbullet: "DGNS.CALIBER.leadbullet",
-	Ecube: "DGNS.CALIBER.Ecube",
-	arrow: "DGNS.CALIBER.arrow",
-	bolt: "DGNS.CALIBER.bolt",
-	petro: "DGNS.CALIBER.petro",
-	harpoon: "DGNS.CALIBER.harpoon",
-	nail: "DGNS.CALIBER.nail",
-	coal: "DGNS.CALIBER.coal",
-	boltcoal: "DGNS.CALIBER.boltcoal",
-	special: "DGNS.CALIBER.special",
-	custom: "DGNS.CALIBER.custom"
+//#region src/module/config/settings.config.mjs
+var settings_config_exports = /* @__PURE__ */ __exportAll({ gameConfig: () => gameConfig });
+/**
+* Structure for storing main core / game system settings.
+*/
+var gameConfig = {
+	appearance: "appearance",
+	rules: "rules",
+	homebrew: "homebrew",
+	subliminals: "subliminals"
 };
 //#endregion
 //#region src/module/logic/damage.mjs
@@ -787,19 +914,79 @@ var Modification = { type: {
 	armor: "DGNS.MOD.armor"
 } };
 //#endregion
-//#region src/module/config.mjs
+//#region src/module/logic/config/items.mjs
+var WEAPON_GROUPS = {
+	brawl: "DGNS.WEAPON.brawl",
+	armedMelee: "DGNS.WEAPON.armedMelee",
+	thrown: "DGNS.WEAPON.thrown",
+	projectiles: "DGNS.WEAPON.projectiles",
+	handguns: "DGNS.WEAPON.handguns",
+	rifles: "DGNS.WEAPON.rifles",
+	heavy: "DGNS.WEAPON.heavy",
+	explosives: "DGNS.WEAPON.explosives",
+	sonic: "DGNS.WEAPON.sonic",
+	custom: "DGNS.WEAPON.custom"
+};
+var WEAPON_GROUPS_SKILLS = {
+	brawl: "brawl",
+	armedMelee: "melee",
+	thrown: "projectiles",
+	projectiles: "projectiles",
+	handguns: "projectiles",
+	rifles: "projectiles",
+	heavy: "projectiles",
+	explosives: "projectiles",
+	sonic: "engineering",
+	custom: ""
+};
+var CALIBERS = {
+	"50gl": "DGNS.CALIBER.50gl",
+	357: "DGNS.CALIBER.357",
+	44: "DGNS.CALIBER.44",
+	"410sh": "DGNS.CALIBER.410sh",
+	"410sl": "DGNS.CALIBER.410sl",
+	556: "DGNS.CALIBER.556",
+	jacket: "DGNS.CALIBER.jacket",
+	hollowPoint: "DGNS.CALIBER.hollowPoint",
+	flechette: "DGNS.CALIBER.flechette",
+	"46x30": "DGNS.CALIBER.46x30",
+	"9mm": "DGNS.CALIBER.9mm",
+	"5x30": "DGNS.CALIBER.5x30",
+	762: "DGNS.CALIBER.762",
+	14: "DGNS.CALIBER.14",
+	buckshot: "DGNS.CALIBER.buckshot",
+	rifleBarrel: "DGNS.CALIBER.rifleBarrel",
+	cartridge: "DGNS.CALIBER.cartridge",
+	grenade: "DGNS.CALIBER.grenade",
+	missile: "DGNS.CALIBER.missile",
+	fragger: "DGNS.CALIBER.fragger",
+	blackpowder: "DGNS.CALIBER.blackpowder",
+	leadbullet: "DGNS.CALIBER.leadbullet",
+	Ecube: "DGNS.CALIBER.Ecube",
+	arrow: "DGNS.CALIBER.arrow",
+	bolt: "DGNS.CALIBER.bolt",
+	petro: "DGNS.CALIBER.petro",
+	harpoon: "DGNS.CALIBER.harpoon",
+	nail: "DGNS.CALIBER.nail",
+	coal: "DGNS.CALIBER.coal",
+	boltcoal: "DGNS.CALIBER.boltcoal",
+	special: "DGNS.CALIBER.special",
+	custom: "DGNS.CALIBER.custom"
+};
+/**
+* Main object available trough entire system
+*/
+var SYSTEM = {
+	id: "degenesisnext",
+	settings: settings_config_exports,
+	logic: {
+		damage: Damage,
+		condition: Condition,
+		qualities: Qualities,
+		modification: Modification
+	}
+};
 var DEGENESIS = {};
-DEGENESIS.Damage = Damage;
-DEGENESIS.Condition = Condition;
-DEGENESIS.Qualities = Qualities;
-DEGENESIS.Modification = Modification;
-DEGENESIS.alignments = { ambition: {
-	label: "DGNS.Ambition",
-	description: "DGNS.AmbitionDescription",
-	affinity: [],
-	aversion: [],
-	constellation: []
-} };
 DEGENESIS.raptures = {
 	biokinetics: "DGNS.Biokinetics",
 	dushani: "DGNS.Dushani",
@@ -1292,9 +1479,9 @@ DEGENESIS.weaponQualityDescription = {
 	singleLoader: "DGNS.SingleLoaderDescription",
 	cutting: "DGNS.CuttingDescription"
 }, DEGENESIS.defenseQualityDescription = { special: "DGNS.SpecialDescription" }, DEGENESIS.damageTypes = {
-	fleshwounds: "DGNS.Fleshwounds",
-	ego: "DGNS.Ego",
-	trauma: "DGNS.Trauma"
+	fleshwounds: "DGNS.CONDITION.fleshwounds",
+	ego: "DGNS.CONDITION.ego",
+	trauma: "DGNS.CONDITION.trauma"
 };
 DEGENESIS.standardDamageModifiers = Damage.standardModifiers;
 DEGENESIS.formHellDamageModifiers = Damage.fromHellModifiers;
@@ -1514,7 +1701,7 @@ function pause_default() {
 	});
 }
 //#endregion
-//#region src/module/hooks/item.mjs
+//#region src/module/hooks/item.hooks.mjs
 /** import Hooks from @common/as */
 function RegisterItemHooks() {
 	/** Sync changes to actors  */
@@ -1528,17 +1715,10 @@ function RegisterItemHooks() {
 	});
 }
 //#endregion
-//#region src/module/hooks/actor.mjs
+//#region src/module/hooks/actor.hooks.mjs
 function RegisterActorHooks() {
 	Hooks.on("preUpdateActor", (actor, changes, options, userId) => {
 		console.log("Actor update triggered:", changes);
-	});
-}
-//#endregion
-//#region src/module/hooks/handlebars.mjs
-function RegisterHandlebars() {
-	Hooks.on("init", () => {
-		Handlebars.registerHelper("eq", (a, b) => a == b);
 	});
 }
 //#endregion
@@ -1564,7 +1744,6 @@ function _module_default() {
 	menu_default();
 	pause_default();
 	sidebar_default();
-	RegisterHandlebars();
 	chat_message_default();
 	RegisterItemHooks();
 	RegisterActorHooks();
@@ -1574,20 +1753,53 @@ function _module_default() {
 /** @import HandlebarsApplicationMixin from '@client/applications/api/handlebars-application.mjs*/
 var { api: api$10, sheets: sheets$10 } = foundry.applications;
 var { DragDrop, TextEditor: TextEditor$10 } = foundry.applications.ux;
+var { performIntegerSort: performIntegerSort$1 } = foundry.utils;
 var getSheetPrefs = (doc) => {
 	const key = `${doc.type}${doc.limited ? ":limited" : ""}`;
-	return game.user.getFlag("degenesisnext", `actorSheetPrefs.${key}`) ?? {};
+	return game.user.getFlag(CONFIG.DEGENESIS.id, `actorSheetPrefs.${key}`) ?? {};
 };
-/** Class extending HandlebarsApplicationMixin */
+/**
+* Class extending HandlebarsApplicationMixin.
+* @param {*} Base
+*/
 function ActorSheetMixin(Base) {
-	return class DegenesisActorSheet extends api$10.HandlebarsApplicationMixin(Base) {
+	return class DGNSActorSheet extends api$10.HandlebarsApplicationMixin(Base) {
 		static TABS = [];
 		static MODES = {
 			PLAY: 1,
 			EDIT: 2
 		};
 		static DEFAULT_OPTIONS = {
-			actions: { toggleExpanded: DegenesisActorSheet.#toggleExpanded },
+			actions: {
+				toggleExpanded: DGNSActorSheet.#toggleExpanded,
+				showLinkedItem: DGNSActorSheet.#showLinkedItem,
+				removeLinkedItem: DGNSActorSheet.#removeLinkedItem,
+				toggleSort: DGNSActorSheet.#toggleSort,
+				toggleEquipped: DGNSActorSheet.#toggleItemProp("system.equipped"),
+				toggleDropped: DGNSActorSheet.#toggleItemProp("system.dropped"),
+				createItem: DGNSActorSheet.#createItem,
+				editItem: DGNSActorSheet.prototype._onEditItem,
+				deleteItem: DGNSActorSheet.prototype._onDeleteItem,
+				rollAction: DGNSActorSheet.prototype._onActionRoll,
+				rollCombination: DGNSActorSheet.prototype._onCombinationRoll,
+				manageEffect: DGNSActorSheet.prototype._onManageEffect
+			},
+			contextMenus: [{
+				handler: DGNSActorSheet.#getActionRollContextOptions,
+				selector: "[data-action=rollAction]",
+				options: {
+					parentClassHooks: false,
+					fixed: true
+				}
+			}, {
+				handler: DGNSActorSheet.#getInventoryContextOptions,
+				selector: "[data-action=openItemMenu]",
+				options: {
+					eventName: "click",
+					parentClassHooks: false,
+					fixed: true
+				}
+			}],
 			dragDrop: [{
 				dragSelector: "[data-drag]",
 				dropSelector: null
@@ -1602,122 +1814,6 @@ function ActorSheetMixin(Base) {
 			super(object, options);
 			this.#dragDrop = this.#createDragDropHandlers();
 		}
-		/**
-		* Expanded states for collapsible sections to persist between renders.
-		*/
-		#expandedSections = /* @__PURE__ */ new Map();
-		get expandedSections() {
-			return this.#expandedSections;
-		}
-		/**
-		*
-		* Handling collapsible sections. Based on dnd5e implementation, but items are hidden
-		* on defautl and we are toggling 'Expanded' instead 'Collapsed' to not confuse
-		* future generation of programmer`s.
-		*
-		* .collapsible is the required class for elements
-		*
-		* @this {*}
-		* @param {*} event
-		* @param {*} target
-		* @returns
-		*/
-		static #toggleExpanded(event, target) {
-			const collapsible = target.closest(".collapsible");
-			if (!collapsible) return;
-			collapsible.classList.remove("expanded--restored");
-			collapsible.classList.toggle("expanded");
-			this.#expandedSections.set(target.closest("[data-expand-id]")?.dataset.expandId, collapsible.classList.contains("expanded"));
-		}
-		#dragDrop;
-		/**
-		* Returns an array of DragDrop instances
-		* @type {DragDrop[]}
-		*/
-		get dragDrop() {
-			return this.#dragDrop;
-		}
-		/**
-		* Create drag-and-drop workflow handlers for this Application
-		* @returns {DragDrop[]}     An array of DragDrop handlers
-		* @private
-		*/
-		#createDragDropHandlers() {
-			return this.options.dragDrop.map((d) => {
-				d.permissions = {
-					dragstart: this._canDragStart.bind(this),
-					drop: this._canDragDrop.bind(this)
-				};
-				d.callbacks = {
-					dragstart: this._onDragStart.bind(this),
-					dragover: this._onDragOver.bind(this),
-					drop: this._onDrop.bind(this)
-				};
-				return new DragDrop(d);
-			});
-		}
-		/**
-		* Returns an array of DragDrop instances
-		* @type {DragDrop[]}
-		*/
-		/**
-		* Define whether a user is able to begin a dragstart workflow for a given drag selector
-		* @param {string} selector       The candidate HTML selector for dragging
-		* @returns {boolean}             Can the current user drag this selector?
-		* @protected
-		*/
-		_canDragStart(selector) {
-			console.log(`canDragStart`);
-			return this.isEditable;
-		}
-		/**
-		* Define whether a user is able to conclude a drag-and-drop workflow for a given drop selector
-		* @param {string} selector       The candidate HTML selector for the drop target
-		* @returns {boolean}             Can the current user drop on this selector?
-		* @protected
-		*/
-		_canDragDrop(selector) {
-			console.log(`canDragDrop`);
-			return this.isEditable;
-		}
-		/**
-		* Callback actions which occur at the beginning of a drag start workflow.
-		* @param {DragEvent} event       The originating DragEvent
-		* @protected
-		*/
-		_onDragStart(event) {
-			const el = event.currentTarget;
-			console.log(`Element`);
-			console.log(el);
-			if ("link" in event.target.dataset) return;
-			const itemId = el.dataset.itemId;
-			const item = this.actor.items.get(itemId);
-			if (!item) return;
-			const dragData = item.toDragData();
-			event.dataTransfer.setData("text/plain", JSON.stringify(dragData));
-		}
-		/**
-		* Callback actions which occur when a dragged element is over a drop target.
-		* @param {DragEvent} event       The originating DragEvent
-		* @protected
-		*/
-		_onDragOver(event) {}
-		/**
-		* Callback actions which occur when a dragged element is dropped on a target.
-		* It will call different method based on data type beeing dragged onto sheet.
-		* @param {DragEvent} event       The originating DragEvent
-		* @protected
-		*/
-		async _onDrop(event) {
-			event.preventDefault();
-			const data = TextEditor$10.getDragEventData(event);
-			console.log(`onDropData`);
-			console.log(data);
-			if (!data.type) return super._onDrop(event);
-			const handlerName = `_onDrop${data.type}`;
-			if (typeof this[handlerName] === "function") return this[handlerName](event, data);
-			return super._onDrop(event);
-		}
 		/** @inheritdoc */
 		async close(options) {
 			options = { animate: false };
@@ -1726,6 +1822,10 @@ function ActorSheetMixin(Base) {
 		/** @inheritdoc */
 		async _render(force, { mode, ...options } = {}) {
 			return super._render(force, {mode, ...options} = {});
+		}
+		async _onFirstRender(context, options) {
+			await super._onFirstRender(context, options);
+			if (!!this.options.contextMenus.length) this._createContextMenus();
 		}
 		/** @inheritdoc */
 		async _renderHTML(context, options) {
@@ -1742,8 +1842,8 @@ function ActorSheetMixin(Base) {
 				modeIcon.classList.add("fa-solid");
 				modeIcon.classList.add(toggle.checked ? "fa-pen" : "fa-play");
 				toggle.classList.add("mode-slider");
-				toggle.dataset.tooltip = "UI.SHEETMODES.play";
-				toggle.setAttribute("aria-label", game.i18n.localize("UI.SHEETMODES.play"));
+				toggle.dataset.tooltip = "DGNS.UISHEETMODES.play";
+				toggle.setAttribute("aria-label", game.i18n.localize("DGNS.UISHEETMODES.play"));
 				toggle.addEventListener("change", (event) => {
 					event.stopPropagation();
 					event.stopImmediatePropagation();
@@ -1764,6 +1864,7 @@ function ActorSheetMixin(Base) {
 			if (!this._dropdownState) this._dropdownState = {};
 			context.editable = this.isEditable && this._mode === this.constructor.MODES.EDIT;
 			context.cssClass = context.editable ? "editable" : this.isEditable ? "interactable" : "locked";
+			context.isEditMode = this._mode === 2;
 			return context;
 		}
 		/** @inheritdoc */
@@ -1798,7 +1899,7 @@ function ActorSheetMixin(Base) {
 		async _onChangeSheetMode(event) {
 			const { MODES } = this.constructor;
 			const toggle = event.currentTarget;
-			const label = game.i18n.localize(`UI.SHEETMODES.${toggle.checked ? "edit" : "play"}`);
+			const label = game.i18n.localize(`DGNS.UI.SHEETMODES.${toggle.checked ? "edit" : "play"}`);
 			toggle.dataset.tooltip = label;
 			toggle.setAttribute("aria-label", label);
 			this._mode = toggle.checked ? MODES.EDIT : MODES.PLAY;
@@ -1806,6 +1907,293 @@ function ActorSheetMixin(Base) {
 		}
 		_disableFields(form) {
 			super._disableFields(form);
+		}
+		/**
+		* Expanded states for collapsible sections to persist between renders.
+		*/
+		#expandedSections = /* @__PURE__ */ new Map();
+		get expandedSections() {
+			return this.#expandedSections;
+		}
+		/**
+		* Handling collapsible sections. Based on dnd5e implementation, but items are hidden
+		* on defautl and we are toggling 'Expanded' instead 'Collapsed' to not confuse
+		* future generation of programmer`s.
+		*
+		* .collapsible is the required class for elements
+		*
+		* @this {*}
+		* @param {*} event
+		* @param {*} target
+		* @returns
+		*/
+		static #toggleExpanded(event, target) {
+			const collapsible = target.closest(".collapsible");
+			if (!collapsible) return;
+			collapsible.classList.remove("expanded--restored");
+			collapsible.classList.toggle("expanded");
+			this.#expandedSections.set(target.closest("[data-expand-id]")?.dataset.expandId, collapsible.classList.contains("expanded"));
+		}
+		/**
+		* Display linked Item, and fallback to cached one if main do not exist anymore.
+		* Mainly used with Culture / Concept / Cult
+		* @param {*} event
+		* @param {*} target
+		*/
+		static async #showLinkedItem(event, target) {
+			const itemType = target.dataset.itemType;
+			const itemId = this.actor.system[itemType].id;
+			const item = itemId === this.actor.system[`${itemType}Item`].linked.id ? game.items.get(itemId) : this.actor.items.get(itemId);
+			if (item) item.sheet.render(true);
+		}
+		static async #removeLinkedItem(event, target) {
+			const itemType = target.dataset.itemType;
+			await this.actor.system.removeLinkedItem(itemType);
+		}
+		_createContextMenus() {
+			for (const config of this.options.contextMenus) {
+				const { handler, selector, options } = config;
+				this._createContextMenu(handler.bind(this), selector, options);
+			}
+		}
+		/**
+		* Preparing standard context menu options
+		* @returns
+		*/
+		static #getInventoryContextOptions() {
+			return [...[{
+				label: "itemEdit",
+				icon: "fas fa-edit",
+				callback: async (target) => {
+					await this._onEditItem(null, target);
+				}
+			}, {
+				label: "itemDelete",
+				icon: "fas fa-trash",
+				callback: async (target) => {
+					await this._onDeleteItem(null, target);
+				}
+			}].map((option) => ({
+				...option,
+				label: `DGNS.UI.CONTEXT.${option.label}`,
+				icon: `<i class="${option.icon}"></i>`
+			}))];
+		}
+		static #getActionRollContextOptions() {
+			return [...[{
+				label: "actionRoll",
+				icon: "",
+				callback: async (target) => {
+					await this._onActionRoll(null, target);
+				}
+			}, {
+				label: "combinationRoll",
+				icon: "",
+				callback: async (target) => {
+					await this._onCombinationRoll(null, target);
+				}
+			}].map((option) => ({
+				...option,
+				label: `DGNS.UI.CONTEXT.${option.label}`,
+				icon: `<i class="${option.icon}"></i>`
+			}))];
+		}
+		#dragDrop;
+		/**
+		* Returns an array of DragDrop instances
+		* @type {DragDrop[]}
+		*/
+		get dragDrop() {
+			return this.#dragDrop;
+		}
+		/**
+		* Create drag-and-drop workflow handlers for this Application
+		* @returns {DragDrop[]}     An array of DragDrop handlers
+		* @private
+		*/
+		#createDragDropHandlers() {
+			return this.options.dragDrop.map((d) => {
+				d.permissions = {
+					dragstart: this._canDragStart.bind(this),
+					drop: this._canDragDrop.bind(this)
+				};
+				d.callbacks = {
+					dragstart: this._onDragStart.bind(this),
+					dragover: this._onDragOver.bind(this),
+					drop: this._onDrop.bind(this)
+				};
+				return new DragDrop(d);
+			});
+		}
+		/**
+		* Define whether a user is able to begin a dragstart workflow for a given drag selector
+		* @param {string} selector       The candidate HTML selector for dragging
+		* @returns {boolean}             Can the current user drag this selector?
+		* @protected
+		*/
+		_canDragStart(selector) {
+			return this.isEditable;
+		}
+		/**
+		* Define whether a user is able to conclude a drag-and-drop workflow for a given drop selector
+		* @param {string} selector       The candidate HTML selector for the drop target
+		* @returns {boolean}             Can the current user drop on this selector?
+		* @protected
+		*/
+		_canDragDrop(selector) {
+			return this.isEditable;
+		}
+		/**
+		* Callback actions which occur at the beginning of a drag start workflow.
+		* @param {DragEvent} event       The originating DragEvent
+		* @protected
+		*/
+		_onDragStart(event) {
+			const el = event.currentTarget;
+			if ("link" in event.target.dataset) return;
+			const itemId = el.dataset.itemId;
+			const item = this.actor.items.get(itemId);
+			if (!item) return;
+			const dragData = item.toDragData();
+			event.dataTransfer.setData("text/plain", JSON.stringify(dragData));
+		}
+		/**
+		* Callback actions which occur when a dragged element is over a drop target.
+		* @param {DragEvent} event       The originating DragEvent
+		* @protected
+		*/
+		_onDragOver(event) {}
+		/**
+		* Callback actions which occur when a dragged element is dropped on a target.
+		* It will call different method based on data type beeing dragged onto sheet.
+		* @param {DragEvent} event       The originating DragEvent
+		* @protected
+		*/
+		async _onDrop(event) {
+			event.preventDefault();
+			const data = TextEditor$10.getDragEventData(event);
+			console.log(`onDropData`);
+			console.log(data);
+			if (!data.type) return super._onDrop(event);
+			const handlerName = `_onDrop${data.type}`;
+			if (typeof this[handlerName] === "function") return this[handlerName](event, data);
+			return super._onDrop(event);
+		}
+		async _onDropItem(event, data) {
+			const item = await Item.implementation.fromDropData(data);
+			if (!item) return false;
+			const targetId = event.target.closest(".entry")?.dataset.itemId;
+			const targetItem = targetId ? this.actor.items.get(targetId) : null;
+			if (item.type === "culture" && !item.actor) {
+				await this.actor.system.setCulture(item.id);
+				return false;
+			}
+			if (item.type === "cult" && !item.actor) {
+				await this.actor.system.setCult(item.id);
+				return false;
+			}
+			if (item.type === "concept" && !item.actor) {
+				await this.actor.system.setConcept(item.id);
+				return false;
+			}
+			const isSameActor = item.actor?.id === this.actor.id;
+			const isFromSidebar = !item.actor;
+			item.actor && (item.actor.id, this.actor.id);
+			if (isSameActor) {
+				if (targetItem) {
+					if (item.id === targetItem.id) return false;
+					const sortMode = (this.actor.getFlag(CONFIG.DEGENESIS.id, "inventorySortModes") || {})[targetItem.type] || "manual";
+					console.log(sortMode);
+					if (sortMode === "manual") return this._handleInventorySort(item, targetItem);
+					else {
+						ui.notifications.warn("Disable alphabetical sorting first. ");
+						return false;
+					}
+				}
+			}
+			if (isFromSidebar) return super._onDropItem(event, item);
+		}
+		static async #createItem(event, target) {
+			const itemType = target.closest("[data-item-type")?.dataset.itemType;
+			await this.actor._createItem(itemType);
+		}
+		static async #onCreateItem() {}
+		async _onEditItem(event, target) {
+			const itemId = target.closest("[data-item-id]")?.dataset.itemId;
+			const item = this.actor.items.get(itemId);
+			if (item) item.sheet.render(true);
+		}
+		async _onDeleteItem(event, target) {
+			const itemId = target.closest("[data-item-id]")?.dataset.itemId;
+			const item = this.actor.items.get(itemId);
+			if (item) item.delete();
+		}
+		static #toggleItemProp(propPath) {
+			return async function(event, target) {
+				const itemId = target.closest("[data-item-id]").dataset.itemId;
+				const item = this.document.items.get(itemId);
+				console.log(`Toggle item prop`);
+				console.log(item);
+				console.log(propPath);
+				const currentValue = foundry.utils.getProperty(item, propPath);
+				console.log(currentValue);
+				await item.update({ [propPath]: !currentValue });
+			};
+		}
+		static async #toggleSort(event, target) {
+			const group = target.dataset.group;
+			const newMode = (this.actor.getFlag(CONFIG.DEGENESIS.id, `inventorySortModes.${group}`) || "manual") === "manual" ? "alpha" : "manual";
+			await this.actor.setFlag("degenesisnext", `inventorySortModes.${group}`, newMode);
+		}
+		async _handleInventorySort(source, target) {
+			const updates = performIntegerSort$1(source, {
+				target,
+				siblings: this.actor.items.filter((i) => i.type === target.type && i.id !== source.id)
+			}).map((u) => ({
+				_id: u.target.id,
+				sort: u.update.sort
+			}));
+			return this.actor.updateEmbeddedDocuments("Item", updates);
+		}
+		async _onCombinationRoll(event, target) {
+			if (event) event.preventDefault();
+			const skill = target.dataset.skill;
+			const attribute = target.dataset.attribute;
+			await this.actor.combinationRoll(attribute, skill);
+		}
+		async _onActionRoll(event, target) {
+			if (event) event.preventDefault();
+			const skill = target.dataset.skill;
+			const attribute = target.dataset.attribute;
+			await this.actor.actionRoll(attribute, skill);
+		}
+		/**
+		* Manage effect on Actor's side.
+		* @param {*} event
+		* @param {*} target
+		* @returns
+		*/
+		async _onManageEffect(event, target) {
+			if (event) event.preventDefault();
+			const action = target.dataset.type;
+			const effectId = target.closest(".effect")?.dataset.effectId;
+			return await this.actor._manageEffect(action, effectId);
+		}
+		/**
+		* todo: effects sorting need to be implemented yet
+		* @param {*} source
+		* @param {*} target
+		* @returns
+		*/
+		async _handleEffectsSort(source, target) {
+			const updates = performIntegerSort$1(source, {
+				target,
+				siblings: this.actor.items.filter((i) => i.type === target.type && i.id !== source.id)
+			}).map((u) => ({
+				_id: u.target.id,
+				sort: u.update.sort
+			}));
+			return this.actor.updateEmbeddedDocuments("Effect", updates);
 		}
 	};
 }
@@ -1816,27 +2204,14 @@ function ActorSheetMixin(Base) {
 * Extend the basic ActorSheet class to suppose system-specific logic and functionality.
 * @abstract
 */
-var { renderTemplate: renderTemplate$3 } = foundry.applications.handlebars;
+var { renderTemplate: renderTemplate$4 } = foundry.applications.handlebars;
 var { api: api$9, sheets: sheets$9 } = foundry.applications;
 var { DialogV2: DialogV2$1 } = foundry.applications.api;
 var { TextEditor: TextEditor$9 } = foundry.applications.ux;
 var { performIntegerSort } = foundry.utils;
 var DGNSCharacterSheet = class DGNSCharacterSheet extends ActorSheetMixin(sheets$9.ActorSheetV2) {
 	static DEFAULT_OPTIONS = {
-		actions: {
-			showLinkedItem: DGNSCharacterSheet.prototype.showLinkedItem,
-			removeLinkedItem: DGNSCharacterSheet.prototype.removeLinkedItem,
-			toggleEquipped: DGNSCharacterSheet.prototype.toggleItemProp("system.equipped"),
-			toggleDropped: DGNSCharacterSheet.prototype.toggleItemProp("system.dropped"),
-			toggleDescription: DGNSCharacterSheet.prototype.toggleDescription,
-			createItem: DGNSCharacterSheet.prototype.createItem,
-			editItem: DGNSCharacterSheet.prototype.onEditItem,
-			toggleSort: DGNSCharacterSheet.prototype.toggleSort,
-			unsetGroup: DGNSCharacterSheet.prototype.unsetGroup,
-			rollAction: DGNSCharacterSheet.prototype.onActionRoll,
-			rollCombination: DGNSCharacterSheet.prototype.onCombinationRoll,
-			manageEffect: DGNSCharacterSheet.prototype.onManageEffect
-		},
+		actions: { unsetGroup: DGNSCharacterSheet.prototype.unsetGroup },
 		form: { submitOnChange: true },
 		window: {
 			resizable: true,
@@ -1886,9 +2261,9 @@ var DGNSCharacterSheet = class DGNSCharacterSheet extends ActorSheetMixin(sheets
 		history: {
 			template: "systems/degenesisnext/templates/actor/character/history.hbs",
 			templates: [
+				"systems/degenesisnext/templates/actor/character/group.hbs",
 				"systems/degenesisnext/templates/actor/character/legacies.hbs",
 				"systems/degenesisnext/templates/actor/character/biography.hbs",
-				"systems/degenesisnext/templates/actor/character/group.hbs",
 				"systems/degenesisnext/templates/actor/character/notes.hbs",
 				"systems/degenesisnext/templates/actor/character/gmnotes.hbs"
 			],
@@ -1903,27 +2278,27 @@ var DGNSCharacterSheet = class DGNSCharacterSheet extends ActorSheetMixin(sheets
 			tabs: [
 				{
 					id: "general",
-					label: "UI.TABS.general"
+					label: "DGNS.UI.TABS.general"
 				},
 				{
 					id: "stats",
-					label: "UI.TABS.stats"
+					label: "DGNS.UI.TABS.stats"
 				},
 				{
 					id: "effects",
-					label: "UI.TABS.effects"
+					label: "DGNS.UI.TABS.effects"
 				},
 				{
 					id: "combat",
-					label: "UI.TABS.combat"
+					label: "DGNS.UI.TABS.combat"
 				},
 				{
 					id: "inventory",
-					label: "UI.TABS.inventory"
+					label: "DGNS.UI.TABS.inventory"
 				},
 				{
 					id: "history",
-					label: "UI.TABS.history"
+					label: "DGNS.UI.TABS.history"
 				}
 			]
 		},
@@ -1932,22 +2307,22 @@ var DGNSCharacterSheet = class DGNSCharacterSheet extends ActorSheetMixin(sheets
 			tabs: [
 				{
 					id: "details",
-					label: "UI.TABS.details",
+					label: "DGNS.UI.TABS.details",
 					icon: "fa-solid fa-circle-info"
 				},
 				{
 					id: "modes",
-					label: "UI.TABS.modes",
+					label: "DGNS.UI.TABS.modes",
 					icon: "fa-solid fa-brain"
 				},
 				{
 					id: "currency",
-					label: "UI.TABS.currency",
+					label: "DGNS.UI.TABS.currency",
 					icon: "fa-solid fa-coins"
 				},
 				{
 					id: "xp",
-					label: "UI.TABS.xp",
+					label: "DGNS.UI.TABS.xp",
 					icon: "fa-solid fa-timeline"
 				}
 			]
@@ -1956,24 +2331,24 @@ var DGNSCharacterSheet = class DGNSCharacterSheet extends ActorSheetMixin(sheets
 			initial: "group",
 			tabs: [
 				{
+					id: "group",
+					label: "DGNS.UI.TABS.group"
+				},
+				{
 					id: "biography",
-					label: "UI.TABS.biography"
+					label: "DGNS.UI.TABS.biography"
 				},
 				{
 					id: "legacies",
-					label: "UI.TABS.legacies"
-				},
-				{
-					id: "group",
-					label: "UI.TABS.group"
+					label: "DGNS.UI.TABS.legacies"
 				},
 				{
 					id: "notes",
-					label: "UI.TABS.notes"
+					label: "DGNS.UI.TABS.notes"
 				},
 				{
 					id: "gmnotes",
-					label: "UI.TABS.gmnotes"
+					label: "DGNS.UI.TABS.gmnotes"
 				}
 			]
 		}
@@ -1992,7 +2367,7 @@ var DGNSCharacterSheet = class DGNSCharacterSheet extends ActorSheetMixin(sheets
 			actor: this.actor,
 			system: this.actor.system,
 			flags: this.actor.flags,
-			sortMode: this.actor.getFlag("degenesisnext", "inventorySortMode") || "manual",
+			sortMode: this.actor.getFlag(CONFIG.DEGENESIS.id, "inventorySortMode") || "manual",
 			actorFields: this.actor.schema.fields,
 			culture: this.actor.system.culture,
 			concept: this.actor.system.concept,
@@ -2032,59 +2407,6 @@ var DGNSCharacterSheet = class DGNSCharacterSheet extends ActorSheetMixin(sheets
 		}
 		return context;
 	}
-	/**
-	* Creating initial context menus for permanent objects
-	*/
-	createContextMenus() {
-		function _actionRollContextOptions() {
-			return [{
-				name: "Action roll",
-				callback: async (target) => {
-					await this.onActionRoll(null, target);
-				}
-			}, {
-				name: "Combination roll",
-				callback: async (target) => {
-					await this.onCombinationRoll(null, target);
-				}
-			}];
-		}
-		function _itemContextOptions() {
-			return [{
-				name: "Edit",
-				icon: "<i class=\"fas fa-edit\"></i>",
-				callback: async (target) => {
-					await this.onEditItem(null, target);
-				}
-			}, {
-				name: "Delete",
-				icon: "<i class=\"fas fa-trash\"></i>",
-				callback: async (target) => {
-					await this.onDeleteItem(null, target);
-				}
-			}];
-		}
-		this._createContextMenu(_actionRollContextOptions.bind(this), `[data-action=rollAction]`, {
-			hookName: "getActionRollContextOptions",
-			fixed: true,
-			parentClassHooks: false
-		});
-		this._createContextMenu(_itemContextOptions.bind(this), `[data-action=openItemMenu]`, {
-			eventName: "click",
-			hookName: "getItemContextOptions",
-			fixed: true,
-			parentClassHooks: false
-		});
-	}
-	/** @inheritdoc */
-	async _onFirstRender(context, options) {
-		await super._onFirstRender(context, options);
-		this.createContextMenus();
-	}
-	activateListeners(html) {
-		console.log(`Activate listeners`);
-		super.activateListeners(html);
-	}
 	/** @inheritdoc */
 	_onRender(context, options) {
 		super._onRender(context, options);
@@ -2102,139 +2424,206 @@ var DGNSCharacterSheet = class DGNSCharacterSheet extends ActorSheetMixin(sheets
 		const actor = await Actor.implementation.fromDropData(data);
 		if (actor.type === "group") await this.actor.setGroup(actor);
 	}
-	async _onDropItem(event, data) {
-		const item = await Item.implementation.fromDropData(data);
-		if (!item) return false;
-		const targetId = event.target.closest(".entry")?.dataset.itemId;
-		const targetItem = targetId ? this.actor.items.get(targetId) : null;
-		if (item.type === "culture" && !item.actor) {
-			await this.actor.system.setCulture(item.id);
-			return false;
-		}
-		if (item.type === "cult" && !item.actor) {
-			await this.actor.system.setCult(item.id);
-			return false;
-		}
-		if (item.type === "concept" && !item.actor) {
-			await this.actor.system.setConcept(item.id);
-			return false;
-		}
-		const isSameActor = item.actor?.id === this.actor.id;
-		const isFromSidebar = !item.actor;
-		item.actor && (item.actor.id, this.actor.id);
-		if (isSameActor) {
-			if (targetItem) {
-				if (item.id === targetItem.id) return false;
-				const sortMode = (this.actor.getFlag("degenesisnext", "inventorySortModes") || {})[targetItem.type] || "manual";
-				console.log(sortMode);
-				if (sortMode === "manual") return this._handleSort(item, targetItem);
-				else {
-					ui.notifications.warn("Disable alphabetical sorting first. ");
-					return false;
-				}
-			}
-		}
-		if (isFromSidebar) return super._onDropItem(event, item);
-	}
-	async _handleSort(source, target) {
-		const updates = performIntegerSort(source, {
-			target,
-			siblings: this.actor.items.filter((i) => i.type === target.type && i.id !== source.id)
-		}).map((u) => ({
-			_id: u.target.id,
-			sort: u.update.sort
-		}));
-		return this.actor.updateEmbeddedDocuments("Item", updates);
-	}
-	/**
-	* Manage effect on Actor's side.
-	* @param {*} event
-	* @param {*} target
-	* @returns
-	*/
-	async onManageEffect(event, target) {
-		if (event) event.preventDefault();
-		const action = target.dataset.type;
-		const effectId = target.closest(".effect")?.dataset.effectId;
-		return await this.actor._manageEffect(action, effectId);
-	}
-	async onCombinationRoll(event, target) {
-		if (event) event.preventDefault();
-		const skill = target.dataset.skill;
-		const attribute = target.dataset.attribute;
-		await this.actor.combinationRoll(attribute, skill);
-	}
-	async onActionRoll(event, target) {
-		if (event) event.preventDefault();
-		const skill = target.dataset.skill;
-		const attribute = target.dataset.attribute;
-		await this.actor.actionRoll(attribute, skill);
-	}
-	async createItem(event, target) {
-		const itemType = target.closest("[data-item-type")?.dataset.itemType;
-		await this.actor._createItem(itemType);
-	}
-	/**
-	* Display linked Item, and fallback to cached one if main do not exist anymore.
-	* Mainly used with Culture / Concept / Cult
-	* @param {*} event
-	* @param {*} target
-	*/
-	async showLinkedItem(event, target) {
-		const itemType = target.dataset.itemType;
-		const itemId = this.actor.system[itemType].id;
-		const item = itemId === this.actor.system[`${itemType}Item`].linked.id ? game.items.get(itemId) : this.actor.items.get(itemId);
-		if (item) item.sheet.render(true);
-	}
-	async onCreateItem() {}
-	async onEditItem(event, target) {
-		const itemId = target.closest("[data-item-id]")?.dataset.itemId;
-		const item = this.actor.items.get(itemId);
-		if (item) item.sheet.render(true);
-	}
-	async onDeleteItem(event, target) {
-		const itemId = target.closest("[data-item-id]")?.dataset.itemId;
-		const item = this.actor.items.get(itemId);
-		if (item) item.delete();
-	}
-	async removeLinkedItem(event, target) {
-		const itemType = target.dataset.itemType;
-		await this.actor.system.removeLinkedItem(itemType);
-	}
 	async unsetGroup() {
 		await this.actor.unsetGroup();
 	}
-	async toggleSort(event, target) {
-		const group = target.dataset.group;
-		const newMode = (this.actor.getFlag("degenesisnext", `inventorySortModes.${group}`) || "manual") === "manual" ? "alpha" : "manual";
-		await this.actor.setFlag("degenesisnext", `inventorySortModes.${group}`, newMode);
-	}
-	toggleItemProp(propPath) {
-		return async function(event, target) {
-			const itemId = target.closest("[data-item-id]").dataset.itemId;
-			const item = this.document.items.get(itemId);
-			console.log(`Toggle item prop`);
-			console.log(item);
-			console.log(propPath);
-			const currentValue = foundry.utils.getProperty(item, propPath);
-			console.log(currentValue);
-			await item.update({ [propPath]: !currentValue });
-		};
-	}
-	async toggleDescription(event, target) {
-		const entry = target.closest(".entry.item");
-		const itemId = entry.dataset.itemId;
-		const item = this.document.items.get(itemId);
-		let existingDesc = entry.nextElementSibling;
-		if (existingDesc?.classList.contains("entry-description-dropdown")) {
-			existingDesc.remove();
-			return;
+};
+//#endregion
+//#region src/module/logic/scars.mjs
+/**
+* Based on Articfacts extended shared destiny rules
+*/
+var ALIGNMENTS_DEFINITIONS = {
+	ambition: {
+		label: "DGNS.ALIGNMENT.ambition.label",
+		description: "DGNS.ALIGNMENT.ambition.description",
+		affinity: {
+			key: "background.bonus",
+			value: 1,
+			label: "DGNS.ALIGNMENT.ambition.affinity",
+			concepts: [
+				"creator",
+				"conqueror",
+				"visionary",
+				"ruler"
+			]
+		},
+		aversion: {
+			key: "background.bonus",
+			value: -1,
+			label: "DGNS.ALIGNMENT.ambition.aversion",
+			concepts: ["defiler", "traditionalist"]
+		},
+		constellation: {
+			key: "special.xpCostMultiplier",
+			value: -1,
+			label: "DGNS.ALIGNMENT.ambition.constellation"
 		}
-		const html = await renderTemplate$3("systems/degenesisnext/templates/shared/item/summary.hbs", {
-			description: await TextEditor$9.enrichHTML(item.system.description, { async: true }),
-			item
-		});
-		entry.insertAdjacentHTML("afterend", `<div class="entry entry-description-dropdown" data-item-id="${itemId}">${html}</div>`);
+	},
+	loyalty: {
+		label: "DGNS.ALIGNMENT.loyalty.label",
+		description: "DGNS.ALIGNMENT.loyalty.description",
+		affinity: {
+			key: "ego.max",
+			value: 1,
+			label: "DGNS.ALIGNMENT.loyalty.affinity",
+			concepts: [
+				"mentor",
+				"protector",
+				"martyr",
+				"healer"
+			]
+		},
+		aversion: {
+			key: "ego.max",
+			value: -1,
+			label: "DGNS.ALIGNMENT.loyalty.aversion",
+			concepts: ["abomination", "ruler"]
+		},
+		constellation: {
+			key: "special.egoSuccessConvert",
+			value: 1,
+			label: "DGNS.ALIGNMENT.loyalty.constellation"
+		}
+	},
+	chance: {
+		label: "DGNS.ALIGNMENT.chance.label",
+		description: "DGNS.ALIGNMENT.chance.description",
+		affinity: {
+			key: "assist.dicebonus",
+			value: 1,
+			label: "DGNS.ALIGNMENT.chance.affinity",
+			concepts: [
+				"adventurer",
+				"traveler",
+				"disciple",
+				"mediator"
+			]
+		},
+		aversion: {
+			key: "assist.dicebonus",
+			value: -1,
+			label: "DGNS.ALIGNMENT.chance.aversion",
+			concepts: ["hermit", "destroyer"]
+		},
+		constellation: {
+			key: "special.groupSkillHalfXP",
+			value: 1,
+			label: "DGNS.ALIGNMENT.chance.constellation"
+		}
+	},
+	destiny: {
+		label: "DGNS.ALIGNMENT.destiny.label",
+		description: "DGNS.ALIGNMENT.destiny.description",
+		affinity: {
+			key: "fleshwounds.max",
+			value: 1,
+			label: "DGNS.ALIGNMENT.destiny.affinity",
+			concepts: [
+				"seeker",
+				"chosen",
+				"zealot",
+				"martyr"
+			]
+		},
+		aversion: {
+			key: "fleshwounds.max",
+			value: -1,
+			label: "DGNS.ALIGNMENT.destiny.aversion",
+			concepts: ["traveler", "adventurer"]
+		},
+		constellation: {
+			key: "trauma.max",
+			value: 1,
+			label: "DGNS.ALIGNMENT.destiny.constellation"
+		}
+	},
+	dogma: {
+		label: "DGNS.ALIGNMENT.dogma.label",
+		description: "DGNS.ALIGNMENT.dogma.description",
+		affinity: {
+			key: "mentalDefence.dicebonus",
+			value: 1,
+			label: "DGNS.ALIGNMENT.dogma.affinity",
+			concepts: [
+				"traditionalist",
+				"zealot",
+				"righteous",
+				"protector"
+			]
+		},
+		aversion: {
+			key: "mentalDefence.dicebonus",
+			value: -1,
+			label: "DGNS.ALIGNMENT.dogma.aversion",
+			concepts: ["heretic", "visionary"]
+		},
+		constellation: {
+			key: "special.rerollFailedMentalDefence",
+			value: 1,
+			label: "DGNS.ALIGNMENT.dogma.constellation"
+		}
+	},
+	revenge: {
+		label: "DGNS.ALIGNMENT.revenge.label",
+		description: "DGNS.ALIGNMENT.revenge.description",
+		affinity: {
+			key: "revenge.dicebonus",
+			value: 1,
+			label: "DGNS.ALIGNMENT.revenge.affinity",
+			concepts: [
+				"defiler",
+				"abomination",
+				"heretic",
+				"destroyer"
+			]
+		},
+		aversion: {
+			key: "revenge.dicebonus",
+			value: -1,
+			label: "DGNS.ALIGNMENT.revenge.aversion",
+			concepts: ["healer", "mediator"]
+		},
+		constellation: {
+			key: "special.rerollRevengeAttempts",
+			value: 1,
+			label: "DGNS.ALIGNMENT.revenge.constellation"
+		}
+	}
+};
+var Scars = {
+	get AlignmentsOptions() {
+		const choices = {};
+		for (const [k, v] of Object.entries(ALIGNMENTS_DEFINITIONS)) choices[k] = v.label;
+		return choices;
+	},
+	get Alignments() {
+		return ALIGNMENTS_DEFINITIONS;
+	},
+	prepareAligmentModifiers(concept, alignment, groupConcepts, isNewMember = false) {
+		if (!alignment || concept) return [];
+		const base = ALIGNMENTS_DEFINITIONS[alignment];
+		if (!base) return [];
+		const inAffinity = base.affinity.concepts.includes(concept);
+		const inAversion = base.aversion.concepts.includes(concept);
+		if (inAffinity) {}
+		if (inAversion) {}
+	},
+	buildGroupModifiers(group, newMemberIds = /* @__PURE__ */ new Set()) {
+		const modifiers = /* @__PURE__ */ new Map();
+		const { alignment, memberActors, memberConcepts } = group.system;
+		for (const actor of memberActors) {
+			if (!alignment) {
+				modifiers.set(actor.id, []);
+				continue;
+			}
+			actor.system.concept.id;
+		}
+	},
+	isConstellation(alignment, groupConcepts) {
+		const defined = groupConcepts.filter(Boolean);
+		if (defined.length === 0) return false;
+		return defined.every((c) => alignment.affinity.concepts.includes(c));
 	}
 };
 //#endregion
@@ -2246,9 +2635,9 @@ var DGNSCharacterSheet = class DGNSCharacterSheet extends ActorSheetMixin(sheets
 var { api: api$8, sheets: sheets$8 } = foundry.applications;
 var { DialogV2 } = foundry.applications.api;
 var { TextEditor: TextEditor$8 } = foundry.applications.ux;
-var DGNSGroupSheet = class extends ActorSheetMixin(sheets$8.ActorSheetV2) {
+var DGNSGroupSheet = class DGNSGroupSheet extends ActorSheetMixin(sheets$8.ActorSheetV2) {
 	static DEFAULT_OPTIONS = {
-		actions: {},
+		actions: { createMilestone: DGNSGroupSheet.prototype.onCreateMilestone },
 		form: { submitOnChange: true },
 		window: {
 			resizable: true,
@@ -2263,19 +2652,95 @@ var DGNSGroupSheet = class extends ActorSheetMixin(sheets$8.ActorSheetV2) {
 	static PARTS = {
 		sheetHeader: { template: "systems/degenesisnext/templates/shared/sheet/title.hbs" },
 		groupHeader: { template: "systems/degenesisnext/templates/actor/group/header.hbs" },
+		tabs: {
+			template: "systems/degenesisnext/templates/actor/group/tabs.hbs",
+			scrollable: [""]
+		},
+		members: {
+			template: "systems/degenesisnext/templates/actor/group/members.hbs",
+			scrollable: [""]
+		},
+		alignment: {
+			template: "systems/degenesisnext/templates/actor/group/alignment.hbs",
+			scrollable: [""]
+		},
+		milestones: {
+			template: "systems/degenesisnext/templates/actor/group/milestones.hbs",
+			scrollable: [""]
+		},
+		history: {
+			template: "systems/degenesisnext/templates/actor/group/history.hbs",
+			scrollable: [""]
+		},
+		inventory: {
+			template: "systems/degenesisnext/templates/actor/group/inventory.hbs",
+			scrollable: [""]
+		},
 		sheetFooter: { template: "systems/degenesisnext/templates/shared/sheet/footer.hbs" }
 	};
-	static TABS = [];
+	static TABS = { main: {
+		initial: "members",
+		tabs: [
+			{
+				id: "members",
+				label: "DGNS.UI.TABS.members"
+			},
+			{
+				id: "alignment",
+				label: "DGNS.UI.TABS.alignment"
+			},
+			{
+				id: "history",
+				label: "DGNS.UI.TABS.history"
+			},
+			{
+				id: "milestones",
+				label: "DGNS.UI.TABS.milestones"
+			},
+			{
+				id: "inventory",
+				label: "DGNS.UI.TABS.inventory"
+			}
+		]
+	} };
 	/** Preparing sheet context */
 	async _prepareContext(options) {
 		const context = await super._prepareContext(options);
+		const system = this.actor.system;
 		context.document = this.document;
 		context.system = this.document.system;
 		context.fields = this.document.schema.fields;
 		context.systemFields = this.document.system.schema.fields;
 		context.mode = this._mode;
 		context.isEditable = this.isEditable;
-		context.members = this.actor.system.members;
+		context.sortMode = this.actor.getFlag(CONFIG.DEGENESIS.id, "inventorySortMode") || "manual";
+		context.inventory = this.actor._prepareInventory();
+		context.alignmentData = Scars.Alignments[system.alignment] ?? null;
+		context.milestones = this.document.system.milestones;
+		context.members = system.members;
+		context.membersConcepts = system.membersConcepts;
+		context.mainTabs = this._prepareTabs("main");
+		context.enriched = {};
+		console.log(`Milestone debug`);
+		console.log(context.milestones[0].description);
+		if (context.inventory?.groups) for (const group of context.inventory.groups) for (const item of group.items) {
+			item.expanded = await item._getChatData({ secrets: item.isOwner });
+			if (!this.expandedSections.has(item.id)) continue;
+			if (!this.document.items.has(item.id)) {
+				this.expandedSections.delete(item.id);
+				continue;
+			}
+			item.isExpanded = true;
+		}
+		console.log(`Context for group actor: ${this.name}`);
+		console.dir(context);
+		return context;
+	}
+	async _preparePartContext(partId, context) {
+		if (context.mainTabs?.[partId]) {
+			context.tab = context.mainTabs[partId];
+			if (partId === "history") context.subtabs = context.historyTabs;
+		}
 		return context;
 	}
 	getTabs() {
@@ -2303,10 +2768,23 @@ var DGNSGroupSheet = class extends ActorSheetMixin(sheets$8.ActorSheetV2) {
 		event.preventDefault();
 		return super._onDrop(event);
 	}
+	async onCreateMilestone() {
+		const milestones = this.document.system.milestones ?? [];
+		console.log(`Adding new mielstone`);
+		console.log(milestones);
+		await this.document.update({ "system.milestones": [...milestones, {
+			id: foundry.utils.randomID(),
+			label: "Milestone",
+			description: "description",
+			achieved: false,
+			awardedEgo: false,
+			awardedScar: false
+		}] });
+	}
 };
 //#endregion
 //#region src/module/applications/actor/_module.mjs
-var _module_exports$4 = /* @__PURE__ */ __exportAll({
+var _module_exports$5 = /* @__PURE__ */ __exportAll({
 	ActorSheetMixin: () => ActorSheetMixin,
 	DGNSCharacterSheet: () => DGNSCharacterSheet,
 	DGNSGroupSheet: () => DGNSGroupSheet
@@ -2321,6 +2799,10 @@ function ItemSheetMixin(Base) {
 			PLAY: 1,
 			EDIT: 2
 		};
+		static DEFAULT_OPTIONS = { actions: {
+			manageQuality: DGNSItemSheet.#onManageQuality,
+			manageEffect: DGNSItemSheet.#onManageEffect
+		} };
 		_mode = this.constructor.MODES.PLAY;
 		_dropdownState = {};
 		constructor(object, options = {}) {
@@ -2349,8 +2831,8 @@ function ItemSheetMixin(Base) {
 				const toggle = document.createElement("dgns-slidetoggle");
 				toggle.checked = this._mode === this.constructor.MODES.EDIT;
 				toggle.classList.add("mode-slider");
-				toggle.dataset.tooltip = "UI.SHEETMODES.play";
-				toggle.setAttribute("aria-label", game.i18n.localize("UI.SHEETMODES.play"));
+				toggle.dataset.tooltip = "DGNS.UI.SHEETMODES.play";
+				toggle.setAttribute("aria-label", game.i18n.localize("DGNS.UI.SHEETMODES.play"));
 				toggle.addEventListener("change", this._onChangeSheetMode.bind(this));
 				toggle.addEventListener("dblclick", (event) => event.stopPropagation());
 				header.insertAdjacentElement("afterbegin", toggle);
@@ -2364,6 +2846,10 @@ function ItemSheetMixin(Base) {
 			context.cssClass = context.editable ? "editable" : this.isEditable ? "interactable" : "locked";
 			return context;
 		}
+		/**
+		* @this
+		* @param {} html
+		*/
 		activateListeners(html) {
 			html.querySelectorAll(".section-dropdown").forEach((sectionEl) => {
 				const sectionId = sectionEl.dataset.section;
@@ -2377,11 +2863,16 @@ function ItemSheetMixin(Base) {
 					this._dropdownState[sectionId] = !isCollapsed;
 				});
 			});
+			html.querySelectorAll(".quality-input").forEach((input) => {
+				input.addEventListener("change", (event) => {
+					DGNSItemSheet.#onManageQuality.call(this, event, event.currentTarget);
+				});
+			});
 		}
 		async _onChangeSheetMode(event) {
 			const { MODES } = this.constructor;
 			const toggle = event.currentTarget;
-			const label = game.i18n.localize(`UI.SHEETMODES.${toggle.checked ? "edit" : "play"}`);
+			const label = game.i18n.localize(`DGNS.UI.SHEETMODES.${toggle.checked ? "edit" : "play"}`);
 			toggle.dataset.tooltip = label;
 			toggle.setAttribute("aria-label", label);
 			this._mode = toggle.checked ? MODES.EDIT : MODES.PLAY;
@@ -2412,6 +2903,31 @@ function ItemSheetMixin(Base) {
 			} catch (err) {
 				console.log(err);
 			}
+		}
+		static async #onManageQuality(event, target) {
+			console.log(`onManageQuality mixin fired`);
+			console.log(this);
+			if (event) event.preventDefault();
+			let { field = null, value = null } = {};
+			const action = target.dataset.type;
+			const qualityKey = target.closest(".quality")?.dataset.qualityKey;
+			if (action === "update") {
+				field = target.dataset.field;
+				value = target.value;
+			}
+			return await this.document._manageQualities(action, qualityKey, field, value);
+		}
+		/**
+		* Manage effect on Actor's side.
+		* @param {*} event
+		* @param {*} target
+		* @returns
+		*/
+		static async #onManageEffect(event, target) {
+			if (event) event.preventDefault();
+			const action = target.dataset.type;
+			const effectId = target.closest(".effect")?.dataset.effectId;
+			return await this.item._manageEffect(action, effectId);
 		}
 	};
 }
@@ -2478,7 +2994,7 @@ var { TextEditor: TextEditor$7 } = foundry.applications.ux;
 var { FilePicker: FilePicker$4 } = foundry.applications.apps;
 var DegenesisWeaponSheet = class extends ItemSheetMixin(sheets$6.ItemSheetV2) {
 	static DEFAULT_OPTIONS = {
-		actions: { manageQuality: this.#onManageQuality },
+		actions: {},
 		form: { submitOnChange: true },
 		window: {
 			controls: [],
@@ -2565,6 +3081,8 @@ var DegenesisWeaponSheet = class extends ItemSheetMixin(sheets$6.ItemSheetV2) {
 					key: def.key,
 					label: def.label,
 					description: def.description,
+					injectedFrom: data ? data.injectedFrom : null,
+					injectedFromName: data ? data.injectedFromName : null,
 					enabled: data ? data.enabled : false,
 					inputs: (def.inputs || []).map((input) => ({
 						...input,
@@ -2596,26 +3114,16 @@ var DegenesisWeaponSheet = class extends ItemSheetMixin(sheets$6.ItemSheetV2) {
 	}
 	activateListeners(html) {
 		super.activateListeners(this.element);
-		html.querySelectorAll(".quality-input").forEach((input) => {
-			input.addEventListener("change", (event) => {
-				this._onManageQuality(event, event.currentTarget);
-			});
-		});
 	}
-	/** Static wrapper for logic. */
-	static async #onManageQuality(event, target) {
-		await this._onManageQuality(event, target);
-	}
-	async _onManageQuality(event, target) {
-		if (event) event.preventDefault();
-		let { field = null, value = null } = {};
-		const action = target.dataset.type;
-		const qualityKey = target.closest(".quality")?.dataset.qualityKey;
-		if (action === "update") {
-			field = target.dataset.field;
-			value = target.value;
-		}
-		return await this.document._manageQualities(action, qualityKey, field, value);
+	async _onDrop(event) {
+		console.log(`Weapon _onDropEvent`);
+		console.log(event);
+		const data = TextEditor$7.getDragEventData(event);
+		if (data.type !== "Item") return super._onDrop(event);
+		const droppedItem = await fromUuid(data.uuid);
+		if (!droppedItem) return;
+		if (droppedItem.type === "modification") return this.item._installMod(droppedItem);
+		return super._onDrop(event);
 	}
 };
 //#endregion
@@ -2624,7 +3132,6 @@ var { api: api$5, sheets: sheets$5 } = foundry.applications;
 var { TextEditor: TextEditor$6 } = foundry.applications.ux;
 var DegenesisModificationSheet = class extends ItemSheetMixin(sheets$5.ItemSheetV2) {
 	static DEFAULT_OPTIONS = {
-		actions: {},
 		form: { submitOnChange: true },
 		window: {
 			controls: [],
@@ -3063,7 +3570,7 @@ var DegenesisCultSheet = class extends BackgroundSheetMixin(ItemSheetMixin(sheet
 };
 //#endregion
 //#region src/module/applications/item/_module.mjs
-var _module_exports$3 = /* @__PURE__ */ __exportAll({
+var _module_exports$4 = /* @__PURE__ */ __exportAll({
 	BackgroundSheetMixin: () => BackgroundSheetMixin,
 	DGNSConceptSheet: () => DegenesisConceptSheet,
 	DGNSCultSheet: () => DegenesisCultSheet,
@@ -3074,6 +3581,237 @@ var _module_exports$3 = /* @__PURE__ */ __exportAll({
 	DGNSWeaponSheet: () => DegenesisWeaponSheet,
 	ItemSheetMixin: () => ItemSheetMixin
 });
+//#endregion
+//#region src/module/applications/effect/config.mjs
+var { ACTIVE_EFFECT_DURATION_UNITS: DURATION_UNITS, ACTIVE_EFFECT_TIME_DURATION_UNITS: TIME_DURATION_UNITS } = CONST;
+var { DocumentSheetV2, HandlebarsApplicationMixin: HandlebarsApplicationMixin$2 } = foundry.applications.api;
+var DGNSEffectConfig = class DGNSEffectConfig extends HandlebarsApplicationMixin$2(DocumentSheetV2) {
+	/** @inheritDoc */
+	static DEFAULT_OPTIONS = {
+		classes: ["active-effect-config"],
+		window: {
+			contentClasses: ["standard-form"],
+			icon: "fa-solid fa-person-rays"
+		},
+		position: { width: 560 },
+		form: { closeOnSubmit: true },
+		actions: {
+			addChange: DGNSEffectConfig.#onAddChange,
+			deleteChange: DGNSEffectConfig.#onDeleteChange
+		}
+	};
+	/** @override */
+	static PARTS = {
+		header: { template: "systems/degenesisnext/templates/effects/header.hbs" },
+		tabs: { template: "systems/degenesisnext/templates/effects/tabs.hbs" },
+		details: {
+			template: "systems/degenesisnext/templates/effects/details.hbs",
+			scrollable: [""]
+		},
+		duration: { template: "systems/degenesisnext/templates/effects/duration.hbs" },
+		changes: {
+			template: "systems/degenesisnext/templates/effects/changes.hbs",
+			templates: ["systems/degenesisnext/templates/effects/change.hbs"],
+			scrollable: ["ol[data-changes]"]
+		},
+		footer: { template: "templates/generic/form-footer.hbs" }
+	};
+	/** @override */
+	static TABS = { sheet: {
+		tabs: [
+			{
+				id: "details",
+				icon: "fa-solid fa-book"
+			},
+			{
+				id: "duration",
+				icon: "fa-solid fa-clock"
+			},
+			{
+				id: "changes",
+				icon: "fa-solid fa-gears"
+			}
+		],
+		initial: "details",
+		labelPrefix: "EFFECT.TABS"
+	} };
+	/** @inheritDoc */
+	async _preparePartContext(partId, context) {
+		const partContext = await super._preparePartContext(partId, context);
+		if (partId in partContext.tabs) partContext.tab = partContext.tabs[partId];
+		const effect = this.document;
+		switch (partId) {
+			case "details":
+				partContext.isActorEffect = effect.parent?.documentName === "Actor";
+				partContext.isItemEffect = effect.parent?.documentName === "Item";
+				partContext.statuses = Object.values(CONFIG.statusEffects).map((s) => ({
+					value: s.id,
+					label: _loc(s.name)
+				}));
+				partContext.showIconOptions = Object.entries(CONST.ACTIVE_EFFECT_SHOW_ICON).map(([k, value]) => ({
+					value,
+					label: _loc(`EFFECT.SHOW_ICON.${k.toLowerCase()}`)
+				})).reverse();
+				break;
+			case "duration": {
+				partContext.start = await this._prepareStartContext();
+				partContext.hasDuration = typeof context.source.duration.value === "number";
+				const groups = {
+					time: _loc("EFFECT.DURATION.UNITS.GROUPS.time"),
+					combat: _loc("EFFECT.DURATION.UNITS.GROUPS.combat")
+				};
+				partContext.durationUnits = DURATION_UNITS.map((value) => ({
+					value,
+					label: _loc(`EFFECT.DURATION.UNITS.${value}`),
+					group: TIME_DURATION_UNITS.includes(value) ? groups.time : groups.combat
+				}));
+				partContext.expiryEvents = Object.entries(ActiveEffect.EXPIRY_EVENTS).map(([value, label]) => ({
+					value,
+					label: _loc(label)
+				})).sort((a, b) => a.label.localeCompare(b.label, game.i18n.lang)).reduce((events, { value, label }) => {
+					events[value] = label;
+					return events;
+				}, {});
+				break;
+			}
+			case "changes": {
+				const fields = effect.system.schema.fields.changes.element.fields;
+				const changeTypes = Object.entries(ActiveEffect.CHANGE_TYPES).map(([type, { label }]) => ({
+					type,
+					label: _loc(label)
+				})).sort((a, b) => a.label.localeCompare(b.label, game.i18n.lang)).reduce((types, { type, label }) => {
+					types[type] = label;
+					return types;
+				}, {});
+				partContext.changes = await Promise.all(foundry.utils.deepClone(context.source.changes).map((change, index) => {
+					const defaultPriority = ActiveEffect.CHANGE_TYPES[change.type]?.defaultPriority;
+					return this._renderChange({
+						change,
+						index,
+						fields,
+						defaultPriority,
+						changeTypes
+					});
+				}));
+				break;
+			}
+			case "footer":
+				partContext.buttons = [{
+					type: "submit",
+					icon: "fa-solid fa-floppy-disk",
+					label: "EFFECT.Submit"
+				}];
+				break;
+			case "tabs":
+				partContext.tabClasses = "top-tabs";
+				break;
+		}
+		return partContext;
+	}
+	/**
+	* Prepare render context for a single change object.
+	* @param {object} context                   Data for rendering the change row
+	* @param {EffectChangeData} context.change  A copy of the change from the Effect's source array
+	* @param {number} context.index             The change object's index in the array
+	* @param {DataSchema} context.fields        The defined fields of the change data
+	* @param {number} context.defaultPriority   The change type's default priority
+	* @param {Record<string, string>} context.changeTypes All change types and their localized labels
+	* @returns {Promise<string>}
+	* @protected
+	*/
+	async _renderChange(context) {
+		const { change, index } = context;
+		if (typeof change.value !== "string") change.value = JSON.stringify(change.value);
+		Object.assign(change, [
+			"key",
+			"type",
+			"value",
+			"priority"
+		].reduce((paths, fieldName) => {
+			paths[`${fieldName}Path`] = `system.changes.${index}.${fieldName}`;
+			return paths;
+		}, {}));
+		return ActiveEffect.CHANGE_TYPES[change.type].render?.(context) ?? renderTemplate("templates/sheets/active-effect/change.hbs", context);
+	}
+	/**
+	* Prepare display context for {@link EffectStartData}.
+	* @returns {object}
+	* @protected
+	*/
+	async _prepareStartContext() {
+		const effect = this.document;
+		const start = effect._source.start;
+		if (!start) return null;
+		const time = game.time.calendar.format(game.time.worldTime - start.time, "ago");
+		const combat = effect.start.combat ?? null;
+		const combatant = combat?.combatants.get(start.combatant) ?? null;
+		const combatantName = combatant?.visible ? combatant.name : "???";
+		const combatantInitiative = combatant?.visible === false ? "???" : typeof combatant?.initiative === "number" ? combatant.initiative : _loc("EFFECT.START.NoInitiative");
+		return {
+			...start,
+			time,
+			combat,
+			combatant,
+			combatantName,
+			combatantInitiative
+		};
+	}
+	/** @inheritDoc */
+	_processFormData(event, form, formData) {
+		const submitData = super._processFormData(event, form, formData);
+		if (!foundry.utils.isPlainObject(submitData.system?.changes)) return submitData;
+		for (const [index, change] of Object.values(submitData.system.changes).entries()) this._processChangeSubmission(change, index);
+		return submitData;
+	}
+	/**
+	* Process submission data for a single change object.
+	* @param {EffectChangeData} change The submitted change object with the value deserialized
+	* @param {number} index            The object's index in the submitted array
+	* @protected
+	*/
+	_processChangeSubmission(change, index) {
+		try {
+			if (typeof change.value === "string") change.value &&= JSON.parse(change.value);
+		} catch {}
+	}
+	/** @inheritDoc */
+	_onChangeForm(formConfig, event) {
+		super._onChangeForm(formConfig, event);
+		if (foundry.utils.isElementInstanceOf(event.target, "select") && event.target.name.endsWith(".type")) {
+			const typeSelect = event.target;
+			const selector = `input[name="${typeSelect.name.replace(/\.type$/, ".priority")}"]`;
+			const priorityInput = typeSelect.closest("li").querySelector(selector);
+			priorityInput.placeholder = ActiveEffect.CHANGE_TYPES[typeSelect.value]?.defaultPriority ?? "";
+		}
+	}
+	/**
+	* Add a new change to the Effect's changes array.
+	* @this {ActiveEffectConfig}
+	* @type {ApplicationClickAction}
+	*/
+	static async #onAddChange() {
+		const submitData = this._processFormData(null, this.form, new FormDataExtended(this.form));
+		const changes = Object.values(submitData.system?.changes ?? {});
+		changes.push(this.document.system.schema.fields.changes.element.getInitialValue());
+		return this.submit({ updateData: { system: { changes } } });
+	}
+	/**
+	* Delete a change from the effect's changes array.
+	* @this {ActiveEffectConfig}
+	* @type {ApplicationClickAction}
+	*/
+	static async #onDeleteChange(event) {
+		const submitData = this._processFormData(null, this.form, new FormDataExtended(this.form));
+		const changes = Object.values(submitData.system.changes);
+		const row = event.target.closest("li");
+		const index = Number(row.dataset.index) || 0;
+		changes.splice(index, 1);
+		return this.submit({ updateData: { system: { changes } } });
+	}
+};
+//#endregion
+//#region src/module/applications/effect/_module.mjs
+var _module_exports$3 = /* @__PURE__ */ __exportAll({ DGNSEffectConfig: () => DGNSEffectConfig });
 //#endregion
 //#region src/module/applications/components/stylesheet-mixin.mjs
 /**
@@ -3258,6 +3996,10 @@ var CheckboxElement = class extends StyleSheetMixin(foundry.applications.element
 		this.#shadowRoot.adoptedStyleSheets = [sheet];
 	}
 	/** @override */
+	/**
+	* todo: cleanup!
+	* @returns
+	*/
 	_buildElements() {
 		const container = document.createElement("div");
 		container.innerHTML = `
@@ -3705,7 +4447,7 @@ var PrimalFocusSwitch = class extends StyleSheetMixin(foundry.applications.eleme
 	_buildElements() {
 		const title = document.createElement("div");
 		title.className = "mode-title";
-		title.innerHTML = game.i18n.localize("UI.TITLES.primalFocus");
+		title.innerHTML = game.i18n.localize("DGNS.UI.TITLES.primalFocus");
 		const container = document.createElement("div");
 		container.className = "mode-switch";
 		for (const mode of Object.values(MODES$1)) {
@@ -3824,7 +4566,7 @@ var FaithWillSwitch = class extends StyleSheetMixin(foundry.applications.element
 	_buildElements() {
 		const title = document.createElement("div");
 		title.className = "mode-title";
-		title.innerHTML = game.i18n.localize("UI.TITLES.faithWill");
+		title.innerHTML = game.i18n.localize("DGNS.UI.TITLES.faithWill");
 		const container = document.createElement("div");
 		container.className = "mode-switch";
 		for (const mode of Object.values(MODES)) {
@@ -3927,9 +4669,10 @@ var _module_exports$1 = /* @__PURE__ */ __exportAll({ DGNSGamePause: () => DGNSG
 //#endregion
 //#region src/module/applications/_module.mjs
 var _module_exports = /* @__PURE__ */ __exportAll({
-	actor: () => _module_exports$4,
+	actor: () => _module_exports$5,
 	components: () => _module_exports$2,
-	item: () => _module_exports$3,
+	effect: () => _module_exports$3,
+	item: () => _module_exports$4,
 	ui: () => _module_exports$1
 });
 //#endregion
@@ -4091,10 +4834,117 @@ var CachedReferenceField = class extends SchemaField$28 {
 	}
 };
 //#endregion
+//#region src/module/documents/active.effect.mjs
+var DGNSActiveEffect = class DGNSActiveEffect extends ActiveEffect {
+	/**
+	* Following keys need to be skipped due to uncommon for typical Foundry usage calculations
+	* patterns. Those will be skipped, and must be reapplied in different methods using
+	* todo: simplify the path, or move this to some helper
+	*/
+	static CONDITION_KEYS = {
+		"system.condition.ego.max": (system) => system.condition.ego,
+		"system.condition.spore.max": (system) => system.condition.spore,
+		"system.condition.fleshwounds.max": (system) => system.condition.fleshwounds,
+		"system.condition.trauma.max": (system) => system.condition.trauma
+	};
+	static ENCUMBRANCE_KEYS = { "system.general.encumbrance.max": (system) => system.general.encumbrance };
+	static MOVEMENT_KEYS = { "system.general.movement": (system) => system.general };
+	static SUPPRESSED_KEYS = new Set([
+		...Object.keys(this.CONDITION_KEYS),
+		...Object.keys(this.ENCUMBRANCE_KEYS),
+		...Object.keys(this.MOVEMENT_KEYS)
+	]);
+	/**
+	* Override apply to support item targets.
+	* Standard apply() always targets an Actor. We redirect when flagged.
+	*/
+	static applyChange(actor, change, options) {
+		if ((change.effect ?? options?.effect)?.type === "modification") return;
+		if (DGNSActiveEffect.SUPPRESSED_KEYS.has(change.key)) return;
+		return super.applyChange(actor, change, options);
+	}
+	/**
+	* Apply a single change to an Item document's system data.
+	* Mirrors what the base apply() does but targets item.system.
+	* @param {DGNSItem} item
+	* @param {EffectChangeData} change
+	*/
+	_applyToItem(item, change) {
+		console.log(`Applying mods to items:`);
+		console.log(item);
+		console.log(change);
+		const current = foundry.utils.getProperty(item, change.key) ?? null;
+		let value = change.value;
+		switch (change.type) {
+			case "add":
+				if (typeof current === "number") value = current + parseFloat(value);
+				else value = (current ?? "") + value;
+				break;
+			case "subtract": if (typeof current === "number") value = current - parseFloat(value);
+			else value = (current ?? "") - value;
+			case "multiply":
+				if (typeof current === "number") value = current * parseFloat(value);
+				break;
+			case "override": break;
+			case "upgrade":
+				if (typeof current === "number") value = Math.max(current, parseFloat(value));
+				break;
+			case "downgrade":
+				if (typeof current === "number") value = Math.min(current, parseFloat(value));
+				break;
+			default: return;
+		}
+		foundry.utils.setProperty(item, change.key, value);
+	}
+	static applyToTargets(actor, effectKeys) {
+		if (!actor) return null;
+		console.log(`calling applyToTargets for ${actor.name}`);
+		console.log(actor.appliedEffects);
+		for (const effect of actor.appliedEffects) {
+			if (effect.disabled) continue;
+			for (const change of effect.changes) {
+				const getTarget = effectKeys[change.key];
+				if (!getTarget) continue;
+				const target = getTarget(actor.system);
+				const property = change.key.split(".").at(-1);
+				const value = Number(change.value);
+				switch (change.type) {
+					case "add":
+						target[property] += value;
+						break;
+					case "subtract":
+						target[property] -= value;
+						break;
+					case "multiply":
+						target[property] *= value;
+						break;
+					case "override":
+						target[property] = value;
+						break;
+					case "upgrade":
+						target[property] = Math.max(target[property], value);
+						break;
+					case "downgrade":
+						target[property] = Math.min(target[property], value);
+						break;
+				}
+			}
+		}
+	}
+	/** @override */
+	async _preCreate(data, options, user) {
+		await super._preCreate(data, options, user);
+		if (this.type === "modification") this.updateSource({ transfer: false });
+	}
+	get targetsItem() {
+		return this.type === "modification";
+	}
+};
+//#endregion
 //#region src/module/applications/roll/action.dialog.mjs
 /** @import HandlebarsApplicationMixin from '@client/applications/api/handlebars-application.mjs*/
 var { HandlebarsApplicationMixin: HandlebarsApplicationMixin$1, ApplicationV2: ApplicationV2$1 } = foundry.applications.api;
-var { FormDataExtended: FormDataExtended$1 } = foundry.applications.ux;
+var { FormDataExtended: FormDataExtended$2 } = foundry.applications.ux;
 var { deepClone: deepClone$1 } = foundry.utils;
 /**
 * Application: Action roll dialog
@@ -4191,7 +5041,7 @@ var DGNSActionRollDialog = class extends HandlebarsApplicationMixin$1(Applicatio
 	_onChangeForm(formConfig, event) {
 		super._onChangeForm(formConfig, event);
 		const formElement = event.target.form;
-		const formData = new FormDataExtended$1(formElement).object;
+		const formData = new FormDataExtended$2(formElement).object;
 		const expanded = foundry.utils.expandObject(formData);
 		foundry.utils.mergeObject(this._rollDefinition, expanded.roll);
 		if (this._rollDefinition.difficulty !== void 0) this._rollDefinition.difficulty = Math.clamp(this._rollDefinition.difficulty, 1, 12);
@@ -4233,7 +5083,7 @@ var DGNSActionRollDialog = class extends HandlebarsApplicationMixin$1(Applicatio
 //#endregion
 //#region src/module/applications/roll/combination.dialog.mjs
 var { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
-var { FormDataExtended } = foundry.applications.ux;
+var { FormDataExtended: FormDataExtended$1 } = foundry.applications.ux;
 var { deepClone } = foundry.utils;
 /** @inheritdoc */
 var DGNSCombinationRollDialog = class extends HandlebarsApplicationMixin(ApplicationV2) {
@@ -4328,7 +5178,7 @@ var DGNSCombinationRollDialog = class extends HandlebarsApplicationMixin(Applica
 	_onChangeForm(formConfig, event) {
 		super._onChangeForm(formConfig, event);
 		const formElement = event.target.form;
-		const formData = new FormDataExtended(formElement).object;
+		const formData = new FormDataExtended$1(formElement).object;
 		const expanded = foundry.utils.expandObject(formData);
 		for (let prefix of [
 			"primary",
@@ -4433,7 +5283,7 @@ var DGNSCombinationRollDialog = class extends HandlebarsApplicationMixin(Applica
 //#region src/module/dice/base.roll.mjs
 /** @import Roll from '@client/dice/roll.mjs*/
 var { Roll: Roll$1 } = foundry.dice;
-var { renderTemplate: renderTemplate$2 } = foundry.applications.handlebars;
+var { renderTemplate: renderTemplate$3 } = foundry.applications.handlebars;
 /**
 * Default roll class. Use it for building variations (like action roll,
 * complex roll etc.)
@@ -4522,7 +5372,7 @@ var DGNSRoll = class extends Roll$1 {
 			resultLabel: game.i18n.localize(`DGNS.ROLL.${this.result}`)
 		};
 		const template = this.constructor.CHAT_TEMPLATE;
-		const content = await renderTemplate$2(template, chatData);
+		const content = await renderTemplate$3(template, chatData);
 		const messageOptions = foundry.utils.mergeObject({
 			user: game.user.id,
 			style: CONST.CHAT_MESSAGE_STYLES ? CONST.CHAT_MESSAGE_STYLES.ROLL : void 0,
@@ -4540,7 +5390,7 @@ var DGNSRoll = class extends Roll$1 {
 };
 //#endregion
 //#region src/module/dice/combination.roll.mjs
-var { renderTemplate: renderTemplate$1 } = foundry.applications.handlebars;
+var { renderTemplate: renderTemplate$2 } = foundry.applications.handlebars;
 /**
 * Combination roll class - using two instances of basic rolls.
 */
@@ -4558,7 +5408,7 @@ var DGNSCombinationRoll = class {
 		return this;
 	}
 	async toMessage(messageData = {}) {
-		const content = await renderTemplate$1("systems/degenesisnext/templates/chat/combination.roll.hbs", {
+		const content = await renderTemplate$2("systems/degenesisnext/templates/chat/combination.roll.hbs", {
 			primary: this.primary,
 			secondary: this.secondary,
 			totalTriggers: this.primary.triggers + this.secondary.triggers
@@ -4574,16 +5424,21 @@ var DGNSCombinationRoll = class {
 };
 //#endregion
 //#region src/module/utils/item.helper.mjs
-var ICONS_PATH = "systems/degenesisnext/assets/icons/items";
+var ICONS_PATH = "systems/degenesisnext/assets/icons/_defaults/";
 /**
 * Todo: add all item definitions later.
 */
 var ITEM_TEMPLATES = {
+	default: { img: `item.svg` },
 	potential: {
-		img: `${ICONS_PATH}/potentials/common.svg`,
+		img: `potential.svg`,
 		system: { origin: "common" }
 	},
-	default: { img: `${ICONS_PATH}/default.svg` }
+	culture: { img: `culture.svg` },
+	concept: { img: `concept.svg` },
+	cult: { img: `cult.svg` },
+	modification: { img: `modification.svg` },
+	weapon: { img: `weapon.svg` }
 };
 var ItemHelper = {
 	prepareItemData(name, type, customData = {}) {
@@ -4592,7 +5447,7 @@ var ItemHelper = {
 		return {
 			name: name || defaultName,
 			type,
-			img: template.img,
+			img: ICONS_PATH + template.img,
 			system: {
 				...template.system,
 				...customData
@@ -4608,11 +5463,19 @@ var ItemHelper = {
 //#endregion
 //#region src/module/utils/effect.helper.mjs
 /**
-* Helper for managing effects in streamliend way.
+* Helper for managing effects in streamlined way.
 */
 var EffectHelper = {
 	async _prepareEffects(doc) {
-		const effects = doc.effects;
+		let effects;
+		if (doc instanceof Actor) {
+			const seen = /* @__PURE__ */ new Set();
+			effects = [...doc.effects, ...doc.appliedEffects].filter((e) => {
+				if (seen.has(e.id)) return false;
+				seen.add(e.id);
+				return true;
+			});
+		} else effects = [...doc.effects];
 		const categories = {
 			temporary: {
 				label: "Temporary",
@@ -4635,6 +5498,8 @@ var EffectHelper = {
 				effect.source = await this._getEffectSource(doc, effect);
 				if (origin) localSourceCache.set(origin, effect.source);
 			}
+			effect.isInjected = !!effect.getFlag(CONFIG.DEGENESIS.id, "injectedFrom");
+			effect.injectedFromName = effect.getFlag(CONFIG.DEGENESIS.id, "injectedFromName") ?? null;
 			if (effect.disabled) categories.inactive.effects.push(effect);
 			else if (effect.isTemporary) categories.temporary.effects.push(effect);
 			else categories.passive.effects.push(effect);
@@ -4648,6 +5513,10 @@ var EffectHelper = {
 	},
 	async _manageEffect(doc, action, effectId = null) {
 		const effect = doc.effects.get(effectId);
+		if (effect?.getFlag(CONFIG.DEGENESIS.id, "injectedFrom")) {
+			ui.notifications.warn(`This effect comes from "${effect.getFlag("dgns", "injectedFromName")}". Edit it on the modification item.`);
+			return;
+		}
 		switch (action) {
 			case "create": return this._onCreateEffect(doc);
 			case "edit": return effect?.sheet.render(true);
@@ -4656,7 +5525,7 @@ var EffectHelper = {
 		}
 	},
 	async _getEffectSource(doc, effect) {
-		if (!effect.origin) return doc.name || doc.documentName;
+		if (!effect.origin) return effect.parent.name || doc.documentName;
 		if (effect.origin === doc.uuid) return doc.name;
 		const source = await fromUuid(effect.origin);
 		if (!source) return "unknown";
@@ -4665,11 +5534,13 @@ var EffectHelper = {
 		return source.name;
 	},
 	async _onCreateEffect(doc) {
+		const type = doc.type === "modification" ? "modification" : "base";
 		const effectData = {
 			name: "New Effect",
 			img: "icons/svg/aura.svg",
 			origin: this.uuid,
-			disabled: false
+			disabled: false,
+			type
 		};
 		return doc.createEmbeddedDocuments("ActiveEffect", [effectData]);
 	}
@@ -4688,11 +5559,12 @@ var Penalty = {
 //#region src/module/documents/actor.mjs
 /** @import Actor from '@common/documents/actor.mjs*/
 /** Required field Classes */
+/** Custom ActiveEffect document  */
 /** Dialogs  */
 /** Roll logic and helper functions  */
 /**
 *
-* Custom Actor class for Degenesis system.
+* Custom Actor document class for Degenesis system.
 * @extends Actor
 * @inheritdoc
 *
@@ -4732,6 +5604,7 @@ var DGNSActor = class extends Actor {
 		this._prepareEncumbrance();
 		this._prepareMovement();
 		this._applyPenalties();
+		this._prepareWeapons();
 	}
 	prepareEmbeddedDocuments() {
 		super.prepareEmbeddedDocuments();
@@ -4758,7 +5631,15 @@ var DGNSActor = class extends Actor {
 			const cacheUpdates = await this._prepareCacheUpdates(data, fieldsToSync);
 			if (cacheUpdates) foundry.utils.mergeObject(data, cacheUpdates);
 		}
-		return super.update(data, options);
+		const result = await super.update(data, options);
+		this._syncGroup();
+		return result;
+	}
+	/**
+	* Main event for syncing stuff with group actor.
+	*/
+	async _syncGroup() {
+		if (this.isGroupMember) this.group.sheet?.render();
 	}
 	/**
 	* Calculate basic condition maximas for standard properties.
@@ -4767,7 +5648,6 @@ var DGNSActor = class extends Actor {
 	* !can be influenced by other modifiers
 	*/
 	_prepareConditionMaxima() {
-		console.log(`prepareConditionMaxima`);
 		const { attributes, condition, modes, actionNumbers } = this.system;
 		const primalFocusSkill = modes.primalFocus;
 		const faithWillpowerSkill = modes.faithWillpower;
@@ -4776,12 +5656,14 @@ var DGNSActor = class extends Actor {
 		condition.spore.max = Condition.calculateMaxSpore(attributes.psyche.value, attributes.psyche.skills[faithWillpowerSkill].value);
 		condition.fleshwounds.max = Condition.calculateMaxFleshwounds(attributes.body.value, attributes.body.skills.toughness.value);
 		condition.trauma.max = Condition.calculateMaxTrauma(attributes.body.value, attributes.psyche.value);
+		DGNSActiveEffect.applyToTargets(this, DGNSActiveEffect.CONDITION_KEYS);
 	}
 	_prepareEncumbrance() {
 		const { general, attributes, actionNumbers } = this.system;
 		const enc = general.encumbrance;
 		enc.current = 0;
 		enc.max = Condition.calculateMaxEncumbrance(attributes.body.value, attributes.body.skills.force.value);
+		DGNSActiveEffect.applyToTargets(this, DGNSActiveEffect.ENCUMBRANCE_KEYS);
 		for (const item of this.items) if (item.system?.encumbrance && !item.system?.location) enc.current += item.system.encumbrance * (item.system.quantity ?? 1);
 		enc.over = enc.current > enc.max;
 		enc.pct = Math.round(Math.min(enc.current / enc.max * 100, 100));
@@ -4792,6 +5674,7 @@ var DGNSActor = class extends Actor {
 	_prepareMovement() {
 		const { general, attributes } = this.system;
 		general.movement = Condition.calculateMovement(attributes.body.value, attributes.body.skills.athletics.value);
+		DGNSActiveEffect.applyToTargets(this, DGNSActiveEffect.MOVEMENT_KEYS);
 	}
 	_applyPenalties() {
 		const { condition, general } = this.system;
@@ -4800,6 +5683,9 @@ var DGNSActor = class extends Actor {
 		totalPenalty += Penalty.fromEncumbrance(general.encumbrance.current, general.encumbrance.max);
 		console.log(`Calculated total penalty`);
 		console.log(totalPenalty);
+	}
+	_prepareWeapons() {
+		console.log(`Holding a spot in modifiers queue`);
 	}
 	/**
 	* Set actor's group (ForeignField link) and reverse link
@@ -4913,7 +5799,7 @@ var DGNSActor = class extends Actor {
 	* @returns
 	*/
 	_prepareInventory() {
-		const sortModes = this.getFlag("degenesisnext", "inventorySortModes") || {};
+		const sortModes = this.getFlag(CONFIG.DEGENESIS.id, "inventorySortModes") || {};
 		const groups = [
 			"weapon",
 			"armor",
@@ -4967,6 +5853,19 @@ var DGNSActor = class extends Actor {
 	* to actor entity. Main execution lies here.
 	*/
 	/**
+	* Core roll pipeline. All roll types pass through here
+	* after configuration dialog resolves.
+	*/
+	async _executeRoll({ type, definition }) {
+		const RollClass = this.constructor.ROLL_CLASSES[type];
+		if (!RollClass) return null;
+		const roll = new RollClass(definition);
+		await roll.evaluate();
+		await this._postRollEffects(type, roll);
+		await roll.toMessage();
+		return roll;
+	}
+	/**
 	* todo: method description
 	* @param {*} attribute
 	* @param {*} skill
@@ -5007,24 +5906,102 @@ var DGNSActor = class extends Actor {
 		});
 	}
 	/**
-	* Core roll pipeline. All roll types pass through here
-	* after configuration dialog resolves.
+	*
+	* @param {*} weapon weapon item
+	* @param {*} action weapon action string
+	* @returns
 	*/
-	async _executeRoll({ type, definition }) {
-		const RollClass = this.constructor.ROLL_CLASSES[type];
-		if (!RollClass) return null;
-		const roll = new RollClass(definition);
-		await roll.evaluate();
-		await this._postRollEffects(type, roll);
-		await roll.toMessage();
-		return roll;
+	async combatRoll(weapon, action) {
+		if (!action) return null;
+		const { primary, secondary } = weapon.system.skills;
+		const definition = await (secondary ? DGNSCombinationRollDialog : DGNSActionRollDialog).create({
+			actor: this,
+			definition: {
+				primary: {
+					attribute,
+					skill,
+					actionNumber: this.system.actionNumbers[primary]
+				},
+				...secondary && { secondary: {
+					attribute,
+					skill,
+					actionNumber: this.system.actionNumbers[secondary]
+				} }
+			}
+		});
+		if (!definition) return;
+		return this._executeRoll({
+			type: secondary ? "combination" : "action",
+			definition
+		});
 	}
 	/**
 	* Post roll pipeline. Handling all side effects for actor entity.
+	* For now its basic deduct action number and overload for psychonauts.
 	*/
 	async _postRollEffects(type, roll) {
-		console.log(`_postRollEffects pipline:`);
-		console.dir(type, roll);
+		const updates = {};
+		if (type !== "initiative" && this.system.state.initiative.actions >= 1) updates["system.state.initiative.actions"] = this.system.state.initiative.actions - 1;
+		if (roll?.overload > 0) updates["system.condition.spore.value"] = this.system.condition.spore.value - roll.overload;
+		if (Object.keys(updates).length > 0) await this.update(updates);
+	}
+	get concept() {
+		return this.system.concept || "";
+	}
+	get culture() {
+		return this.system.culture || "";
+	}
+	get cult() {
+		return this.system.cult || "";
+	}
+	get group() {
+		return this.system?.group || null;
+	}
+	/**
+	* Returning true if there is a linked
+	* group actor.
+	*/
+	get isGroupMember() {
+		return this.system?.group ? true : false;
+	}
+	/**
+	* !deprecated
+	* Manually apply AE for the system keys that cannot be changed
+	* during initial method call, like trauma.max.
+	* @param {*} targetMap
+	* @param {*} property
+	* @returns
+	*/
+	_applyEffectsToTargets(targetMap, property) {
+		if (!property || !targetMap) return null;
+		for (const effect of this.appliedEffects) {
+			if (effect.disabled) continue;
+			for (const change of effect.changes) {
+				const target = targetMap[change.key];
+				if (!target) continue;
+				const value = Number(change.value);
+				switch (change.mode) {
+					case "add":
+						target[property] += value;
+						break;
+					case "subtract":
+						target[property] -= value;
+						break;
+					case "multiply":
+						target[property] *= value;
+						break;
+					case "override":
+						target[property] = value;
+						break;
+					case "upgrade":
+						target[property] = Math.max(target[property], value);
+						break;
+					case "downgrade":
+						target[property] = Math.min(target[property], value);
+						break;
+				}
+			}
+		}
 	}
 };
 //#endregion
@@ -5045,17 +6022,29 @@ var DGNSItem = class extends Item {
 	}
 	/**
 	* Preparing embedded documents.
+	* We are injecting ActiveEffects from mods into main AE document collection.
 	*/
 	prepareEmbeddedDocuments() {
 		super.prepareEmbeddedDocuments();
+		if (this.type === "weapon" || this.type === "armor") this._handleModifications();
 	}
 	/**
 	* Devied data preparation - this should be mostly used for presenting finished data.
 	*/
 	prepareDerivedData() {
 		super.prepareDerivedData();
-		if (this.system?.qualities) {}
-		if (this.system?.modifications) this.system.modifications.used = 0;
+	}
+	/**
+	* When a modification is updated, notify its parent weapon/armor
+	* so it re-prepares and picks up the new mod data immediately.
+	* @override
+	*/
+	_onUpdate(data, options, userId) {
+		super._onUpdate(data, options, userId);
+		if (this.type !== "modification") return;
+		if (!this.system.mounted) return;
+		if (foundry.utils.hasProperty(data, "effects") || foundry.utils.hasProperty(data, "system.modifications")) this.sheet?.render(false);
+		fromUuidSync(this.system.mounted)?.sheet?.render(false);
 	}
 	/**
 	* Preparing data format for displaying in chat messages and dropdowns
@@ -5113,7 +6102,104 @@ var DGNSItem = class extends Item {
 		return this.update({ "system.qualities": qualities });
 	}
 	/**
-	* Preparing ActiveEffects for sheet.
+	* Passing the AE from linked modificiation items into linked parent.
+	* Passing and overriding qualities from linked modification items into linked parent.
+	*/
+	_handleModifications() {
+		console.log(`HandleModifications for:`);
+		console.log(this);
+		const mods = (this.system.modifications?.installed ?? []).map((uuid) => fromUuidSync(uuid)).filter((mod) => {
+			if (!mod) console.warn("DGNS | Installed mod resolved to null — UUID may be stale.");
+			return !!mod;
+		});
+		let used = 0;
+		for (const mod of mods) {
+			used += mod.system.slotCost ?? 1;
+			for (const effect of mod.effects) {
+				if (effect.disabled) continue;
+				for (const change of effect.changes) DGNSActiveEffect.applyChange(this, change);
+				const effectData = effect.toObject();
+				foundry.utils.setProperty(effectData, "flags.degenesisnext.injectedFrom", mod.uuid);
+				foundry.utils.setProperty(effectData, "flags.degenesisnext.injectedFromName", mod.name);
+				const tempEffect = new CONFIG.ActiveEffect.documentClass(effectData, {
+					parent: this,
+					temporary: true
+				});
+				this.effects.set(tempEffect.id, tempEffect);
+			}
+			for (const modQuality of mod.system.qualities ?? []) {
+				if (!modQuality.enabled) continue;
+				const existingIndex = this.system.qualities.findIndex((q) => q.key === modQuality.key);
+				if (existingIndex !== -1) {
+					if (!this.system.qualities[existingIndex].enabled) this.system.qualities[existingIndex] = {
+						...modQuality,
+						injectedFrom: mod.uuid,
+						injectedFromName: mod.name
+					};
+				} else this.system.qualities.push({
+					...modQuality,
+					injectedFrom: mod.uuid,
+					injectedFromName: mod.name
+				});
+			}
+		}
+		this.system.modifications.used = used;
+	}
+	/**
+	* Install a modification onto this weapon/armor.
+	* * Three cases depending on ownership context:
+	* * 1. Weapon not actor-owned — link mod directly, no copy. Mod stays where it is.
+	* * 2. Weapon actor-owned, actor does not have the mod — copy mod into actor inventory.
+	* * 3. Weapon actor-owned, actor already has the mod — link existing instance, no copy.
+	* @param {*} mod
+	* @returns
+	*/
+	async _installMod(mod) {
+		if (!["weapon", "armor"].includes(this.type)) return;
+		const slots = this.system.modifications.slots ?? 0;
+		const used = this.system.modifications.used ?? 0;
+		const incoming = mod.system.slotCost ?? 1;
+		if (used + incoming > slots) {
+			ui.notifications.warn(`Not enough modification slots. Need ${incoming}, have ${slots - used}.`);
+			return;
+		}
+		const modToLink = await this._resolveModInstance(mod);
+		console.log(`modToLInk:`);
+		console.log(modToLink.id);
+		if (!modToLink) return;
+		if ((this.system.modifications.installed ?? []).some((m) => m?.uuid === modToLink.uuid)) {
+			ui.notifications.warn("Modification already installed.");
+			return;
+		}
+		await this.update({ "system.modifications.installed": [...this.system.modifications.installed, modToLink.uuid] });
+		await modToLink.update({ ["system.mounted"]: this.uuid });
+	}
+	/**
+	* Uninstall / unlink modification
+	* @param {*} mod
+	* @param {*} param1
+	*/
+	async _uninstallMod(mod, { updateMod = true }) {
+		await this.update({ "system.modifications.installed": this.system.modifications.installed.filter((uuid) => uuid !== mod.uuid) });
+		if (updateMod) await mod.update({ "system.mounted": null });
+	}
+	/**
+	* Resolve which mod instance to link based on ownership context.
+	* Helper function.
+	* @param {*} mod
+	* @returns
+	*/
+	async _resolveModInstance(mod) {
+		if (!this.actor) return mod;
+		const existingOnActor = this.actor.items.get(mod.id);
+		if (existingOnActor) return existingOnActor;
+		const itemData = mod.toObject();
+		itemData.system.mounted = "";
+		const [created] = await this.actor.createEmbeddedDocuments("Item", [itemData]);
+		return created ?? null;
+	}
+	/**
+	* Preparing ActiveEffects for sheet display.
 	* @returns
 	*/
 	async _prepareEffects() {
@@ -5128,12 +6214,8 @@ var DGNSItem = class extends Item {
 	async _manageEffect(action, effectId = null) {
 		return await EffectHelper._manageEffect(this, action, effectId);
 	}
-	/**
-	* Helper function for creating new effect.
-	* @returns
-	*/
-	async _onCreateEffect() {
-		return await EffectHelper._onCreateEffect(this);
+	get dgnsid() {
+		return this.system?.dgnsid || null;
 	}
 	/**
 	* Return true if it is a weapon within melee range.
@@ -5151,11 +6233,11 @@ var DGNSItem = class extends Item {
 //#endregion
 //#region src/module/documents/chat.mjs
 /** @import ChatMessage from '@common/documents/chat-message.mjs*/
-var { renderTemplate } = foundry.applications.handlebars;
+var { renderTemplate: renderTemplate$1 } = foundry.applications.handlebars;
 var DGNSChatMessage = class DGNSChatMessage extends ChatMessage {
 	static TEMPLATES = { default: "systems/degenesisnext/templates/chat/default.hbs" };
 	get customType() {
-		return this.getFlag("degenesisnext", "type") ?? "default";
+		return this.getFlag(CONFIG.DEGENESIS.id, "type") ?? "default";
 	}
 	/**
 	* Build the template context.
@@ -5166,20 +6248,23 @@ var DGNSChatMessage = class DGNSChatMessage extends ChatMessage {
 			speaker: this.speaker,
 			isGM: game.user.isGM,
 			isAuthor: this.isAuthor,
-			...this.getFlag("degenesisnext", "actionData") ?? {}
+			...this.getFlag(CONFIG.DEGENESIS.id, "actionData") ?? {}
 		};
 	}
 	/** Using base Foundry message and inserting proper template  */
 	async renderHTML() {
 		const el = await super.renderHTML();
-		const content = await renderTemplate(DGNSChatMessage.TEMPLATES[this.customType] ?? DGNSChatMessage.TEMPLATES.default, await this._getTemplateData());
+		const content = await renderTemplate$1(DGNSChatMessage.TEMPLATES[this.customType] ?? DGNSChatMessage.TEMPLATES.default, await this._getTemplateData());
 		el.querySelector(".message-content").innerHTML = content;
 		return el;
 	}
 	/**
-	* @param {string} type        - Must match a key in TEMPLATES
-	* @param {object} actionData  - Arbitrary payload passed to the template
-	* @param {object} [data]      - Extra ChatMessage fields
+	*
+	* Creating actions for chat rows.
+	* @param {*} type matching key in TEMPLATES
+	* @param {*} actionData payload
+	* @param {*} data extra fields
+	* @returns
 	*/
 	static async createAction(type, actionData, data = {}) {
 		return this.create({
@@ -5192,10 +6277,9 @@ var DGNSChatMessage = class DGNSChatMessage extends ChatMessage {
 		});
 	}
 };
-ActiveEffect;
 //#endregion
 //#region src/module/data/fields/attribute-field.mjs
-var { SchemaField: SchemaField$27, NumberField: NumberField$28, StringField: StringField$29, BooleanField: BooleanField$25, ArrayField: ArrayField$25, IntegerSortField: IntegerSortField$25 } = foundry.data.fields;
+var { SchemaField: SchemaField$27, NumberField: NumberField$28, StringField: StringField$30, BooleanField: BooleanField$25, ArrayField: ArrayField$25, IntegerSortField: IntegerSortField$25 } = foundry.data.fields;
 /** Default Rank field
 *
 * TODO: Think about requirements, items etc....
@@ -5226,14 +6310,14 @@ var AttributeField = class extends SchemaField$27 {
 };
 //#endregion
 //#region src/module/data/fields/skill-field.mjs
-var { SchemaField: SchemaField$26, NumberField: NumberField$27, StringField: StringField$28, BooleanField: BooleanField$24, ArrayField: ArrayField$24, IntegerSortField: IntegerSortField$24 } = foundry.data.fields;
+var { SchemaField: SchemaField$26, NumberField: NumberField$27, StringField: StringField$29, BooleanField: BooleanField$24, ArrayField: ArrayField$24, IntegerSortField: IntegerSortField$24 } = foundry.data.fields;
 /**
 * Default Skill field
 */
 var SkillField = class extends SchemaField$26 {
 	constructor(attribute, label, schemaOptions = {}) {
 		const fields = {
-			attribute: new StringField$28({ initial: attribute }),
+			attribute: new StringField$29({ initial: attribute }),
 			value: new NumberField$27({
 				nullable: false,
 				integer: true,
@@ -5253,7 +6337,7 @@ var SkillField = class extends SchemaField$26 {
 };
 //#endregion
 //#region src/module/data/actor/partials/attributes.skills.mjs
-var { SchemaField: SchemaField$25, NumberField: NumberField$26, StringField: StringField$27, BooleanField: BooleanField$23, ArrayField: ArrayField$23, IntegerSortField: IntegerSortField$23 } = foundry.data.fields;
+var { SchemaField: SchemaField$25, NumberField: NumberField$26, StringField: StringField$28, BooleanField: BooleanField$23, ArrayField: ArrayField$23, IntegerSortField: IntegerSortField$23 } = foundry.data.fields;
 /** Helper class for setting entire standar Attribute / Skills structure. */
 var AttributesSkillsFields = class {
 	static get attributes() {
@@ -5316,12 +6400,12 @@ var AttributesSkillsFields = class {
 	}
 	static get modes() {
 		return { modes: new SchemaField$25({
-			primalFocus: new StringField$27({
+			primalFocus: new StringField$28({
 				label: "DGNS.PrimalFocus",
 				initial: "primal",
 				choices: ["primal", "focus"]
 			}),
-			faithWillpower: new StringField$27({
+			faithWillpower: new StringField$28({
 				label: "DGNS.FaithWillpower",
 				initial: "faith",
 				choices: ["faith", "willpower"]
@@ -5372,7 +6456,7 @@ var AttributesSkillsFields = class {
 };
 //#endregion
 //#region src/module/data/actor/partials/condition.mjs
-var { SchemaField: SchemaField$24, NumberField: NumberField$25, StringField: StringField$26, BooleanField: BooleanField$22, ArrayField: ArrayField$22, IntegerSortField: IntegerSortField$22 } = foundry.data.fields;
+var { SchemaField: SchemaField$24, NumberField: NumberField$25, StringField: StringField$27, BooleanField: BooleanField$22, ArrayField: ArrayField$22, IntegerSortField: IntegerSortField$22 } = foundry.data.fields;
 var ConditionFields = class {
 	static get condition() {
 		return { condition: new SchemaField$24({
@@ -5425,7 +6509,7 @@ var ConditionFields = class {
 };
 //#endregion
 //#region src/module/data/actor/partials/general.mjs
-var { SchemaField: SchemaField$23, NumberField: NumberField$24, StringField: StringField$25, HTMLField: HTMLField$15, BooleanField: BooleanField$21, ArrayField: ArrayField$21, IntegerSortField: IntegerSortField$21 } = foundry.data.fields;
+var { SchemaField: SchemaField$23, NumberField: NumberField$24, StringField: StringField$26, HTMLField: HTMLField$16, BooleanField: BooleanField$21, ArrayField: ArrayField$21, IntegerSortField: IntegerSortField$21 } = foundry.data.fields;
 var GeneralFields$1 = class {
 	static get general() {
 		return { general: new SchemaField$23({
@@ -5532,7 +6616,7 @@ var GeneralFields$1 = class {
 };
 //#endregion
 //#region src/module/data/actor/partials/details.mjs
-var { SchemaField: SchemaField$22, NumberField: NumberField$23, StringField: StringField$24, HTMLField: HTMLField$14, BooleanField: BooleanField$20, ArrayField: ArrayField$20, IntegerSortField: IntegerSortField$20 } = foundry.data.fields;
+var { SchemaField: SchemaField$22, NumberField: NumberField$23, StringField: StringField$25, HTMLField: HTMLField$15, BooleanField: BooleanField$20, ArrayField: ArrayField$20, IntegerSortField: IntegerSortField$20 } = foundry.data.fields;
 /**
 *
 *
@@ -5542,10 +6626,10 @@ var { SchemaField: SchemaField$22, NumberField: NumberField$23, StringField: Str
 var DetailsFields = class {
 	static get details() {
 		return { details: new SchemaField$22({
-			age: new StringField$24({ label: "DGNS.Age" }),
-			sex: new StringField$24({ label: "DGNS.Sex" }),
-			height: new StringField$24({ label: "DGNS.Height" }),
-			weight: new StringField$24({ label: "DGNS.Weight" }),
+			age: new StringField$25({ label: "DGNS.GENERAL.age" }),
+			sex: new StringField$25({ label: "DGNS.GENERAL.sex" }),
+			height: new StringField$25({ label: "DGNS.GENERAL.height" }),
+			weight: new StringField$25({ label: "DGNS.GENERAL.weight" }),
 			experience: new SchemaField$22({
 				current: new NumberField$23({
 					integer: true,
@@ -5633,9 +6717,9 @@ var DetailsFields = class {
 	}
 	static get biography() {
 		return {
-			biography: new HTMLField$14({ label: "DGNS.Biography" }),
-			ownerNotes: new HTMLField$14({ label: "DGNS.OwnerNotes" }),
-			gmNotes: new HTMLField$14({ label: "DGNS.GMNotes" })
+			biography: new HTMLField$15({ label: "DGNS.Biography" }),
+			ownerNotes: new HTMLField$15({ label: "DGNS.OwnerNotes" }),
+			gmNotes: new HTMLField$15({ label: "DGNS.GMNotes" })
 		};
 	}
 };
@@ -5644,7 +6728,7 @@ var DetailsFields = class {
 /** @import {SchemaField, ForeignDocumentField} from "@client/data/fields.mjs" */
 /** @import { BaseItem } from "@client/documents/item.mjs"  */
 /** @import { BaseActor } from "@client/documents/actor.mjs"  */
-var { StringField: StringField$23, ForeignDocumentField: ForeignDocumentField$5 } = foundry.data.fields;
+var { StringField: StringField$24, ForeignDocumentField: ForeignDocumentField$5 } = foundry.data.fields;
 var { BaseItem: BaseItem$4, BaseActor: BaseActor$2 } = foundry.documents;
 /** Culture / Concept / Cult / Custom Clan document fields */
 var IdentityFields = class {
@@ -5654,13 +6738,13 @@ var IdentityFields = class {
 			conceptItem: new CachedReferenceField(BaseItem$4),
 			cultItem: new CachedReferenceField(BaseItem$4),
 			group: new ForeignDocumentField$5(BaseActor$2),
-			rank: new StringField$23({ label: "DGNS.Rank" })
+			rank: new StringField$24({ label: "DGNS.GENERAL.rank" })
 		};
 	}
 };
 //#endregion
 //#region src/module/data/actor/character.mjs
-var { SchemaField: SchemaField$21, NumberField: NumberField$22, StringField: StringField$22, BooleanField: BooleanField$19, ArrayField: ArrayField$19, IntegerSortField: IntegerSortField$19 } = foundry.data.fields;
+var { SchemaField: SchemaField$21, NumberField: NumberField$22, StringField: StringField$23, BooleanField: BooleanField$19, ArrayField: ArrayField$19, IntegerSortField: IntegerSortField$19 } = foundry.data.fields;
 var CharacterData = class extends foundry.abstract.TypeDataModel {
 	/** @inheritdoc */
 	static _systemType = "character";
@@ -5727,11 +6811,11 @@ var CharacterData = class extends foundry.abstract.TypeDataModel {
 };
 //#endregion
 //#region src/module/data/fields/armor-field.mjs
-var { SchemaField: SchemaField$20, NumberField: NumberField$21, StringField: StringField$21, BooleanField: BooleanField$18, ArrayField: ArrayField$18, IntegerSortField: IntegerSortField$18 } = foundry.data.fields;
+var { SchemaField: SchemaField$20, NumberField: NumberField$21, StringField: StringField$22, BooleanField: BooleanField$18, ArrayField: ArrayField$18, IntegerSortField: IntegerSortField$18 } = foundry.data.fields;
 var ArmorField = class extends SchemaField$20 {
 	constructor(options = {}, schemaOptions = {}) {
 		const fields = {
-			name: new StringField$21({}),
+			name: new StringField$22({}),
 			rating: new NumberField$21({
 				integer: true,
 				min: 0,
@@ -5743,7 +6827,7 @@ var ArmorField = class extends SchemaField$20 {
 };
 //#endregion
 //#region src/module/data/actor/npc.mjs
-var { SchemaField: SchemaField$19, NumberField: NumberField$20, StringField: StringField$20, BooleanField: BooleanField$17, ArrayField: ArrayField$17, IntegerSortField: IntegerSortField$17, HTMLField: HTMLField$13 } = foundry.data.fields;
+var { SchemaField: SchemaField$19, NumberField: NumberField$20, StringField: StringField$21, BooleanField: BooleanField$17, ArrayField: ArrayField$17, IntegerSortField: IntegerSortField$17, HTMLField: HTMLField$14 } = foundry.data.fields;
 var NPCData = class extends foundry.abstract.TypeDataModel {
 	/** @inheritdoc */
 	static _systemType = "npc";
@@ -5759,14 +6843,14 @@ var NPCData = class extends foundry.abstract.TypeDataModel {
 			...DetailsFields.backrounds,
 			...DetailsFields.biography,
 			armor: new ArmorField(),
-			tactics: new HTMLField$13({})
+			tactics: new HTMLField$14({})
 		};
 	}
 	prepareBaseData() {}
 };
 //#endregion
 //#region src/module/data/actor/fromhell.mjs
-var { SchemaField: SchemaField$18, StringField: StringField$19, HTMLField: HTMLField$12, NumberField: NumberField$19 } = foundry.data.fields;
+var { SchemaField: SchemaField$18, StringField: StringField$20, HTMLField: HTMLField$13, NumberField: NumberField$19 } = foundry.data.fields;
 var FromHellData = class extends foundry.abstract.TypeDataModel {
 	/** @inheritdoc */
 	static _systemType = "fromHell";
@@ -5777,15 +6861,15 @@ var FromHellData = class extends foundry.abstract.TypeDataModel {
 			...GeneralFields$1.fighting,
 			...ConditionFields.condition,
 			armor: new ArmorField(),
-			tactics: new HTMLField$12({}),
-			about: new HTMLField$12({})
+			tactics: new HTMLField$13({}),
+			about: new HTMLField$13({})
 		};
 	}
 	prepareBaseData() {}
 };
 //#endregion
 //#region src/module/data/actor/aberrant.mjs
-var { SchemaField: SchemaField$17, StringField: StringField$18, HTMLField: HTMLField$11, NumberField: NumberField$18 } = foundry.data.fields;
+var { SchemaField: SchemaField$17, StringField: StringField$19, HTMLField: HTMLField$12, NumberField: NumberField$18 } = foundry.data.fields;
 var AberrantData = class extends foundry.abstract.TypeDataModel {
 	/** @inheritdoc */
 	static _systemType = "aberrant";
@@ -5800,24 +6884,46 @@ var AberrantData = class extends foundry.abstract.TypeDataModel {
 			...DetailsFields.backrounds,
 			...DetailsFields.biography,
 			armor: new ArmorField(),
-			variant: new StringField$18({}),
-			tactics: new HTMLField$11({}),
-			rapture: new StringField$18({}),
+			variant: new StringField$19({}),
+			tactics: new HTMLField$12({}),
+			rapture: new StringField$19({}),
 			skinbags: new NumberField$18({
 				integer: true,
 				min: 0,
 				initial: 0
 			}),
-			phase: new StringField$18({ initial: "primal" })
+			phase: new StringField$19({ initial: "primal" })
 		};
 	}
 };
 //#endregion
 //#region src/module/data/actor/sleeper.mjs
-var { SchemaField: SchemaField$16, NumberField: NumberField$17, StringField: StringField$17, BooleanField: BooleanField$16, ArrayField: ArrayField$16, IntegerSortField: IntegerSortField$16, HTMLField: HTMLField$10 } = foundry.data.fields;
+var { SchemaField: SchemaField$16, NumberField: NumberField$17, StringField: StringField$18, BooleanField: BooleanField$16, ArrayField: ArrayField$16, IntegerSortField: IntegerSortField$16, HTMLField: HTMLField$11 } = foundry.data.fields;
 var SleeperData = class extends foundry.abstract.TypeDataModel {
 	/** @inheritdoc */
 	static _systemType = "sleeper";
+	static defineSchema() {
+		return {
+			...AttributesSkillsFields.attributes,
+			...GeneralFields$1.general,
+			...GeneralFields$1.state,
+			...GeneralFields$1.fighting,
+			...ConditionFields.condition,
+			...DetailsFields.details,
+			...DetailsFields.backrounds,
+			...DetailsFields.biography,
+			armor: new ArmorField(),
+			tactics: new HTMLField$11({})
+		};
+	}
+	prepareBaseData() {}
+};
+//#endregion
+//#region src/module/data/actor/marauder.mjs
+var { SchemaField: SchemaField$15, NumberField: NumberField$16, StringField: StringField$17, BooleanField: BooleanField$15, ArrayField: ArrayField$15, IntegerSortField: IntegerSortField$15, HTMLField: HTMLField$10 } = foundry.data.fields;
+var MarauderData = class extends foundry.abstract.TypeDataModel {
+	/** @inheritdoc */
+	static _systemType = "marauder";
 	static defineSchema() {
 		return {
 			...AttributesSkillsFields.attributes,
@@ -5835,49 +6941,75 @@ var SleeperData = class extends foundry.abstract.TypeDataModel {
 	prepareBaseData() {}
 };
 //#endregion
-//#region src/module/data/actor/marauder.mjs
-var { SchemaField: SchemaField$15, NumberField: NumberField$16, StringField: StringField$16, BooleanField: BooleanField$15, ArrayField: ArrayField$15, IntegerSortField: IntegerSortField$15, HTMLField: HTMLField$9 } = foundry.data.fields;
-var MarauderData = class extends foundry.abstract.TypeDataModel {
-	/** @inheritdoc */
-	static _systemType = "marauder";
-	static defineSchema() {
-		return {
-			...AttributesSkillsFields.attributes,
-			...GeneralFields$1.general,
-			...GeneralFields$1.state,
-			...GeneralFields$1.fighting,
-			...ConditionFields.condition,
-			...DetailsFields.details,
-			...DetailsFields.backrounds,
-			...DetailsFields.biography,
-			armor: new ArmorField(),
-			tactics: new HTMLField$9({})
-		};
-	}
-	prepareBaseData() {}
-};
-//#endregion
 //#region src/module/data/actor/group.mjs
-var { SchemaField: SchemaField$14, NumberField: NumberField$15, StringField: StringField$15, BooleanField: BooleanField$14, ArrayField: ArrayField$14, SetField, ForeignDocumentField: ForeignDocumentField$4, IntegerSortField: IntegerSortField$14 } = foundry.data.fields;
+var { SchemaField: SchemaField$14, NumberField: NumberField$15, StringField: StringField$16, BooleanField: BooleanField$14, ArrayField: ArrayField$14, SetField, ForeignDocumentField: ForeignDocumentField$4, IntegerSortField: IntegerSortField$14, HTMLField: HTMLField$9 } = foundry.data.fields;
 var { BaseItem: BaseItem$3, BaseActor: BaseActor$1 } = foundry.documents;
 var GroupData = class extends foundry.abstract.TypeDataModel {
 	/** @inheritdoc */
 	static _systemType = "group";
 	static defineSchema() {
 		return {
-			name: new StringField$15({}),
+			description: new HTMLField$9({ initial: "" }),
 			members: new ArrayField$14(new SchemaField$14({ actor: new ForeignDocumentField$4(BaseActor$1, {
 				nullable: true,
 				idOnly: false
-			}) })),
-			alignment: new StringField$15({})
+			}, { label: "DGNS.GENERAL.members" }) })),
+			alignment: new StringField$16({
+				required: false,
+				blank: true,
+				initial: "",
+				choices: Scars.AlignmentsOptions,
+				label: "DGNS.ALIGNMENT.alignment"
+			}),
+			infamy: new NumberField$15({
+				label: "DGNS.ALIGNMENT.infamy",
+				min: 0,
+				max: 6,
+				initial: 0,
+				integer: true
+			}),
+			scars: new SchemaField$14({
+				current: new NumberField$15({
+					integer: true,
+					min: 0
+				}),
+				spent: new NumberField$15({
+					integer: true,
+					min: 0
+				})
+			}, { label: "DGNS.ALIGNMENT.scars" }),
+			milestones: new ArrayField$14(new SchemaField$14({
+				id: new StringField$16({
+					required: true,
+					initial: () => foundry.utils.randomID()
+				}),
+				label: new StringField$16({
+					required: true,
+					initial: "Milestone"
+				}),
+				description: new HTMLField$9({ label: "DGNS.GENERAL.description" }),
+				achieved: new BooleanField$14({ initial: false }),
+				awardedEgo: new BooleanField$14({ initial: false }),
+				awardedScar: new BooleanField$14({ initial: false })
+			}), { initial: [] }),
+			revengeTarget: new StringField$16({
+				required: false,
+				blank: true,
+				initial: "",
+				label: "DGNS.GENERAL.revengeTarget"
+			})
 		};
 	}
-	prepareBaseData() {}
+	get memberActors() {
+		return this.members.map((entry) => entry.actor).filter(Boolean);
+	}
+	get memberConcepts() {
+		return this.memberActors.map((actor) => actor.system.concept ?? "").filter(Boolean);
+	}
 };
 //#endregion
 //#region src/module/data/actor/_module.mjs
-var config$1 = {
+var config$2 = {
 	character: CharacterData,
 	npc: NPCData,
 	fromhell: FromHellData,
@@ -5888,11 +7020,19 @@ var config$1 = {
 };
 //#endregion
 //#region src/module/data/item/partials/general.mjs
-var { SchemaField: SchemaField$13, NumberField: NumberField$14, StringField: StringField$14, HTMLField: HTMLField$8, BooleanField: BooleanField$13, ObjectField, ArrayField: ArrayField$13, ForeignDocumentField: ForeignDocumentField$3, IntegerSortField: IntegerSortField$13, DocumentIdField: DocumentIdField$8, FilePathField } = foundry.data.fields;
+var { SchemaField: SchemaField$13, NumberField: NumberField$14, StringField: StringField$15, HTMLField: HTMLField$8, BooleanField: BooleanField$13, ObjectField, ArrayField: ArrayField$13, ForeignDocumentField: ForeignDocumentField$3, IntegerSortField: IntegerSortField$13, DocumentIdField: DocumentIdField$8, FilePathField, DocumentUUIDField: DocumentUUIDField$1 } = foundry.data.fields;
 var { BaseItem: BaseItem$2 } = foundry.documents;
 var GeneralFields = class {
+	static get dgnsid() {
+		return { dgnsid: new StringField$15({
+			label: "DGNS.GENERAL.ID",
+			required: true,
+			nullable: true,
+			initial: ""
+		}) };
+	}
 	static get subtitle() {
-		return { subtitle: new StringField$14({ label: "DGNS.Subtitle" }) };
+		return { subtitle: new StringField$15({ label: "DGNS.Subtitle" }) };
 	}
 	static get description() {
 		return { description: new HTMLField$8({ label: "DGNS.Description" }) };
@@ -5913,10 +7053,10 @@ var GeneralFields = class {
 		}) };
 	}
 	static get group() {
-		return { group: new StringField$14({ label: "DGNS.Group" }) };
+		return { group: new StringField$15({ label: "DGNS.Group" }) };
 	}
 	static get weaponGroup() {
-		return { group: new StringField$14({
+		return { group: new StringField$15({
 			label: "DGNS.Group",
 			choices: WEAPON_GROUPS,
 			required: false,
@@ -5924,7 +7064,7 @@ var GeneralFields = class {
 		}) };
 	}
 	static get rules() {
-		return { rules: new StringField$14({ label: "DGNS.Rules" }) };
+		return { rules: new StringField$15({ label: "DGNS.Rules" }) };
 	}
 	static get effect() {
 		return { effect: new HTMLField$8({ label: "DGNS.Effect" }) };
@@ -5936,7 +7076,7 @@ var GeneralFields = class {
 		return { dropped: new BooleanField$13({ default: false }) };
 	}
 	static get prerequisite() {
-		return { prerequisite: new StringField$14({ label: "DGNS.Prerequisite" }) };
+		return { prerequisite: new StringField$15({ label: "DGNS.Prerequisite" }) };
 	}
 	/** Deprected - do not use.  */
 	static get slots() {
@@ -5947,7 +7087,7 @@ var GeneralFields = class {
 	}
 	static get qualities() {
 		return { qualities: new ArrayField$13(new SchemaField$13({
-			key: new StringField$14({ required: true }),
+			key: new StringField$15({ required: true }),
 			enabled: new BooleanField$13({ initial: true }),
 			values: new ObjectField({ initial: {} })
 		}), { initial: [] }) };
@@ -5992,7 +7132,7 @@ var GeneralFields = class {
 		}) };
 	}
 	static get cult() {
-		return { cult: new StringField$14({ label: "DGNS.Cult" }) };
+		return { cult: new StringField$15({ label: "DGNS.GENERAL.cult" }) };
 	}
 	/** Containers / location reference  */
 	static get location() {
@@ -6010,22 +7150,27 @@ var GeneralFields = class {
 				integer: true,
 				initial: 0
 			}),
-			installed: new ArrayField$13(new ForeignDocumentField$3(BaseItem$2, {
-				idOnly: false,
+			used: new NumberField$14({
 				required: false,
-				nullable: true
+				integer: true,
+				min: 0,
+				initial: 0
+			}),
+			installed: new ArrayField$13(new DocumentUUIDField$1({
+				nullable: false,
+				type: "Item"
 			}), { initial: [] })
 		}) };
 	}
 };
 //#endregion
 //#region src/module/data/item/partials/identity.bonus.mjs
-var { SchemaField: SchemaField$12, NumberField: NumberField$13, StringField: StringField$13, BooleanField: BooleanField$12, ArrayField: ArrayField$12, IntegerSortField: IntegerSortField$12 } = foundry.data.fields;
+var { SchemaField: SchemaField$12, NumberField: NumberField$13, StringField: StringField$14, BooleanField: BooleanField$12, ArrayField: ArrayField$12, IntegerSortField: IntegerSortField$12 } = foundry.data.fields;
 var IdentityBonusFields = class {
 	static get attributeBonus() {
 		return { attrBonus: new ArrayField$12(new SchemaField$12({
-			attribute: new StringField$13({
-				label: "DGNS.Attribute",
+			attribute: new StringField$14({
+				label: "DGNS.GENERAL.attribute",
 				choices: DEGENESIS.attributes
 			}),
 			max: new NumberField$13({
@@ -6037,8 +7182,8 @@ var IdentityBonusFields = class {
 	}
 	static get skillBonus() {
 		return { skillBonus: new ArrayField$12(new SchemaField$12({
-			skill: new StringField$13({
-				label: "DGNS.Skill",
+			skill: new StringField$14({
+				label: "DGNS.GENERAL.skill",
 				choices: DEGENESIS.skills
 			}),
 			max: new NumberField$13({
@@ -6049,12 +7194,12 @@ var IdentityBonusFields = class {
 		})) };
 	}
 	static get commonCults() {
-		return { commonCults: new ArrayField$12(new StringField$13({ label: "DGNS.Cult" })) };
+		return { commonCults: new ArrayField$12(new StringField$14({ label: "DGNS.GENERAL.cult" })) };
 	}
 };
 //#endregion
 //#region src/module/data/item/culture.mjs
-var { SchemaField: SchemaField$11, NumberField: NumberField$12, StringField: StringField$12, BooleanField: BooleanField$11, ArrayField: ArrayField$11, IntegerSortField: IntegerSortField$11 } = foundry.data.fields;
+var { SchemaField: SchemaField$11, NumberField: NumberField$12, StringField: StringField$13, BooleanField: BooleanField$11, ArrayField: ArrayField$11, IntegerSortField: IntegerSortField$11 } = foundry.data.fields;
 var CultureData = class extends foundry.abstract.TypeDataModel {
 	static _sync = true;
 	static _systemType = "culture";
@@ -6074,12 +7219,13 @@ var CultureData = class extends foundry.abstract.TypeDataModel {
 };
 //#endregion
 //#region src/module/data/item/concept.mjs
-var { SchemaField: SchemaField$10, NumberField: NumberField$11, StringField: StringField$11, BooleanField: BooleanField$10, ArrayField: ArrayField$10, IntegerSortField: IntegerSortField$10 } = foundry.data.fields;
+var { SchemaField: SchemaField$10, NumberField: NumberField$11, StringField: StringField$12, BooleanField: BooleanField$10, ArrayField: ArrayField$10, IntegerSortField: IntegerSortField$10 } = foundry.data.fields;
 var ConceptData = class extends foundry.abstract.TypeDataModel {
 	static _sync = true;
 	static _systemType = "concept";
 	static defineSchema() {
 		return {
+			...GeneralFields.dgnsid,
 			...GeneralFields.description,
 			...GeneralFields.backgroundImage,
 			...IdentityBonusFields.attributeBonus,
@@ -6092,7 +7238,7 @@ var ConceptData = class extends foundry.abstract.TypeDataModel {
 };
 //#endregion
 //#region src/module/data/item/cult.mjs
-var { SchemaField: SchemaField$9, NumberField: NumberField$10, StringField: StringField$10, BooleanField: BooleanField$9, ArrayField: ArrayField$9, IntegerSortField: IntegerSortField$9 } = foundry.data.fields;
+var { SchemaField: SchemaField$9, NumberField: NumberField$10, StringField: StringField$11, BooleanField: BooleanField$9, ArrayField: ArrayField$9, IntegerSortField: IntegerSortField$9 } = foundry.data.fields;
 var CultData = class extends foundry.abstract.TypeDataModel {
 	static _sync = true;
 	static _systemType = "cult";
@@ -6110,25 +7256,25 @@ var CultData = class extends foundry.abstract.TypeDataModel {
 };
 //#endregion
 //#region src/module/data/item/legacy.mjs
-var { SchemaField: SchemaField$8, NumberField: NumberField$9, StringField: StringField$9, HTMLField: HTMLField$7, BooleanField: BooleanField$8, ArrayField: ArrayField$8, IntegerSortField: IntegerSortField$8, DocumentIdField: DocumentIdField$7 } = foundry.data.fields;
+var { SchemaField: SchemaField$8, NumberField: NumberField$9, StringField: StringField$10, HTMLField: HTMLField$7, BooleanField: BooleanField$8, ArrayField: ArrayField$8, IntegerSortField: IntegerSortField$8, DocumentIdField: DocumentIdField$7 } = foundry.data.fields;
 var LegacyData = class extends foundry.abstract.TypeDataModel {
 	static _systemType = "legacy";
 	static defineSchema() {
 		return {
 			...GeneralFields.prerequisite,
-			legacy: new StringField$9({ label: "DGNS.Legacy" }),
-			drawback: new StringField$9({ label: "DGNS.Drawback" }),
-			bonus: new StringField$9({ label: "DGNS.Bonus" })
+			legacy: new StringField$10({ label: "DGNS.Legacy" }),
+			drawback: new StringField$10({ label: "DGNS.Drawback" }),
+			bonus: new StringField$10({ label: "DGNS.Bonus" })
 		};
 	}
 };
 //#endregion
 //#region src/module/data/fields/formula-field.mjs
-var { SchemaField: SchemaField$7, NumberField: NumberField$8, StringField: StringField$8, BooleanField: BooleanField$7, ArrayField: ArrayField$7, IntegerSortField: IntegerSortField$7 } = foundry.data.fields;
-var FormulaField = class extends StringField$8 {};
+var { SchemaField: SchemaField$7, NumberField: NumberField$8, StringField: StringField$9, BooleanField: BooleanField$7, ArrayField: ArrayField$7, IntegerSortField: IntegerSortField$7 } = foundry.data.fields;
+var FormulaField = class extends StringField$9 {};
 //#endregion
 //#region src/module/data/item/partials/combat.mjs
-var { SchemaField: SchemaField$6, NumberField: NumberField$7, StringField: StringField$7, HTMLField: HTMLField$6, BooleanField: BooleanField$6, ArrayField: ArrayField$6, ForeignDocumentField: ForeignDocumentField$2, IntegerSortField: IntegerSortField$6, DocumentIdField: DocumentIdField$6 } = foundry.data.fields;
+var { SchemaField: SchemaField$6, NumberField: NumberField$7, StringField: StringField$8, HTMLField: HTMLField$6, BooleanField: BooleanField$6, ArrayField: ArrayField$6, ForeignDocumentField: ForeignDocumentField$2, IntegerSortField: IntegerSortField$6, DocumentIdField: DocumentIdField$6 } = foundry.data.fields;
 var { BaseItem: BaseItem$1, BaseActor } = foundry.documents;
 var CombatFields = class {
 	static get damage() {
@@ -6138,8 +7284,8 @@ var CombatFields = class {
 				initial: 0,
 				integer: true
 			}),
-			type: new StringField$7({ label: "DGNS.DamageType" }),
-			bonus: new StringField$7({ label: "DGNS.DamageBonus" })
+			type: new StringField$8({ label: "DGNS.DamageType" }),
+			bonus: new StringField$8({ label: "DGNS.DamageBonus" })
 		}) };
 	}
 	/**
@@ -6188,13 +7334,13 @@ var CombatFields = class {
 	}
 	static get skills() {
 		return { skills: new SchemaField$6({
-			primary: new StringField$7({ label: "DGNS.PrimarySkill" }),
-			secondary: new StringField$7({ label: "DGNS.SecondarySkill" })
+			primary: new StringField$8({ label: "DGNS.PrimarySkill" }),
+			secondary: new StringField$8({ label: "DGNS.SecondarySkill" })
 		}) };
 	}
 	static get ammunition() {
 		return { ammunition: new SchemaField$6({
-			caliber: new StringField$7({
+			caliber: new StringField$8({
 				label: "DGNS.Caliber",
 				choices: CALIBERS,
 				blank: true,
@@ -6237,6 +7383,7 @@ var ArmorData = class extends foundry.abstract.TypeDataModel {
 			...GeneralFields.description,
 			...GeneralFields.quantity,
 			...GeneralFields.encumbrance,
+			...GeneralFields.modifications,
 			...GeneralFields.equipped,
 			...GeneralFields.dropped,
 			...GeneralFields.qualities,
@@ -6251,13 +7398,13 @@ var ArmorData = class extends foundry.abstract.TypeDataModel {
 };
 //#endregion
 //#region src/module/data/item/burn.mjs
-var { SchemaField: SchemaField$5, NumberField: NumberField$6, StringField: StringField$6, HTMLField: HTMLField$5, BooleanField: BooleanField$5, ArrayField: ArrayField$5, IntegerSortField: IntegerSortField$5, DocumentIdField: DocumentIdField$5 } = foundry.data.fields;
+var { SchemaField: SchemaField$5, NumberField: NumberField$6, StringField: StringField$7, HTMLField: HTMLField$5, BooleanField: BooleanField$5, ArrayField: ArrayField$5, IntegerSortField: IntegerSortField$5, DocumentIdField: DocumentIdField$5 } = foundry.data.fields;
 var BurnData = class extends foundry.abstract.TypeDataModel {
 	static _systemType = "burn";
 	static defineSchema() {
 		return {
-			chakra: new StringField$6({ label: "DGNS.Chakra" }),
-			earthChakra: new StringField$6({ label: "DGNS.EarthChakra" }),
+			chakra: new StringField$7({ label: "DGNS.Chakra" }),
+			earthChakra: new StringField$7({ label: "DGNS.EarthChakra" }),
 			...GeneralFields.description,
 			...GeneralFields.effect,
 			...GeneralFields.rules,
@@ -6280,13 +7427,13 @@ var BurnData = class extends foundry.abstract.TypeDataModel {
 };
 //#endregion
 //#region src/module/data/item/complication.mjs
-var { NumberField: NumberField$5, StringField: StringField$5 } = foundry.data.fields;
+var { NumberField: NumberField$5, StringField: StringField$6 } = foundry.data.fields;
 var ComplicationData = class extends foundry.abstract.TypeDataModel {
 	static _systemType = "complication";
 	static defineSchema() {
 		return {
 			...GeneralFields.description,
-			cost: new StringField$5({ label: "DGNS.ComplicationCost" }),
+			cost: new StringField$6({ label: "DGNS.ComplicationCost" }),
 			rating: new NumberField$5({
 				label: "DGNS.Level",
 				initial: 1,
@@ -6317,7 +7464,7 @@ var EquipmentData = class extends foundry.abstract.TypeDataModel {
 };
 //#endregion
 //#region src/module/data/item/modification.mjs
-var { SchemaField: SchemaField$4, NumberField: NumberField$4, StringField: StringField$4, HTMLField: HTMLField$4, BooleanField: BooleanField$4, ArrayField: ArrayField$4, IntegerSortField: IntegerSortField$4, DocumentIdField: DocumentIdField$4, ForeignDocumentField: ForeignDocumentField$1 } = foundry.data.fields;
+var { SchemaField: SchemaField$4, NumberField: NumberField$4, StringField: StringField$5, HTMLField: HTMLField$4, BooleanField: BooleanField$4, ArrayField: ArrayField$4, IntegerSortField: IntegerSortField$4, DocumentIdField: DocumentIdField$4, DocumentUUIDField, ForeignDocumentField: ForeignDocumentField$1 } = foundry.data.fields;
 var { BaseItem } = foundry.documents;
 var ModData = class extends foundry.abstract.TypeDataModel {
 	static _systemType = "modification";
@@ -6327,18 +7474,14 @@ var ModData = class extends foundry.abstract.TypeDataModel {
 			...GeneralFields.effect,
 			...GeneralFields.value,
 			...GeneralFields.qualities,
-			type: new StringField$4({
+			type: new StringField$5({
 				label: "DGNS.ModType",
 				initial: "melee",
 				choices: Modification.type
 			}),
-			requirement: new StringField$4({ label: "DGNS.requirement" }),
-			mounted: new ForeignDocumentField$1(BaseItem, {
-				idOnly: false,
-				required: false,
-				nullable: true
-			}),
-			slotcost: new NumberField$4({
+			requirement: new StringField$5({ label: "DGNS.requirement" }),
+			mounted: new DocumentUUIDField({ nullable: true }),
+			slotCost: new NumberField$4({
 				label: "DGNS.SlotCost",
 				initial: 1,
 				min: 0,
@@ -6349,14 +7492,14 @@ var ModData = class extends foundry.abstract.TypeDataModel {
 };
 //#endregion
 //#region src/module/data/item/phenomenon.mjs
-var { SchemaField: SchemaField$3, NumberField: NumberField$3, StringField: StringField$3, HTMLField: HTMLField$3, BooleanField: BooleanField$3, ArrayField: ArrayField$3, IntegerSortField: IntegerSortField$3, DocumentIdField: DocumentIdField$3 } = foundry.data.fields;
+var { SchemaField: SchemaField$3, NumberField: NumberField$3, StringField: StringField$4, HTMLField: HTMLField$3, BooleanField: BooleanField$3, ArrayField: ArrayField$3, IntegerSortField: IntegerSortField$3, DocumentIdField: DocumentIdField$3 } = foundry.data.fields;
 var PhenomenonData = class extends foundry.abstract.TypeDataModel {
 	static _systemType = "phenomenon";
 	static defineSchema() {
 		return {
 			...GeneralFields.description,
 			...GeneralFields.rules,
-			rapture: new StringField$3({ label: "DGNS.Rapture" }),
+			rapture: new StringField$4({ label: "DGNS.Rapture" }),
 			level: new NumberField$3({
 				label: "DGNS.Level",
 				initial: 1,
@@ -6368,7 +7511,7 @@ var PhenomenonData = class extends foundry.abstract.TypeDataModel {
 };
 //#endregion
 //#region src/module/data/item/potential.mjs
-var { SchemaField: SchemaField$2, NumberField: NumberField$2, StringField: StringField$2, HTMLField: HTMLField$2, BooleanField: BooleanField$2, ArrayField: ArrayField$2, IntegerSortField: IntegerSortField$2, DocumentIdField: DocumentIdField$2 } = foundry.data.fields;
+var { SchemaField: SchemaField$2, NumberField: NumberField$2, StringField: StringField$3, HTMLField: HTMLField$2, BooleanField: BooleanField$2, ArrayField: ArrayField$2, IntegerSortField: IntegerSortField$2, DocumentIdField: DocumentIdField$2 } = foundry.data.fields;
 var PotentialData = class extends foundry.abstract.TypeDataModel {
 	static _systemType = "potential";
 	static defineSchema() {
@@ -6376,7 +7519,7 @@ var PotentialData = class extends foundry.abstract.TypeDataModel {
 			...GeneralFields.prerequisite,
 			...GeneralFields.rules,
 			...GeneralFields.effect,
-			origin: new StringField$2({ initial: "None" }),
+			origin: new StringField$3({ initial: "None" }),
 			isAction: new BooleanField$2({ initial: false }),
 			level: new NumberField$2({
 				label: "DGNS.Level",
@@ -6389,7 +7532,7 @@ var PotentialData = class extends foundry.abstract.TypeDataModel {
 };
 //#endregion
 //#region src/module/data/item/shield.mjs
-var { SchemaField: SchemaField$1, NumberField: NumberField$1, StringField: StringField$1, HTMLField: HTMLField$1, BooleanField: BooleanField$1, ArrayField: ArrayField$1, IntegerSortField: IntegerSortField$1, DocumentIdField: DocumentIdField$1 } = foundry.data.fields;
+var { SchemaField: SchemaField$1, NumberField: NumberField$1, StringField: StringField$2, HTMLField: HTMLField$1, BooleanField: BooleanField$1, ArrayField: ArrayField$1, IntegerSortField: IntegerSortField$1, DocumentIdField: DocumentIdField$1 } = foundry.data.fields;
 var ShieldData = class extends foundry.abstract.TypeDataModel {
 	static _systemType = "shield";
 	static defineSchema() {
@@ -6453,7 +7596,7 @@ var BaseItemData = class extends foundry.abstract.TypeDataModel {
 };
 //#endregion
 //#region src/module/data/item/transportation.mjs
-var { SchemaField, NumberField, StringField, HTMLField, BooleanField, ArrayField, IntegerSortField, DocumentIdField, ForeignDocumentField } = foundry.data.fields;
+var { SchemaField, NumberField, StringField: StringField$1, HTMLField, BooleanField, ArrayField, IntegerSortField, DocumentIdField, ForeignDocumentField } = foundry.data.fields;
 var TransportationData = class extends BaseItemData {
 	static _systemType = "transportation";
 	static defineSchema() {
@@ -6498,7 +7641,7 @@ var WeaponData = class extends BaseItemData {
 };
 //#endregion
 //#region src/module/data/item/_module.mjs
-var config = {
+var config$1 = {
 	culture: CultureData,
 	concept: ConceptData,
 	cult: CultData,
@@ -6516,18 +7659,46 @@ var config = {
 	weapon: WeaponData
 };
 //#endregion
+//#region src/module/data/effect/base.mjs
+var { ActiveEffectTypeDataModel } = foundry.data;
+var { StringField } = foundry.data.fields;
+/**
+*
+*/
+var DGNSBaseEffectData = class extends ActiveEffectTypeDataModel {
+	static defineSchema() {
+		return super.defineSchema();
+	}
+};
+//#endregion
+//#region src/module/data/effect/modification.mjs
+var DGNSModEffectData = class extends DGNSBaseEffectData {
+	static defineSchema() {
+		return super.defineSchema();
+	}
+};
+//#endregion
+//#region src/module/data/effect/_module.mjs
+var config = {
+	base: DGNSBaseEffectData,
+	modification: DGNSModEffectData
+};
+//#endregion
 //#region src/degenesis.mjs
-var { Actors, Items } = foundry.documents.collections;
+var { DocumentSheetConfig } = foundry.applications.apps;
+var { Actors, Items, Effects } = foundry.documents.collections;
 var { ActorSheet, ItemSheet } = foundry.appv1.sheets;
 globalThis.degenesis = { applications: _module_exports };
-CONFIG.DEGENESIS = DEGENESIS;
+CONFIG.DEGENESIS = SYSTEM;
 CONFIG.Dice.rolls = [Roll, DGNSRoll];
 CONFIG.Dice.DGNSRoll = DGNSRoll;
 CONFIG.Actor.documentClass = DGNSActor;
 CONFIG.Item.documentClass = DGNSItem;
 CONFIG.ChatMessage.documentClass = DGNSChatMessage;
-CONFIG.Actor.dataModels = config$1;
-CONFIG.Item.dataModels = config;
+CONFIG.ActiveEffect.documentClass = DGNSActiveEffect;
+CONFIG.Actor.dataModels = config$2;
+CONFIG.Item.dataModels = config$1;
+CONFIG.ActiveEffect.dataModels = config;
 CONFIG.ui.pause = DGNSGamePause;
 CONFIG.ActiveEffect.phases = {
 	initial: { label: "Init" },
@@ -6539,6 +7710,7 @@ Hooks.once("init", async function() {
 	document.onkeydown = function(e) {
 		if (e.keyCode == 123) console.log("%cDEGENESIS%c | Welcome, Chronicler", "color: #ed1d27", "color: unset");
 	};
+	registerSystemSettings();
 	_setCompendiumBanners();
 	preloadHandlebarsTemplates();
 	registerHandlebarsHelpers();
@@ -6629,6 +7801,14 @@ Hooks.once("init", async function() {
 			light: "SETTINGS.UI.FIELDS.colorScheme.light"
 		}
 	});
+	DocumentSheetConfig.registerSheet(ActiveEffect, "degenesis", DGNSEffectConfig, {
+		types: ["base", "modification"],
+		makeDefault: true,
+		themes: {
+			dark: "SETTINGS.UI.FIELDS.colorScheme.dark",
+			light: "SETTINGS.UI.FIELDS.colorScheme.light"
+		}
+	});
 	_module_default();
 	CONFIG.canvasTextStyle = new PIXI.TextStyle({
 		fontFamily: "Calluna",
@@ -6644,9 +7824,6 @@ Hooks.once("init", async function() {
 		align: "center",
 		wordWrap: false
 	});
-});
-Hooks.on("setup", () => {
-	for (let group in DEGENESIS) for (let key in DEGENESIS[group]) if (typeof DEGENESIS[group][key] == "string") DEGENESIS[group][key] = game.i18n.localize(DEGENESIS[group][key]);
 });
 function _unregisterCoreSheets() {
 	Actors.unregisterSheet("core", ActorSheet);

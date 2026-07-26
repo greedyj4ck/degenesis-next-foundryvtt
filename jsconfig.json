@@ -14,7 +14,12 @@
     "degenesis.mjs",
     "foundry/client/client.mjs",
     "foundry/client/global.d.mts",
-    "foundry/common/primitives/global.d.mts"
+    "foundry/common/primitives/global.d.mts",
+    "src/module/.old/.old.chat.js",
+    "src/module/.old/.old.combat-degenesis.js",
+    "src/module/.old/.old.chat-message.js",
+    "src/module/.old/.old.utility.js",
+    "src/module/.old.modifier-manager.js"
   ],
   "typeAcquisition": {
     "include": ["jquery"]

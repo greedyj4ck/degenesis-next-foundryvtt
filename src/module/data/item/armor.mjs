@@ -9,6 +9,7 @@ export default class ArmorData extends foundry.abstract.TypeDataModel {
       ...GeneralFields.description,
       ...GeneralFields.quantity,
       ...GeneralFields.encumbrance,
+      ...GeneralFields.modifications,
       ...GeneralFields.equipped,
       ...GeneralFields.dropped,
       ...GeneralFields.qualities,

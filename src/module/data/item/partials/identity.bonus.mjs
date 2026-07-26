@@ -1,4 +1,4 @@
-import { DEGENESIS } from "../../../config.mjs";
+import { DEGENESIS } from "../../../config/system.mjs";
 
 const {
   SchemaField,
@@ -17,7 +17,7 @@ export default class IdentityBonusFields {
       attrBonus: new ArrayField(
         new SchemaField({
           attribute: new StringField({
-            label: "DGNS.Attribute",
+            label: "DGNS.GENERAL.attribute",
             choices: DEGENESIS.attributes,
           }),
           max: new NumberField({
@@ -25,7 +25,7 @@ export default class IdentityBonusFields {
             integer: true,
             positive: true,
           }),
-        })
+        }),
       ),
     };
   }
@@ -35,7 +35,7 @@ export default class IdentityBonusFields {
       skillBonus: new ArrayField(
         new SchemaField({
           skill: new StringField({
-            label: "DGNS.Skill",
+            label: "DGNS.GENERAL.skill",
             choices: DEGENESIS.skills,
           }),
           max: new NumberField({
@@ -43,7 +43,7 @@ export default class IdentityBonusFields {
             integer: true,
             positive: true,
           }),
-        })
+        }),
       ),
     };
   }
@@ -55,8 +55,8 @@ export default class IdentityBonusFields {
     return {
       commonCults: new ArrayField(
         new StringField({
-          label: "DGNS.Cult",
-        })
+          label: "DGNS.GENERAL.cult",
+        }),
       ),
     };
   }

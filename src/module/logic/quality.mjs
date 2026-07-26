@@ -116,6 +116,8 @@ export const QUALITY_DEFINITIONS = {
     chatButtons: null,
     onItemUse: null,
     onPreRoll: null,
+    //! heavily experimental function
+    //todo: fix this later
     onPostRoll: async (rollResult) => {
       const isSuccess = rollResult.isSucess;
       const formula = isSuccess ? "1d6" : "2d6";

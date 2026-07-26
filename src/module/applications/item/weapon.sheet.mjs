@@ -12,7 +12,7 @@ export default class DegenesisWeaponSheet extends ItemSheetMixin(
 ) {
   static DEFAULT_OPTIONS = {
     actions: {
-      manageQuality: this.#onManageQuality,
+      //manageQuality: this.#onManageQuality,
     },
     form: {
       submitOnChange: true,
@@ -106,6 +106,9 @@ export default class DegenesisWeaponSheet extends ItemSheetMixin(
           label: def.label,
           description: def.description,
           // Jeśli nie ma w bazie, domyślnie jest wyłączona (false)
+          injectedFrom: data ? data.injectedFrom : null,
+          injectedFromName: data ? data.injectedFromName : null,
+
           enabled: data ? data.enabled : false,
           // Mapujemy inputy, wstrzykując aktualne wartości z bazy lub defaulty
           inputs: (def.inputs || []).map((input) => ({
@@ -161,40 +164,30 @@ export default class DegenesisWeaponSheet extends ItemSheetMixin(
 
   activateListeners(html) {
     super.activateListeners(this.element);
-    //manual binding for change event for inputs
-    html.querySelectorAll(".quality-input").forEach((input) => {
-      input.addEventListener("change", (event) => {
-        this._onManageQuality(event, event.currentTarget);
-      });
-    });
   }
 
   /* ---------------------------------- */
   /*              Qualities             */
   /* ---------------------------------- */
 
-  /** Static wrapper for logic. */
-  static async #onManageQuality(event, target) {
-    await this._onManageQuality(event, target);
-  }
+  /* ---------------------------------- */
+  /*        Drag n Drop handlers        */
+  /* ---------------------------------- */
 
-  async _onManageQuality(event, target) {
-    if (event) event.preventDefault();
-    let { field = null, value = null } = {};
+  async _onDrop(event) {
+    console.log(`Weapon _onDropEvent`);
+    console.log(event);
 
-    const action = target.dataset.type;
-    const qualityKey = target.closest(".quality")?.dataset.qualityKey;
+    const data = TextEditor.getDragEventData(event);
+    if (data.type !== "Item") return super._onDrop(event);
 
-    if (action === "update") {
-      field = target.dataset.field;
-      value = target.value;
+    const droppedItem = await fromUuid(data.uuid);
+    if (!droppedItem) return;
+
+    if (droppedItem.type === "modification") {
+      return this.item._installMod(droppedItem);
     }
 
-    return await this.document._manageQualities(
-      action,
-      qualityKey,
-      field,
-      value,
-    );
+    return super._onDrop(event);
   }
 }

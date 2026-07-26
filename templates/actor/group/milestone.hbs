@@ -1,0 +1,16 @@
+{{! Used for milestone description with Prosemirror }}
+<div class="item-summary {{#if collapsible}}collapsible-content{{/if}}" {{~#if collapsible-content}}
+    data-expand-id="{{id}}" {{/if}}>
+    <div class="item-description">
+        {{#if edit}}
+            <prose-mirror name="{{concat "system.milestones." idx ".description"}}"
+                data-document-u-u-i-d="{{@root.document.uuid}}" value="{{description}}" collaborate="false">
+                {{{description}}}
+            </prose-mirror>
+        {{else}}
+            {{{description}}}
+        {{/if}}
+    </div>
+
+
+</div>

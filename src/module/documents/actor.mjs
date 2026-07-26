@@ -3,6 +3,9 @@
 /** Required field Classes */
 import CachedReferenceField from "../data/fields/cached-reference-field.mjs";
 
+/** Custom ActiveEffect document  */
+import DGNSActiveEffect from "./active.effect.mjs";
+
 /** Dialogs  */
 import DGNSActionRollDialog from "../applications/roll/action.dialog.mjs";
 import DGNSCombinationRollDialog from "../applications/roll/combination.dialog.mjs";
@@ -18,7 +21,7 @@ import { Penalty } from "../logic/penalties.mjs";
 
 /**
  *
- * Custom Actor class for Degenesis system.
+ * Custom Actor document class for Degenesis system.
  * @extends Actor
  * @inheritdoc
  *
@@ -33,9 +36,9 @@ export default class DGNSActor extends Actor {
     complex: null, // todo: DGNSComplexRoll - not yet implemented
   };
 
-  /* -------------------------------------------------------------------------- */
-  /*                              Data Preparation                              */
-  /* -------------------------------------------------------------------------- */
+  /* ---------------------------------- */
+  /*          Data preparation          */
+  /* ---------------------------------- */
 
   // #region Data Preparation
 
@@ -75,45 +78,50 @@ export default class DGNSActor extends Actor {
 
     // experimental
     this._applyPenalties();
+
+    //
+    this._prepareWeapons();
   }
 
-  /* -------------------------------------------------------------------------- */
+  /* ---------------------------------- */
 
   prepareEmbeddedDocuments() {
     super.prepareEmbeddedDocuments();
   }
   // #endregion
 
-  /* -------------------------------------------------------------------------- */
-  /*                                 Data Events                                */
-  /* -------------------------------------------------------------------------- */
+  /* ---------------------------------- */
+  /*             Data Events            */
+  /* ---------------------------------- */
+
   // #region Data Events
   async _preCreate(data, options, user) {
     if ((await super._preCreate(data, options, user)) === false) {
       return false;
     }
   }
-  /* -------------------------------------------------------------------------- */
+
+  /* ---------------------------------- */
 
   async _preUpdate(changed, options, user) {
     if ((await super._preUpdate(changed, options, user)) === false)
       return false;
   }
 
-  /* -------------------------------------------------------------------------- */
+  /* ---------------------------------- */
 
   _onCreate(data, options, userId) {
     super._onCreate(data, options, userId);
   }
 
-  /* -------------------------------------------------------------------------- */
+  /* ---------------------------------- */
 
   _onUpdate(data, options, userId) {
     super._onUpdate(data, options, userId);
     if (this.type === "group") this._propagateGroup();
   }
 
-  /* -------------------------------------------------------------------------- */
+  /* ---------------------------------- */
   async update(data, options = {}) {
     console.log(`Actor update.`);
     console.log("Data:", data);
@@ -128,7 +136,20 @@ export default class DGNSActor extends Actor {
         foundry.utils.mergeObject(data, cacheUpdates);
       }
     }
-    return super.update(data, options);
+    const result = await super.update(data, options);
+    this._syncGroup();
+    return result;
+  }
+
+  /* ---------------------------------- */
+
+  /**
+   * Main event for syncing stuff with group actor.
+   */
+  async _syncGroup() {
+    if (this.isGroupMember) {
+      this.group.sheet?.render();
+    }
   }
 
   /* ---- Data preparation helpers ---- */
@@ -140,8 +161,6 @@ export default class DGNSActor extends Actor {
    */
 
   _prepareConditionMaxima() {
-    console.log(`prepareConditionMaxima`);
-
     const { attributes, condition, modes, actionNumbers } = this.system;
 
     const primalFocusSkill = modes.primalFocus;
@@ -169,6 +188,9 @@ export default class DGNSActor extends Actor {
       attributes.body.value,
       attributes.psyche.value,
     );
+
+    // Manually apply any AEs targeting condition maxima
+    DGNSActiveEffect.applyToTargets(this, DGNSActiveEffect.CONDITION_KEYS);
   }
 
   _prepareEncumbrance() {
@@ -181,6 +203,8 @@ export default class DGNSActor extends Actor {
       attributes.body.value,
       attributes.body.skills.force.value,
     );
+
+    DGNSActiveEffect.applyToTargets(this, DGNSActiveEffect.ENCUMBRANCE_KEYS);
 
     for (const item of this.items) {
       if (item.system?.encumbrance && !item.system?.location) {
@@ -202,6 +226,8 @@ export default class DGNSActor extends Actor {
       attributes.body.value,
       attributes.body.skills.athletics.value,
     );
+
+    DGNSActiveEffect.applyToTargets(this, DGNSActiveEffect.MOVEMENT_KEYS);
   }
 
   /* ------------ Penalties ----------- */
@@ -220,11 +246,22 @@ export default class DGNSActor extends Actor {
     console.log(totalPenalty);
   }
 
+  /* -- Items / weapons preparations -- */
+
+  _prepareWeapons() {
+    //todo: full loop, change to already filtered weapon group
+    //for (const weapon of this.items.filter((i) => i.type === "weapon")) {
+    //   weapon.prepareAttackPool(this.system.actionNumbers);
+    // }
+
+    console.log(`Holding a spot in modifiers queue`);
+  }
+
   // #endregion
 
-  /* -------------------------------------------------------------------------- */
-  /*                                Data Helpers                                */
-  /* -------------------------------------------------------------------------- */
+  /* ---------------------------------- */
+  /*            Data helpers            */
+  /* ---------------------------------- */
 
   // #region Data  helpers
   /**
@@ -265,9 +302,10 @@ export default class DGNSActor extends Actor {
   }
   // #endregion
 
-  /* -------------------------------------------------------------------------- */
-  /*                            Custom Data Handlers                            */
-  /* -------------------------------------------------------------------------- */
+  /* ---------------------------------- */
+  /*        Custom Data Handlers        */
+  /* ---------------------------------- */
+
   // #region Custom data handlers
 
   /**
@@ -285,7 +323,7 @@ export default class DGNSActor extends Actor {
     return fields;
   }
 
-  /* -------------------------------------------------------------------------- */
+  /* ---------------------------------- */
 
   /**
    * Preparing cached fields information.
@@ -339,11 +377,11 @@ export default class DGNSActor extends Actor {
 
   //#region Sheet Methods
 
-  /* -------------------------------------------------------------------------- */
-  /*                               Sheets Methods                               */
-  /* -------------------------------------------------------------------------- */
+  /* ---------------------------------- */
+  /*        Sheet Helper Methods        */
+  /* ---------------------------------- */
 
-  /* ------------------------------ ActiveEffects ----------------------------- */
+  /* ---------- ActiveEffects --------- */
 
   /**
    * Preparing ActiveEffects for sheet.
@@ -352,7 +390,7 @@ export default class DGNSActor extends Actor {
   async _prepareEffects() {
     return await EffectHelper._prepareEffects(this);
   }
-  /* -------------------------------------------------------------------------- */
+  /* ---------------------------------- */
 
   /**
    * Handling effects for actor.
@@ -365,7 +403,7 @@ export default class DGNSActor extends Actor {
     return await EffectHelper._manageEffect(this, action, effectId);
   }
 
-  /* -------------------------------------------------------------------------- */
+  /* ---------------------------------- */
   /**
    * Helper function for creating new effect.
    * @returns
@@ -412,7 +450,8 @@ export default class DGNSActor extends Actor {
    * @returns
    */
   _prepareInventory() {
-    const sortModes = this.getFlag("degenesisnext", "inventorySortModes") || {};
+    const sortModes =
+      this.getFlag(CONFIG.DEGENESIS.id, "inventorySortModes") || {};
 
     // When adding new category, just create another entry here.
     const groups = [
@@ -481,18 +520,38 @@ export default class DGNSActor extends Actor {
     return ItemHelper.createActorItem(this, "", itemType, {});
   }
 
-  /* -------------------------------------------------------------------------- */
+  /* ---------------------------------- */
   //#endregion
 
+  /* ---------------------------------- */
+  /*                Rolls               */
+  /* ---------------------------------- */
+
   // #region Rolls
-  /* -------------------------------------------------------------------------- */
-  /*                                    Rolls                                   */
-  /* -------------------------------------------------------------------------- */
 
   /**
    * Data for rolls is beeing prepared inside Roll Dialog epplications, and move back
    * to actor entity. Main execution lies here.
    */
+
+  /**
+   * Core roll pipeline. All roll types pass through here
+   * after configuration dialog resolves.
+   */
+
+  async _executeRoll({ type, definition }) {
+    const RollClass = this.constructor.ROLL_CLASSES[type];
+
+    if (!RollClass) return null;
+
+    const roll = new RollClass(definition);
+
+    await roll.evaluate();
+    await this._postRollEffects(type, roll);
+
+    await roll.toMessage();
+    return roll;
+  }
 
   /* -------- Rolls preparation -------- */
   /**
@@ -539,36 +598,152 @@ export default class DGNSActor extends Actor {
     return this._executeRoll({ type: "combination", definition });
   }
 
+  // Preparing combat roll datas for all
+  // Early W.I.P
+
   /**
-   * Core roll pipeline. All roll types pass through here
-   * after configuration dialog resolves.
+   *
+   * @param {*} weapon weapon item
+   * @param {*} action weapon action string
+   * @returns
    */
+  async combatRoll(weapon, action) {
+    if (!action) return null;
+    // check if there
+    const { primary, secondary } = weapon.system.skills;
 
-  async _executeRoll({ type, definition }) {
-    const RollClass = this.constructor.ROLL_CLASSES[type];
+    const DGNSDialog = secondary
+      ? DGNSCombinationRollDialog
+      : DGNSActionRollDialog;
 
-    if (!RollClass) return null;
+    const definition = await DGNSDialog.create({
+      actor: this,
+      definition: {
+        primary: {
+          attribute,
+          skill,
+          actionNumber: this.system.actionNumbers[primary],
+        },
 
-    const roll = new RollClass(definition);
+        ...(secondary && {
+          secondary: {
+            attribute,
+            skill,
+            actionNumber: this.system.actionNumbers[secondary],
+          },
+        }),
+      },
+    });
 
-    await roll.evaluate();
-    await this._postRollEffects(type, roll);
-
-    await roll.toMessage();
-    return roll;
+    if (!definition) return; // Roll was cancelled
+    return this._executeRoll({
+      type: secondary ? "combination" : "action",
+      definition: definition,
+    });
   }
 
   /**
    * Post roll pipeline. Handling all side effects for actor entity.
+   * For now its basic deduct action number and overload for psychonauts.
    */
 
   async _postRollEffects(type, roll) {
-    console.log(`_postRollEffects pipline:`);
-    console.dir(type, roll);
+    const updates = {};
+
+    // todo: add combat state detection
+    if (type !== "initiative" && this.system.state.initiative.actions >= 1) {
+      updates["system.state.initiative.actions"] =
+        this.system.state.initiative.actions - 1;
+    }
+
+    // todo: check if overloading for psychonauts is working
+    // future shit
+    if (roll?.overload > 0) {
+      updates["system.condition.spore.value"] =
+        this.system.condition.spore.value - roll.overload;
+    }
+
+    if (Object.keys(updates).length > 0) {
+      await this.update(updates);
+    }
   }
 
   // #endregion
-  /* -------------------------------------------------------------------------- */
-  /*                              Getters / Setters                             */
-  /* -------------------------------------------------------------------------- */
+
+  /* ---------------------------------- */
+  /*          Getters / Setters         */
+  /* ---------------------------------- */
+
+  // todo: check if returning empty string is correct, or null is better
+  get concept() {
+    return this.system.concept || "";
+  }
+
+  get culture() {
+    return this.system.culture || "";
+  }
+
+  get cult() {
+    return this.system.cult || "";
+  }
+
+  get group() {
+    return this.system?.group || null;
+  }
+
+  /**
+   * Returning true if there is a linked
+   * group actor.
+   */
+  get isGroupMember() {
+    return this.system?.group ? true : false;
+  }
+
+  /* ---------------------------------- */
+  /*                Utils               */
+  /* ---------------------------------- */
+
+  /**
+   * !deprecated
+   * Manually apply AE for the system keys that cannot be changed
+   * during initial method call, like trauma.max.
+   * @param {*} targetMap
+   * @param {*} property
+   * @returns
+   */
+  _applyEffectsToTargets(targetMap, property) {
+    if (!property || !targetMap) return null;
+
+    for (const effect of this.appliedEffects) {
+      if (effect.disabled) continue;
+
+      for (const change of effect.changes) {
+        const target = targetMap[change.key];
+        if (!target) continue;
+
+        const value = Number(change.value);
+
+        switch (change.mode) {
+          case "add":
+            target[property] += value;
+            break;
+          case "subtract":
+            target[property] -= value;
+            break;
+          case "multiply":
+            target[property] *= value;
+            break;
+          case "override":
+            target[property] = value;
+            break;
+          case "upgrade":
+            target[property] = Math.max(target[property], value);
+            break;
+          case "downgrade":
+            target[property] = Math.min(target[property], value);
+            break;
+        }
+      }
+    }
+  }
 }

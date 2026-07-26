@@ -8,7 +8,6 @@ export default class DegenesisModificationSheet extends ItemSheetMixin(
   sheets.ItemSheetV2,
 ) {
   static DEFAULT_OPTIONS = {
-    actions: {},
     form: { submitOnChange: true },
     window: { controls: [], resizable: true, frame: true },
     position: { width: 600, height: 600 },

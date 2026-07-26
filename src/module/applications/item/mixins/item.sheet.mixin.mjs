@@ -11,6 +11,13 @@ export default function ItemSheetMixin(Base) {
       EDIT: 2,
     };
 
+    static DEFAULT_OPTIONS = {
+      actions: {
+        manageQuality: DGNSItemSheet.#onManageQuality,
+        manageEffect: DGNSItemSheet.#onManageEffect,
+      },
+    };
+
     _mode = this.constructor.MODES.PLAY;
     _dropdownState = {};
 
@@ -46,10 +53,10 @@ export default function ItemSheetMixin(Base) {
         const toggle = document.createElement("dgns-slidetoggle");
         toggle.checked = this._mode === this.constructor.MODES.EDIT;
         toggle.classList.add("mode-slider");
-        toggle.dataset.tooltip = "UI.SHEETMODES.play";
+        toggle.dataset.tooltip = "DGNS.UI.SHEETMODES.play";
         toggle.setAttribute(
           "aria-label",
-          game.i18n.localize("UI.SHEETMODES.play"),
+          game.i18n.localize("DGNS.UI.SHEETMODES.play"),
         );
         toggle.addEventListener("change", this._onChangeSheetMode.bind(this));
         toggle.addEventListener("dblclick", (event) => event.stopPropagation());
@@ -77,6 +84,10 @@ export default function ItemSheetMixin(Base) {
       return context;
     }
 
+    /**
+     * @this
+     * @param {} html
+     */
     activateListeners(html) {
       html.querySelectorAll(".section-dropdown").forEach((sectionEl) => {
         const sectionId = sectionEl.dataset.section;
@@ -101,6 +112,12 @@ export default function ItemSheetMixin(Base) {
           this._dropdownState[sectionId] = !isCollapsed;
         });
       });
+
+      html.querySelectorAll(".quality-input").forEach((input) => {
+        input.addEventListener("change", (event) => {
+          DGNSItemSheet.#onManageQuality.call(this, event, event.currentTarget);
+        });
+      });
     }
 
     async _onChangeSheetMode(event) {
@@ -109,7 +126,7 @@ export default function ItemSheetMixin(Base) {
 
       // TODO: Change the localization strings
       const label = game.i18n.localize(
-        `UI.SHEETMODES.${toggle.checked ? "edit" : "play"}`,
+        `DGNS.UI.SHEETMODES.${toggle.checked ? "edit" : "play"}`,
       );
       toggle.dataset.tooltip = label;
       toggle.setAttribute("aria-label", label);
@@ -152,7 +169,48 @@ export default function ItemSheetMixin(Base) {
         console.log(err);
       }
     }
-  };
 
-  // Changeable background
+    /* ---------------------------------- */
+    /*        Common sheet methods        */
+    /* ---------------------------------- */
+
+    static async #onManageQuality(event, target) {
+      console.log(`onManageQuality mixin fired`);
+      console.log(this);
+      if (event) event.preventDefault();
+      let { field = null, value = null } = {};
+
+      const action = target.dataset.type;
+      const qualityKey = target.closest(".quality")?.dataset.qualityKey;
+
+      if (action === "update") {
+        field = target.dataset.field;
+        value = target.value;
+      }
+
+      return await this.document._manageQualities(
+        action,
+        qualityKey,
+        field,
+        value,
+      );
+    }
+
+    /* ---------------------------------- */
+    /*               Effects              */
+    /* ---------------------------------- */
+
+    /**
+     * Manage effect on Actor's side.
+     * @param {*} event
+     * @param {*} target
+     * @returns
+     */
+    static async #onManageEffect(event, target) {
+      if (event) event.preventDefault();
+      const action = target.dataset.type;
+      const effectId = target.closest(".effect")?.dataset.effectId;
+      return await this.item._manageEffect(action, effectId);
+    }
+  };
 }

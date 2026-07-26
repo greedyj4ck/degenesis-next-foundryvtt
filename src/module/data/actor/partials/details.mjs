@@ -19,10 +19,10 @@ export default class DetailsFields {
   static get details() {
     return {
       details: new SchemaField({
-        age: new StringField({ label: "DGNS.Age" }),
-        sex: new StringField({ label: "DGNS.Sex" }),
-        height: new StringField({ label: "DGNS.Height" }),
-        weight: new StringField({ label: "DGNS.Weight" }),
+        age: new StringField({ label: "DGNS.GENERAL.age" }),
+        sex: new StringField({ label: "DGNS.GENERAL.sex" }),
+        height: new StringField({ label: "DGNS.GENERAL.height" }),
+        weight: new StringField({ label: "DGNS.GENERAL.weight" }),
         experience: new SchemaField({
           current: new NumberField({
             integer: true,

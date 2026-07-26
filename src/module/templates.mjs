@@ -1,4 +1,7 @@
-/** Function that preload necessary templates */
+/**
+ * Helper function for preloading all necessary handlebars templates.
+ * @returns {function} foundry.applications.handlebars.loadTemplates
+ */
 
 export async function preloadHandlebarsTemplates() {
   const partials = [
@@ -18,6 +21,9 @@ export async function preloadHandlebarsTemplates() {
     // Combat specific templates
     "systems/degenesisnext/templates/shared/actor/combat/weapon.hbs",
     "systems/degenesisnext/templates/shared/actor/combat/armor.hbs",
+
+    // Group specific templatest
+    "systems/degenesisnext/templates/actor/group/milestone.hbs",
   ];
 
   const paths = {};

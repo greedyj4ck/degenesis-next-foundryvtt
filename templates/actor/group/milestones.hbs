@@ -1,0 +1,80 @@
+<section class="sheet-section tab milestones  {{tab.cssClass}} scrollable" data-group="main" data-tab="milestones">
+    <div class="document-table inventory-group">
+        <div class="header">
+            <div class="name">Milestones</div>
+            <div class="transition">
+                <svg class="line">
+                    <line x1="0" y1="50%" x2="75%" y2="50%"></line>
+                    <line x1="75%" y1="50%" x2="100%" y2="100%"></line>
+                </svg>
+            </div>
+
+            <div class="legends">
+                <div class="field achieved">Achieved</div>
+                <div class="field scars">Scars</div>
+                <div class="field ego">Ego</div>
+                <div class="field controls">
+                    <a data-action="createMilestone"><i class="fa-solid fa-plus"></i></a>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="entries">
+            {{#each system.milestones as |milestone i|}}
+                <div class="entry item collapsible" data-drag data-item-id="{{milestone.id}}"
+                    data-expand-id="{{milestone.id}}" data-action="openMilestoneContextMenu">
+
+                    <div class="entry-row">
+                        <div class="field name">
+                            <a class="caption" data-action="editItem">{{milestone.label}}</a>
+                        </div>
+
+                        <div class="field achieved">
+                            <input class="checkbox-diamond" type="checkbox"
+                                name="{{concat "system.milestones." i ".achieved"}}" {{checked milestone.achieved}} />
+                        </div>
+                        <div class="field scars">
+                            <input class="checkbox-diamond" type="checkbox"
+                                name="{{concat "system.milestones." i ".awardedScar"}}"
+                                {{checked milestone.awardedScar}} />
+
+                        </div>
+                        <div class="field ego">
+                            <input class="checkbox-diamond" type="checkbox"
+                                name="{{concat "system.milestones." i ".awardedEgo"}}"
+                                {{checked milestone.awardedEgo}} />
+
+                        </div>
+                        <div class="field controls">
+
+                            {{!--        <a data-action="toggleEquipped">
+                                <i class="fa-solid fa-shield-halved {{#if item.system.equipped}}active{{/if}}"></i>
+                            </a>
+                            <a data-action="toggleDropped">
+                                <i class="fa-solid fa-sack-xmark {{#if item.system.dropped}}active{{/if}}"></i></a> --}}
+                            <a data-action="toggleExpanded"><i class="fa-solid fa-square-caret-down"></i></a>
+                            <a data-action="openItemMenu"> <i class="fa-solid fa-ellipsis-vertical"></i></a>
+
+                        </div>
+                    </div>
+
+
+
+
+                    <div class="entry-row entry-dropdown collapsible-content">
+                        {{> "dgns.group.milestone" milestone idx=i edit=@root.isEditMode editable=@root.editable}}
+                    </div>
+
+
+
+
+                </div>
+
+
+
+            {{/each}}
+        </div>
+    </div>
+</section>

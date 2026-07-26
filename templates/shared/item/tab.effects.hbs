@@ -23,26 +23,31 @@
                 <div class="entries">
                     {{#each category.effects as |effect|}}
                         <div class="entry effect" data-effect-id="{{effect.id}}">
-                            <div class="field image">
-                                <img src="{{effect.img}}" />
+
+                            <div class="entry-row">
+                                <div class="field image">
+                                    <img src="{{effect.img}}" />
+                                </div>
+                                <div class="field name">
+                                    <div class="caption">{{effect.name}}</div>
+                                    <div class="subcaption">{{effect.name}}</div>
+                                </div>
+                                <div class="field source">{{effect.source}}</div>
+                                <div class="field controls">
+                                    <a data-action="manageEffect" data-type="toggle">
+                                        <i
+                                            class="fas {{#if effect.disabled}}fa-toggle-off{{else}}fa-toggle-on active{{/if}}"></i>
+                                    </a>
+                                    <a data-action="manageEffect" data-type="edit" title="Edytuj">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a data-action="manageEffect" data-type="delete" title="Usuń">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
                             </div>
-                            <div class="field name">
-                                <div class="caption">{{effect.name}}</div>
-                                <div class="subcaption">{{effect.name}}</div>
-                            </div>
-                            <div class="field source">{{effect.source}}</div>
-                            <div class="field controls">
-                                <a data-action="manageEffect" data-type="toggle">
-                                    <i
-                                        class="fas {{#if effect.disabled}}fa-toggle-off{{else}}fa-toggle-on active{{/if}}"></i>
-                                </a>
-                                <a data-action="manageEffect" data-type="edit" title="Edytuj">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <a data-action="manageEffect" data-type="delete" title="Usuń">
-                                    <i class="fas fa-trash"></i>
-                                </a>
-                            </div>
+
+
                         </div>
                     {{/each}}
                 </div>

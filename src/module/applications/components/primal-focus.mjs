@@ -91,7 +91,7 @@ export default class PrimalFocusSwitch extends StyleSheetMixin(
     const title = document.createElement("div");
     title.className = "mode-title";
 
-    title.innerHTML = game.i18n.localize("UI.TITLES.primalFocus");
+    title.innerHTML = game.i18n.localize("DGNS.UI.TITLES.primalFocus");
 
     const container = document.createElement("div");
     container.className = "mode-switch";

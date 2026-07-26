@@ -14,7 +14,7 @@ import {
 import { preloadHandlebarsTemplates } from "./module/templates.mjs";
 import { registerHandlebarsHelpers } from "./module/handlebars.mjs";
 
-import { DEGENESIS } from "./module/config.mjs";
+import { SYSTEM } from "./module/config/system.mjs";
 
 import hooks from "./module/hooks/_module.mjs";
 
@@ -29,7 +29,8 @@ import * as dataModels from "./module/data/_module.mjs";
 import { DGNSRoll, DGNSCombinationRoll } from "./module/dice/_module.mjs";
 
 // V13 Compatibility layer
-const { Actors, Items } = foundry.documents.collections;
+const { DocumentSheetConfig } = foundry.applications.apps;
+const { Actors, Items, Effects } = foundry.documents.collections;
 const { ActorSheet, ItemSheet } = foundry.appv1.sheets;
 
 /* -------------------------------------------- */
@@ -44,7 +45,7 @@ globalThis.degenesis = {
 
 //CONFIG.debug.hooks = true;
 
-CONFIG.DEGENESIS = DEGENESIS;
+CONFIG.DEGENESIS = SYSTEM;
 
 CONFIG.Dice.rolls = [Roll, DGNSRoll];
 CONFIG.Dice.DGNSRoll = DGNSRoll;
@@ -53,10 +54,12 @@ CONFIG.Dice.DGNSRoll = DGNSRoll;
 CONFIG.Actor.documentClass = documents.DGNSActor;
 CONFIG.Item.documentClass = documents.DGNSItem;
 CONFIG.ChatMessage.documentClass = documents.DGNSChatMessage;
+CONFIG.ActiveEffect.documentClass = documents.DGNSActiveEffect;
 
 // Configuring data models
 CONFIG.Actor.dataModels = dataModels.actor.config;
 CONFIG.Item.dataModels = dataModels.item.config;
+CONFIG.ActiveEffect.dataModels = dataModels.effect.config;
 
 // Overriding foundry applications with custom ones
 CONFIG.ui.pause = applications.ui.DGNSGamePause;
@@ -89,7 +92,7 @@ Hooks.once("init", async function () {
   };
 
   // Register system settings and keybindings
-  //registerSystemSettings();
+  registerSystemSettings();
   //registerSystemKeybindings();
 
   // Handling compendiums
@@ -221,6 +224,20 @@ Hooks.once("init", async function () {
     },
   });
 
+  DocumentSheetConfig.registerSheet(
+    ActiveEffect,
+    "degenesis",
+    applications.effect.DGNSEffectConfig,
+    {
+      types: ["base", "modification"],
+      makeDefault: true,
+      themes: {
+        dark: "SETTINGS.UI.FIELDS.colorScheme.dark",
+        light: "SETTINGS.UI.FIELDS.colorScheme.light",
+      },
+    },
+  );
+
   hooks();
 
   // SETTING FONTS FOR USAGE (COULD BE REPLACED WITH CSS?)
@@ -246,13 +263,14 @@ Hooks.once("init", async function () {
 }); */
 
 // HOOK IS FIRED ON SETUP STAGE
-Hooks.on("setup", () => {
+// !deprecated  ?
+/* Hooks.on("setup", () => {
   for (let group in DEGENESIS) {
     for (let key in DEGENESIS[group])
       if (typeof DEGENESIS[group][key] == "string")
         DEGENESIS[group][key] = game.i18n.localize(DEGENESIS[group][key]);
   }
-});
+}); */
 
 // REGISTER ALL OTHER HOOKS
 // hooks();

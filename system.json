@@ -7,6 +7,7 @@
     "minimum": "14",
     "verified": "14"
   },
+  "socket": true,
   "authors": [
     {
       "name": "Greedyj4ck",
@@ -124,6 +125,9 @@
       "shield": {},
       "transportation": {},
       "weapon": {}
+    },
+    "ActiveEffect": {
+      "modification": {}
     }
   }
 }

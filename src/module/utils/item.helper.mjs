@@ -1,19 +1,26 @@
 //todo: move to system config and retrieve
-const ICONS_PATH = "systems/degenesisnext/assets/icons/items";
+const ICONS_PATH = "systems/degenesisnext/assets/icons/_defaults/";
 
 /**
  * Todo: add all item definitions later.
  */
 export const ITEM_TEMPLATES = {
+  default: {
+    img: `item.svg`,
+  },
+
   potential: {
-    img: `${ICONS_PATH}/potentials/common.svg`,
+    img: `potential.svg`,
     system: {
       origin: "common",
     },
   },
-  default: {
-    img: `${ICONS_PATH}/default.svg`,
-  },
+
+  culture: { img: `culture.svg` },
+  concept: { img: `concept.svg` },
+  cult: { img: `cult.svg` },
+  modification: { img: `modification.svg` },
+  weapon: { img: `weapon.svg` },
 };
 
 export const ItemHelper = {
@@ -33,7 +40,7 @@ export const ItemHelper = {
     return {
       name: name || defaultName,
       type: type,
-      img: template.img,
+      img: ICONS_PATH + template.img,
       system: { ...template.system, ...customData },
     };
   },

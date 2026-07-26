@@ -1,8 +1,13 @@
 <section class="tab qualities {{tab.cssClass}} scrollable" data-group="main" data-tab="qualities">
 
+
+
+
+
     <div class="qualities-grid">
         {{#each qualities as |quality key| }}
-            <fieldset class="quality" data-quality-key="{{quality.key}}">
+
+            <fieldset class="quality {{#if quality.injectedFrom}}injected{{/if}}" data-quality-key="{{quality.key}}">
                 <legend>{{localize quality.label}}
                     <a class="quality-control" data-action="manageQuality" data-type="toggle">
                         <i class="fas {{#if quality.enabled}}fa-toggle-on{{else}}fa-toggle-off{{/if}}"></i>

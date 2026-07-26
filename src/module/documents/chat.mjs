@@ -10,7 +10,7 @@ export default class DGNSChatMessage extends ChatMessage {
 
   // Getter for grabbing the custom chat messages types
   get customType() {
-    return this.getFlag("degenesisnext", "type") ?? "default";
+    return this.getFlag(CONFIG.DEGENESIS.id, "type") ?? "default";
   }
 
   /**
@@ -22,7 +22,7 @@ export default class DGNSChatMessage extends ChatMessage {
       speaker: this.speaker,
       isGM: game.user.isGM,
       isAuthor: this.isAuthor,
-      ...(this.getFlag("degenesisnext", "actionData") ?? {}),
+      ...(this.getFlag(CONFIG.DEGENESIS.id, "actionData") ?? {}),
     };
   }
 
@@ -42,12 +42,13 @@ export default class DGNSChatMessage extends ChatMessage {
     return el;
   }
 
-  // -- Factory --
-
   /**
-   * @param {string} type        - Must match a key in TEMPLATES
-   * @param {object} actionData  - Arbitrary payload passed to the template
-   * @param {object} [data]      - Extra ChatMessage fields
+   *
+   * Creating actions for chat rows.
+   * @param {*} type matching key in TEMPLATES
+   * @param {*} actionData payload
+   * @param {*} data extra fields
+   * @returns
    */
   static async createAction(type, actionData, data = {}) {
     return this.create({

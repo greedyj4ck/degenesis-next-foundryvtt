@@ -34,6 +34,11 @@
     --menu-background: var(--dgns-ui-background);
     --input-background-color: var(--dgns-ui-background);
 
+    input {
+      --input-background-color: var(--dgns-ui-background);
+      --input-text-color: var(--dgns-ui-primary);
+    }
+
     // Utilities
     --hr-gradient: linear-gradient(
       90deg,

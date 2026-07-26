@@ -91,7 +91,7 @@ export default class FaithWillSwitch extends StyleSheetMixin(
     const title = document.createElement("div");
     title.className = "mode-title";
 
-    title.innerHTML = game.i18n.localize("UI.TITLES.faithWill");
+    title.innerHTML = game.i18n.localize("DGNS.UI.TITLES.faithWill");
 
     const container = document.createElement("div");
     container.className = "mode-switch";

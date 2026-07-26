@@ -620,4 +620,63 @@
 
   section.inventory {
   }
+
+  /* --------- History / Group -------- */
+
+  section.group {
+    padding-top: 5px;
+    fieldset {
+      @include controls.fieldset;
+
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+
+      legend {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        button {
+          margin-left: 5px;
+        }
+      }
+    }
+    .row {
+      display: flex;
+      flex-direction: row;
+      &.header {
+        max-height: 150px;
+
+        .image {
+          width: 150px;
+          height: 150px;
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          .border {
+            z-index: 10;
+            position: absolute;
+          }
+
+          .content {
+            width: 130px;
+            height: 130px;
+            position: relative;
+            margin: 10px 0;
+          }
+        }
+      }
+    }
+    .left {
+      display: flex;
+      flex: 1;
+    }
+
+    .right {
+      flex: 1;
+    }
+  }
 }

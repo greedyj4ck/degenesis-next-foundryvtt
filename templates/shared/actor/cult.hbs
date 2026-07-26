@@ -2,7 +2,7 @@
     {{#if cult}}
         <div class="controls">
             <label class="header">
-                {{#if (cult.isClan)}}{{localize "DGNS.Clan"}}{{else}}{{localize "DGNS.Cult"}}{{/if}}</label>
+                {{#if (cult.isClan)}}{{localize "DGNS.Clan"}}{{else}}{{localize "DGNS.GENERAL.cult"}}{{/if}}</label>
             {{#if (sheetEditMode mode) }}
                 <!-- todo: add proper styilng -->
                 <button type="button" data-action="removeLinkedItem" data-item-type="cult" class="remove-cult">
@@ -18,7 +18,7 @@
         </div>
     {{else}}
         <div class="controls">
-            <label class="header">{{localize "DGNS.Cult"}}</label>
+            <label class="header">{{localize "DGNS.GENERAL.cult"}}</label>
         </div>
         <div class="icon">
             <div class="drop-placeholder"></div>

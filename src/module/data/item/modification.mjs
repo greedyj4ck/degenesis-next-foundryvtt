@@ -14,6 +14,7 @@ const {
   ArrayField,
   IntegerSortField,
   DocumentIdField,
+  DocumentUUIDField,
   ForeignDocumentField,
 } = foundry.data.fields;
 
@@ -40,13 +41,12 @@ export default class ModData extends foundry.abstract.TypeDataModel {
       }),
 
       // ItemId of document where mod is beeing used.
-      mounted: new ForeignDocumentField(BaseItem, {
-        idOnly: false,
-        required: false,
+      // !deprecated, due to compendiums link should be severed?
+      mounted: new DocumentUUIDField({
         nullable: true,
       }),
 
-      slotcost: new NumberField({
+      slotCost: new NumberField({
         label: "DGNS.SlotCost",
         initial: 1,
         min: 0,

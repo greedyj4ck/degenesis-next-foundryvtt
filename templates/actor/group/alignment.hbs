@@ -1,0 +1,62 @@
+<section class="sheet-section tab alignment  {{tab.cssClass}} scrollable" data-group="main" data-tab="alignment">
+    <div class="alignment-container"></div>
+
+    <fieldset class="alignment">
+        <legend>{{localize alignmentData.label}}</legend>
+
+        <div class="alignment-description">
+            {{localize alignmentData.description}}
+        </div>
+
+        <div class="alignment-effects-container">
+
+            <fieldset class="affinity data">
+
+                <legend>{{localize "DGNS.ALIGNMENT.affinity"}}</legend>
+                <div class="concepts">
+
+                    <ul>
+                        {{#each alignmentData.affinity.concepts as |concept| }}
+                            <li><i class="di di-concept-the-{{concept}}"></i>
+                                {{localizeConcat "DGNS.CONCEPT." concept  }}
+                            </li>
+                        {{/each}}
+                    </ul>
+
+
+                </div>
+                <div class="effect">{{localize alignmentData.affinity.label}}</div>
+
+            </fieldset>
+
+            <fieldset class="aversion data">
+                <legend>{{localize "DGNS.ALIGNMENT.aversion"}}</legend>
+                <div class="concepts">
+
+                    <ul>
+                        {{#each alignmentData.aversion.concepts as |concept| }}
+                            <li><i class="di di-concept-the-{{concept}}"></i>
+                                {{localizeConcat "DGNS.CONCEPT." concept  }}
+                            </li>
+                        {{/each}}
+                    </ul>
+
+
+                </div>
+                <div class="effect">{{localize alignmentData.aversion.label}}</div>
+
+            </fieldset>
+
+            <fieldset class="constellation data">
+                <legend>{{localize "DGNS.ALIGNMENT.constellation"}}</legend>
+                <div class="concepts alignment"><i class="di di-alignment-{{system.alignment}}"></i> </div>
+                <div class="effect">{{localize alignmentData.constellation.label}}</div>
+
+            </fieldset>
+
+        </div>
+
+    </fieldset>
+
+    </div>
+</section>

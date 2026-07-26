@@ -79,6 +79,7 @@
 /*      Vendor styles (3rd party)     */
 /* ---------------------------------- */
 /* Foundry default variables / styles override */
+/* Foundry default variables / styles override */
 @layer foundry {
   * {
     scrollbar-width: unset;
@@ -250,7 +251,8 @@
     white-space: nowrap;
     font-size: var(--font-size-12);
   }
-  button {
+  button,
+  a.button {
     --button-text-color: var(--dgns-ui-control-content);
     --button-background-color: var(--dgns-ui-control-bg);
     --button-border-color: var(--dgns-ui-control-border);
@@ -266,9 +268,81 @@
     text-shadow: none;
     overflow: hidden;
   }
-  button:focus {
+  button:focus,
+  a.button:focus {
     box-shadow: none;
     outline-color: var(--dgns-ui-active-control-border);
+  }
+  select {
+    appearance: base-select;
+    font-family: var(--font-sans);
+    font-size: var(--font-size-13);
+    font-weight: 600;
+    color: var(--dgns-ui-primary);
+    text-transform: uppercase;
+    background-color: var(--dgns-ui-control-bg);
+    border: var(--dgns-line-width) solid rgba(from var(--dgns-ui-secondary) r g b/0.3);
+    box-sizing: border-box;
+    line-height: 1;
+    align-items: center;
+  }
+  select option:checked,
+  select option:focus,
+  select option:hover {
+    color: var(--dgns-ui-accent);
+    outline: 1px solid;
+  }
+  select::picker(select) {
+    scrollbar-width: thin;
+    scrollbar-color: var(--dgns-ui-primary) transparent;
+    appearance: base-select;
+    color: var(--dgns-ui-primary);
+    font-size: var(--font-size-12);
+    border: var(--dgns-line-width) solid var(--dgns-ui-secondary);
+    border-radius: 5px;
+    transition: opacity 225ms ease-in-out, transform 225ms ease-in-out;
+    transform-origin: top;
+    transform: translateY(0);
+  }
+  @starting-style {
+    select::picker(select) {
+      transform: translateY(-0.25rem) scale(0.95);
+      opacity: 0;
+    }
+  }
+  input[type=checkbox] {
+    aspect-ratio: 1;
+    width: round(to-zero, 24px / 1.4142135624, 2px);
+    height: round(to-zero, 24px / 1.4142135624, 2px);
+    transform: rotate(45deg);
+    border: calc(24px / 14 + 1px) solid var(--dgns-ui-primary);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    place-content: center;
+  }
+  input[type=checkbox]::after {
+    display: none;
+  }
+  input[type=checkbox]::before {
+    border-radius: 0;
+    transform: scale(0);
+    background-color: var(--dgns-ui-primary);
+  }
+  input[type=checkbox]:checked::before {
+    content: "";
+    transform: scale(calc((24px - 16px) / 24px));
+  }
+  .form-group label {
+    font-family: var(--font-sans);
+    text-transform: uppercase;
+    font-size: var(--font-size-12);
+    color: var(--dgns-ui-primary);
+  }
+  .form-group .hint {
+    font-family: var(--font-serif);
+    font-size: var(--font-size-14);
   }
   #pause {
     z-index: 20 !important;
@@ -459,6 +533,12 @@
     --color-text-primary: var(--dgns-ui-primary);
     --menu-background: var(--dgns-ui-background);
     --input-background-color: var(--dgns-ui-background);
+  }
+  .theme-dark input {
+    --input-background-color: var(--dgns-ui-background);
+    --input-text-color: var(--dgns-ui-primary);
+  }
+  .theme-dark {
     --hr-gradient: linear-gradient(
       90deg,
       transparent 0%,
@@ -1085,7 +1165,7 @@ svg path.line {
     opacity: 0;
   }
   .application.sheet .tabs a.active::after {
-    opacity: 0.5;
+    opacity: 0.4;
   }
   .application.sheet .tabs.vertical {
     height: fit-content;
@@ -1504,7 +1584,6 @@ svg path.line {
   }
 }
 
-/* Foundry default variables / styles override */
 @layer dgns.sheets.character {
   /* -------------------------------------------------------------------------- */
   /*                             Character sheet                                */
@@ -2033,6 +2112,66 @@ svg path.line {
     flex: 1;
   }
   /* -------------------------------- Inventory ------------------------------- */
+  /* --------- History / Group -------- */
+  section.group {
+    padding-top: 5px;
+  }
+  section.group fieldset {
+    border: var(--dgns-line-width) solid rgba(from var(--dgns-ui-secondary) r g b/0.2);
+    padding: 5px;
+  }
+  section.group fieldset legend {
+    font-family: var(--font-serif);
+    font-size: var(--font-size-14);
+    letter-spacing: 0.15em;
+    text-align: center;
+    text-transform: uppercase;
+  }
+  section.group fieldset {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+  }
+  section.group fieldset legend {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  section.group fieldset legend button {
+    margin-left: 5px;
+  }
+  section.group .row {
+    display: flex;
+    flex-direction: row;
+  }
+  section.group .row.header {
+    max-height: 150px;
+  }
+  section.group .row.header .image {
+    width: 150px;
+    height: 150px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  section.group .row.header .image .border {
+    z-index: 10;
+    position: absolute;
+  }
+  section.group .row.header .image .content {
+    width: 130px;
+    height: 130px;
+    position: relative;
+    margin: 10px 0;
+  }
+  section.group .left {
+    display: flex;
+    flex: 1;
+  }
+  section.group .right {
+    flex: 1;
+  }
 }
 /* 
     DEGENESIS@NEXT
@@ -2404,7 +2543,7 @@ svg path.line {
     width: round(to-zero, 26px / 1.4142135624, 2px);
     height: round(to-zero, 26px / 1.4142135624, 2px);
     transform: rotate(45deg);
-    border: calc(26px / 10 + 1px) solid var(--dgns-ui-primary);
+    border: calc(26px / 14 + 1px) solid var(--dgns-ui-primary);
     margin: 0;
     display: flex;
     justify-content: center;
@@ -2421,7 +2560,7 @@ svg path.line {
   }
   .application.sheet.dgns-weapon input[type=checkbox]:checked::before {
     content: "";
-    transform: scale(calc((26px - 18px) / 26px));
+    transform: scale(calc((26px - 16px) / 26px));
   }
   .application.sheet.dgns-weapon fieldset {
     border: var(--dgns-line-width) solid rgba(from var(--dgns-ui-secondary) r g b/0.2);
@@ -2507,6 +2646,9 @@ svg path.line {
     justify-content: center;
     position: relative;
   }
+  .application.sheet.dgns-weapon section.qualities .qualities-grid fieldset.injected {
+    border-color: var(--dgns-ui-accent);
+  }
   .application.sheet.dgns-weapon section.qualities label {
     text-align: right;
     font-family: var(--font-serif);
@@ -2554,6 +2696,270 @@ svg path.line {
   .application.sheet.dgns-weapon .checkbox {
     display: flex;
     flex: 1;
+  }
+}
+/* 
+    DEGENESIS@NEXT
+    -------------
+    Version  0.1
+
+   */
+@layer dgns.sheets.group {
+  .dgns-group select {
+    appearance: base-select;
+    font-family: var(--font-sans);
+    font-size: var(--font-size-13);
+    font-weight: 600;
+    color: var(--dgns-ui-primary);
+    text-transform: uppercase;
+    background-color: var(--dgns-ui-control-bg);
+    border: var(--dgns-line-width) solid rgba(from var(--dgns-ui-secondary) r g b/0.3);
+    box-sizing: border-box;
+    line-height: 1;
+    align-items: center;
+  }
+  .dgns-group select option:checked,
+  .dgns-group select option:focus,
+  .dgns-group select option:hover {
+    color: var(--dgns-ui-accent);
+    outline: 1px solid;
+  }
+  .dgns-group select::picker(select) {
+    scrollbar-width: thin;
+    scrollbar-color: var(--dgns-ui-primary) transparent;
+    appearance: base-select;
+    color: var(--dgns-ui-primary);
+    font-size: var(--font-size-12);
+    border: var(--dgns-line-width) solid var(--dgns-ui-secondary);
+    border-radius: 5px;
+    transition: opacity 225ms ease-in-out, transform 225ms ease-in-out;
+    transform-origin: top;
+    transform: translateY(0);
+  }
+  @starting-style {
+    .dgns-group select::picker(select) {
+      transform: translateY(-0.25rem) scale(0.95);
+      opacity: 0;
+    }
+  }
+  .dgns-group fieldset {
+    border: var(--dgns-line-width) solid rgba(from var(--dgns-ui-secondary) r g b/0.2);
+    padding: 5px;
+  }
+  .dgns-group fieldset legend {
+    font-family: var(--font-serif);
+    font-size: var(--font-size-14);
+    letter-spacing: 0.15em;
+    text-align: center;
+    text-transform: uppercase;
+  }
+  .dgns-group .group-sheet-header {
+    display: flex;
+    margin-bottom: 20px;
+    justify-content: center;
+    align-items: stretch;
+  }
+  .dgns-group .group-sheet-header .container-left {
+    flex: 1 1 0px;
+  }
+  .dgns-group .group-sheet-header .container-right {
+    flex: 1 1 0px;
+    display: flex;
+    flex-direction: column;
+    padding: 0 5px;
+    align-items: flex-end;
+    justify-content: flex-end;
+  }
+  .dgns-group .group-sheet-header .container-right .alignment {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .dgns-group .group-sheet-header .container-right .alignment .icon {
+    flex-grow: 1;
+    justify-content: center;
+    display: flex;
+  }
+  .dgns-group .group-sheet-header .container-right .alignment .control {
+    flex-grow: 0;
+  }
+  .dgns-group .group-sheet-header .container-right .alignment i {
+    font-size: 100px;
+    line-height: 0;
+  }
+  .dgns-group .group-sheet-header .container-middle {
+    display: flex;
+    flex-direction: row;
+    flex: 1 1 0px;
+    width: 100%;
+    justify-content: center;
+  }
+  .dgns-group .group-sheet-header .container-middle .image {
+    width: 160px;
+    height: 160px;
+    position: relative;
+  }
+  .dgns-group .group-sheet-header .container-middle .image .border {
+    --dgns-line-width: 0.5px;
+    pointer-events: none;
+    position: absolute;
+    z-index: 10;
+    transform: rotate(45deg);
+    scale: 0.9;
+  }
+  .dgns-group .group-sheet-header .container-middle .image .content {
+    width: 162px;
+    height: 162px;
+    position: relative;
+    scale: 1.12;
+    clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  }
+  .dgns-group section.members .row {
+    display: flex;
+  }
+  .dgns-group section.members .image {
+    width: 90px;
+    height: 90px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .dgns-group section.members .image .border {
+    z-index: 10;
+    position: absolute;
+  }
+  .dgns-group section.members .image .content {
+    width: 90px;
+    height: 90px;
+    position: relative;
+    margin: 10px 0;
+  }
+  .dgns-group section.members .data {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding-left: 10px;
+  }
+  .dgns-group section.members .data.stacked {
+    flex-direction: row;
+  }
+  .dgns-group section.members .data .entry {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    flex-grow: 1;
+    flex-basis: 0px;
+  }
+  .dgns-group section.members .data .entry.stacked {
+    flex-direction: column-reverse;
+  }
+  .dgns-group section.members .data .entry.stacked .label {
+    flex: 1 1 0;
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+  }
+  .dgns-group section.members .data .entry .separator {
+    font-size: 8px;
+    padding: 0 5px;
+  }
+  .dgns-group section.members .data .entry .label {
+    font-family: var(--font-serif);
+    text-transform: uppercase;
+    padding-right: 10px;
+  }
+  .dgns-group section.members .data .entry .image {
+    height: 60px;
+    width: 60px;
+    flex: 1 1 0;
+  }
+  .dgns-group section.alignment fieldset.alignment {
+    flex: 1 1 0px;
+    padding: 0 10px;
+    display: flex;
+    flex-direction: column;
+  }
+  .dgns-group section.alignment .alignment-description {
+    font-family: var(--font-serif);
+    text-align: justify;
+  }
+  .dgns-group section.alignment .alignment-effects-container {
+    margin: 5px 0 15px 0;
+    display: flex;
+    flex: 1 1 0px;
+    flex-direction: row;
+  }
+  .dgns-group section.alignment .alignment-effects-container > * {
+    display: flex;
+    flex: 1 1 0px;
+  }
+  .dgns-group section.alignment fieldset.data {
+    display: flex;
+    flex-direction: column;
+  }
+  .dgns-group section.alignment fieldset.data .concepts {
+    display: flex;
+    flex: 1 1 0px;
+    justify-content: center;
+    align-items: center;
+    font-family: var(--font-serif);
+    font-size: var(--font-size-16);
+    text-transform: uppercase;
+  }
+  .dgns-group section.alignment fieldset.data .concepts.alignment i {
+    font-size: 120px;
+    line-height: 0;
+  }
+  .dgns-group section.alignment fieldset.data .concepts i {
+    margin-right: 10px;
+    line-height: 0;
+    font-size: var(--font-size-24);
+  }
+  .dgns-group section.alignment fieldset.data .concepts ul {
+    padding: 0;
+  }
+  .dgns-group section.alignment fieldset.data .concepts li {
+    display: flex;
+    list-style: none;
+    align-items: center;
+    line-height: 150%;
+  }
+  .dgns-group section.alignment fieldset.data .effect {
+    display: flex;
+    flex: 1 1 0px;
+    max-height: 40px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: var(--font-size-12);
+    font-weight: 500;
+    padding-bottom: 5px;
+  }
+  .dgns-group section.milestones input[type=checkbox] {
+    aspect-ratio: 1;
+    width: round(to-zero, 24px / 1.4142135624, 2px);
+    height: round(to-zero, 24px / 1.4142135624, 2px);
+    transform: rotate(45deg);
+    border: calc(24px / 14 + 1px) solid var(--dgns-ui-primary);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    place-content: center;
+  }
+  .dgns-group section.milestones input[type=checkbox]::after {
+    display: none;
+  }
+  .dgns-group section.milestones input[type=checkbox]::before {
+    border-radius: 0;
+    transform: scale(0);
+    background-color: var(--dgns-ui-primary);
+  }
+  .dgns-group section.milestones input[type=checkbox]:checked::before {
+    content: "";
+    transform: scale(calc((24px - 16px) / 24px));
   }
 }
 /* 
@@ -2635,7 +3041,7 @@ svg path.line {
     width: round(to-zero, 26px / 1.4142135624, 2px);
     height: round(to-zero, 26px / 1.4142135624, 2px);
     transform: rotate(45deg);
-    border: calc(26px / 10 + 1px) solid var(--dgns-ui-primary);
+    border: calc(26px / 14 + 1px) solid var(--dgns-ui-primary);
     margin: 0;
     display: flex;
     justify-content: center;
@@ -2652,7 +3058,7 @@ svg path.line {
   }
   .application.sheet.dgns-modification input[type=checkbox]:checked::before {
     content: "";
-    transform: scale(calc((26px - 18px) / 26px));
+    transform: scale(calc((26px - 16px) / 26px));
   }
   .application.sheet.dgns-modification fieldset {
     border: var(--dgns-line-width) solid rgba(from var(--dgns-ui-secondary) r g b/0.2);

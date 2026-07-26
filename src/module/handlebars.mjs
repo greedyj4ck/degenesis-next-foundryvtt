@@ -1,4 +1,6 @@
 export async function registerHandlebarsHelpers() {
+  Handlebars.registerHelper("eq", (a, b) => a == b);
+
   Handlebars.registerHelper("sheetEditMode", function (mode) {
     return mode === 2 ? true : false;
   });

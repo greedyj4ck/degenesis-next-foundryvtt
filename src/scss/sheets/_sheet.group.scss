@@ -1,0 +1,263 @@
+@use "../colors";
+@use "partials";
+@use "partials/sheet.variables" as *;
+
+//@use "tables/";
+@use "../components/document.table";
+
+@use "../mixins/controls" as controls;
+
+@layer dgns.sheets.group {
+  .dgns-group {
+    select {
+      @include controls.select;
+    }
+
+    fieldset {
+      @include controls.fieldset;
+    }
+
+    // todo: cleanup the structure and make it similar to other sheets
+
+    .group-sheet-header {
+      display: flex;
+      margin-bottom: 20px;
+      justify-content: center;
+      align-items: stretch;
+
+      .container-left {
+        flex: 1 1 0px;
+      }
+
+      .container-right {
+        flex: 1 1 0px;
+        display: flex;
+        flex-direction: column;
+        padding: 0 5px;
+        align-items: flex-end;
+        justify-content: flex-end;
+
+        .alignment {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+
+          .icon {
+            flex-grow: 1;
+            justify-content: center;
+            display: flex;
+          }
+
+          .control {
+            flex-grow: 0;
+          }
+
+          i {
+            font-size: 100px;
+            line-height: 0;
+          }
+        }
+      }
+
+      .container-middle {
+        display: flex;
+        flex-direction: row;
+        flex: 1 1 0px;
+        width: 100%;
+        justify-content: center;
+
+        .image {
+          width: 160px;
+          height: 160px;
+          position: relative;
+
+          .border {
+            --dgns-line-width: 0.5px; //override to thin some elements
+            pointer-events: none;
+            position: absolute;
+            z-index: 10;
+            transform: rotate(45deg);
+            scale: 0.9;
+          }
+          .content {
+            width: 162px;
+            height: 162px;
+            position: relative;
+
+            scale: 1.12;
+            clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+          }
+        }
+      }
+    }
+
+    section.members {
+      .row {
+        display: flex;
+      }
+
+      // avatars
+      .image {
+        width: 90px;
+        height: 90px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .border {
+          z-index: 10;
+          position: absolute;
+        }
+
+        .content {
+          width: 90px;
+          height: 90px;
+          position: relative;
+          margin: 10px 0;
+        }
+      }
+      //data
+      .data {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        padding-left: 10px;
+
+        &.stacked {
+          flex-direction: row;
+        }
+
+        .entry {
+          display: inline-flex;
+          flex-direction: row;
+          align-items: center;
+
+          flex-grow: 1;
+          flex-basis: 0px;
+
+          &.stacked {
+            flex-direction: column-reverse;
+
+            .label {
+              flex: 1 1 0;
+              display: flex;
+              text-align: center;
+              align-items: center;
+              justify-content: center;
+            }
+          }
+
+          .separator {
+            font-size: 8px;
+            padding: 0 5px;
+          }
+
+          .label {
+            font-family: var(--font-serif);
+            text-transform: uppercase;
+            padding-right: 10px;
+          }
+          .value {
+          }
+
+          .image {
+            height: 60px;
+            width: 60px;
+
+            flex: 1 1 0;
+          }
+
+          .max {
+          }
+        }
+      }
+    }
+
+    section.alignment {
+      fieldset.alignment {
+        flex: 1 1 0px;
+        padding: 0 10px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .alignment-description {
+        font-family: var(--font-serif);
+        text-align: justify;
+      }
+
+      .alignment-effects-container {
+        margin: 5px 0 15px 0;
+        display: flex;
+        flex: 1 1 0px;
+        flex-direction: row;
+
+        > * {
+          display: flex;
+          flex: 1 1 0px;
+        }
+      }
+
+      fieldset.data {
+        display: flex;
+        flex-direction: column;
+
+        .concepts {
+          display: flex;
+          flex: 1 1 0px;
+          justify-content: center;
+          align-items: center;
+          font-family: var(--font-serif);
+          font-size: var(--font-size-16);
+          text-transform: uppercase;
+
+          &.alignment {
+            i {
+              font-size: 120px;
+              line-height: 0;
+            }
+          }
+
+          i {
+            margin-right: 10px;
+            line-height: 0;
+            font-size: var(--font-size-24);
+          }
+
+          ul {
+            padding: 0;
+          }
+
+          li {
+            display: flex;
+            list-style: none;
+            align-items: center;
+            line-height: 150%;
+          }
+        }
+
+        .effect {
+          display: flex;
+          flex: 1 1 0px;
+          max-height: 40px;
+          justify-content: center;
+          align-items: center;
+          text-align: center;
+          font-size: var(--font-size-12);
+          font-weight: 500;
+          padding-bottom: 5px;
+        }
+      }
+    }
+
+    section.history {
+    }
+
+    section.milestones {
+      input[type="checkbox"] {
+        @include controls.checkbox(24px);
+      }
+    }
+  }
+}

@@ -8,11 +8,15 @@ const { TextEditor } = foundry.applications.ux;
 
 import ActorSheetMixin from "./actor.sheet.mixin.mjs";
 
+import { Scars } from "../../logic/scars.mjs";
+
 export default class DGNSGroupSheet extends ActorSheetMixin(
   sheets.ActorSheetV2,
 ) {
   static DEFAULT_OPTIONS = {
-    actions: {},
+    actions: {
+      createMilestone: DGNSGroupSheet.prototype.onCreateMilestone,
+    },
     form: {
       submitOnChange: true,
     },
@@ -34,11 +38,32 @@ export default class DGNSGroupSheet extends ActorSheetMixin(
     groupHeader: {
       template: "systems/degenesisnext/templates/actor/group/header.hbs",
     },
-    /*  tabs: {
-      template:
-        "systems/degenesisnext/templates/actors/character.sheet/cs.tabs.hbs",
+    tabs: {
+      template: "systems/degenesisnext/templates/actor/group/tabs.hbs",
       scrollable: [""],
     },
+    members: {
+      template: "systems/degenesisnext/templates/actor/group/members.hbs",
+      scrollable: [""],
+    },
+    alignment: {
+      template: "systems/degenesisnext/templates/actor/group/alignment.hbs",
+      scrollable: [""],
+    },
+    milestones: {
+      template: "systems/degenesisnext/templates/actor/group/milestones.hbs",
+      scrollable: [""],
+    },
+    history: {
+      template: "systems/degenesisnext/templates/actor/group/history.hbs",
+      scrollable: [""],
+    },
+    inventory: {
+      template: "systems/degenesisnext/templates/actor/group/inventory.hbs",
+      scrollable: [""],
+    },
+
+    /*
     general: {
       template:
         "systems/degenesisnext/templates/actors/character.sheet/cs.general.hbs",
@@ -50,11 +75,24 @@ export default class DGNSGroupSheet extends ActorSheetMixin(
     },
   };
 
-  static TABS = [];
+  static TABS = {
+    main: {
+      initial: "members", // Set the initial tab
+      tabs: [
+        { id: "members", label: "DGNS.UI.TABS.members" },
+        { id: "alignment", label: "DGNS.UI.TABS.alignment" },
+        { id: "history", label: "DGNS.UI.TABS.history" },
+        /*  { id: "effects", label: "DGNS.UI.TABS.effects" }, */
+        { id: "milestones", label: "DGNS.UI.TABS.milestones" },
+        { id: "inventory", label: "DGNS.UI.TABS.inventory" },
+      ],
+    },
+  };
 
   /** Preparing sheet context */
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
+    const system = this.actor.system;
 
     context.document = this.document;
     context.system = this.document.system;
@@ -63,30 +101,60 @@ export default class DGNSGroupSheet extends ActorSheetMixin(
     context.mode = this._mode;
     context.isEditable = this.isEditable;
 
-    context.members = this.actor.system.members;
+    // Saved sorting mode
+    context.sortMode =
+      this.actor.getFlag(CONFIG.DEGENESIS.id, "inventorySortMode") || "manual";
+
+    // Inventory
+
+    context.inventory = this.actor._prepareInventory();
+    context.alignmentData = Scars.Alignments[system.alignment] ?? null;
+    context.milestones = this.document.system.milestones;
+    context.members = system.members;
+    context.membersConcepts = system.membersConcepts;
+    context.mainTabs = this._prepareTabs("main");
+
+    context.enriched = {};
+
+    console.log(`Milestone debug`);
+    console.log(context.milestones[0].description);
+
+    // Preparing expanded sections.
+
+    if (context.inventory?.groups) {
+      for (const group of context.inventory.groups) {
+        for (const item of group.items) {
+          item.expanded = await item._getChatData({ secrets: item.isOwner });
+          if (!this.expandedSections.has(item.id)) continue;
+
+          // clean up deleted items
+          if (!this.document.items.has(item.id)) {
+            this.expandedSections.delete(item.id);
+            continue;
+          }
+          // Grabbing state and data for expanded views
+          item.isExpanded = true;
+        }
+      }
+    }
+
+    console.log(`Context for group actor: ${this.name}`);
+    console.dir(context);
 
     return context;
   }
 
-  /*  async _preparePartContext(partId, context) {
-    switch (partId) {
-      case "general":
-        context.tab = context.tabs[partId];
-      case "stats":
-        context.tab = context.tabs[partId];
-      case "effects":
-        context.tab = context.tabs[partId];
-      case "combat":
-        context.tab = context.tabs[partId];
-      case "inventory":
-        context.tab = context.tabs[partId];
-      case "history":
-        context.tab = context.tabs[partId];
-        break;
-      default:
+  async _preparePartContext(partId, context) {
+    if (context.mainTabs?.[partId]) {
+      context.tab = context.mainTabs[partId];
+
+      if (partId === "history") {
+        context.subtabs = context.historyTabs;
+      }
     }
+
     return context;
-  } */
+  }
 
   getTabs() {
     let tabs = [];
@@ -124,5 +192,30 @@ export default class DGNSGroupSheet extends ActorSheetMixin(
   async _onDrop(event) {
     event.preventDefault();
     return super._onDrop(event);
+  }
+
+  /* ---------------------------------- */
+  /*            SHEET ACTIONS           */
+  /* ---------------------------------- */
+
+  async onCreateMilestone() {
+    const milestones = this.document.system.milestones ?? [];
+
+    console.log(`Adding new mielstone`);
+    console.log(milestones);
+
+    await this.document.update({
+      "system.milestones": [
+        ...milestones,
+        {
+          id: foundry.utils.randomID(),
+          label: "Milestone",
+          description: "description",
+          achieved: false,
+          awardedEgo: false,
+          awardedScar: false,
+        },
+      ],
+    });
   }
 }
