@@ -1,4 +1,11 @@
 <div class="concept" data-action="showConcept">
+
+    {{#if concept.system.backgroundImage}}
+        <div class="card background">
+            <img src="{{concept.system.backgroundImage}}" />
+        </div>
+    {{/if}}
+
     {{#if concept}}
         <div class="controls">
             <label class="header">{{localize "DGNS.GENERAL.concept"}}</label>

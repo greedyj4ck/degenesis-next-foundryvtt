@@ -20,7 +20,7 @@
     .field-value {
       width: calc(var(--font-size-20) * 2);
       height: calc(var(--font-size-20) * 2);
-      border: 1px solid var(--dgns-ui-secondary);
+      border: 1px solid var(--dgns-color-secondary);
       border-radius: 5px;
       display: flex;
       justify-content: center;
@@ -30,7 +30,7 @@
       aspect-ratio: 1;
 
       font-size: var(--font-size-20);
-      font-weight: 700;
+      font-weight: var(--dgns-weight-subheader-sans);
     }
 
     label {
@@ -51,7 +51,7 @@
     grid-auto-rows: 100px;
 
     .mod {
-      border: 1px solid var(--dgns-ui-secondary);
+      border: 1px solid var(--dgns-color-secondary);
       border-radius: 5px;
       display: flex;
       flex: 1;

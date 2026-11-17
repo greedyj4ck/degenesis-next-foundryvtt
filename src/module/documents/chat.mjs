@@ -17,18 +17,23 @@ export default class DGNSChatMessage extends ChatMessage {
    * Build the template context.
    */
   async _getTemplateData() {
-    return {
+    const context = {
       message: this,
       speaker: this.speaker,
+      actor: this.speakerActor ?? null,
       isGM: game.user.isGM,
       isAuthor: this.isAuthor,
       ...(this.getFlag(CONFIG.DEGENESIS.id, "actionData") ?? {}),
     };
+
+    return context;
   }
 
   /** Using base Foundry message and inserting proper template  */
   async renderHTML() {
     const el = await super.renderHTML();
+
+    this.#applyTheme(el);
 
     const template =
       DGNSChatMessage.TEMPLATES[this.customType] ??
@@ -58,5 +63,13 @@ export default class DGNSChatMessage extends ChatMessage {
       },
       ...data,
     });
+  }
+
+  #applyTheme(html) {
+    const scheme =
+      game.settings.get("core", "uiConfig").colorScheme.applications || "dark";
+    html.classList.add("themed");
+    html.classList.remove("theme-light", "theme-dark");
+    html.classList.add(`theme-${scheme}`);
   }
 }

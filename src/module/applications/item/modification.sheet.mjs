@@ -1,5 +1,5 @@
 import ItemSheetMixin from "./mixins/item.sheet.mixin.mjs";
-import { Qualities } from "../../logic/quality.mjs";
+import { Qualities } from "../../logic/quality.logic.mjs";
 
 const { api, sheets } = foundry.applications;
 const { TextEditor } = foundry.applications.ux;
@@ -109,8 +109,6 @@ export default class DegenesisModificationSheet extends ItemSheetMixin(
     console.log(`Modification Sheet | Context`);
     console.log(context);
 
-    console.log(`Modification Sheet | Qualities`);
-    console.log(context.system.qualities);
     return context;
   }
 

@@ -8,6 +8,7 @@
  * @param {typeof HTMLElement} Base  The base class being mixed.
  * @returns {typeof AdoptedStyleSheetElement}
  */
+
 export default function StyleSheetMixin(Base) {
   return class StyleSheetElement extends Base {
     /**

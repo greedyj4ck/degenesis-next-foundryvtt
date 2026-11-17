@@ -1,4 +1,5 @@
-import { Qualities } from "../../logic/quality.mjs";
+import { Qualities } from "../../logic/quality.logic.mjs";
+import { Skills } from "../../logic/skills.logic.mjs";
 
 const { api, sheets } = foundry.applications;
 
@@ -118,6 +119,8 @@ export default class DegenesisWeaponSheet extends ItemSheetMixin(
         };
       }),
 
+      skills: Skills.list,
+
       effects: await this.item._prepareEffects(),
       modifications: this.document.system.modifications,
 
@@ -132,11 +135,6 @@ export default class DegenesisWeaponSheet extends ItemSheetMixin(
       },
     });
 
-    console.log(`WeaponSheet | Context`);
-    console.log(context);
-
-    console.log(`WeaponSheet | Qualities`);
-    console.log(context.system.qualities);
     return context;
   }
 
@@ -175,9 +173,6 @@ export default class DegenesisWeaponSheet extends ItemSheetMixin(
   /* ---------------------------------- */
 
   async _onDrop(event) {
-    console.log(`Weapon _onDropEvent`);
-    console.log(event);
-
     const data = TextEditor.getDragEventData(event);
     if (data.type !== "Item") return super._onDrop(event);
 

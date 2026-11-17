@@ -25,9 +25,9 @@
 
         font-family: var(--font-sans);
         font-size: var(--font-size-14);
-        color: var(--dgns-ui-primary);
+        color: var(--dgns-text-color-primary);
 
-        font-weight: 800;
+        font-weight: var(--dgns-weight-header-sans);
 
         field-sizing: content;
 
@@ -36,7 +36,7 @@
         }
 
         &:focus {
-          outline-color: var(--dgns-ui-primary);
+          outline-color: var(--dgns-color-primary);
         }
       }
 

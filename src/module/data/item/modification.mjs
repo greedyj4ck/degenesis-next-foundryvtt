@@ -3,7 +3,7 @@
  * Mods should be items with ActiveEffects and then linked to Weapons by ForeignDocumentField.
  */
 import GeneralFields from "./partials/general.mjs";
-import { Modification } from "../../logic/modification.mjs";
+import { Modification } from "../../logic/modification.logic.mjs";
 
 const {
   SchemaField,

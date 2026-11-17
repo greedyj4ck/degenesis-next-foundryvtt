@@ -49,4 +49,6 @@ export async function registerHandlebarsHelpers() {
     parts.pop(); // remove Handlebars options object
     return game.i18n.localize(parts.join(""));
   });
+
+  Handlebars.registerHelper("eq", (a, b) => a === b);
 }

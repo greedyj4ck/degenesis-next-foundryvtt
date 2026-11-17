@@ -1,13 +1,13 @@
 @use "./scrollbar" as sc;
 
 @mixin input {
-  font-family: var(--font-sans);
-  font-size: var(--font-size-13);
-  font-weight: 600;
-  color: var(--dgns-ui-primary);
-  background-color: var(--dgns-ui-control-bg);
+  font-family: var(--font-serif);
+  font-size: var(--font-size-16);
+  font-weight: 500;
+  color: var(--dgns-text-color-primary);
+  background-color: var(--dgns-control-bg-default);
   border: var(--dgns-line-width) solid
-    rgba(from var(--dgns-ui-secondary) r g b / 0.5);
+    rgba(from var(--dgns-color-secondary) r g b / 0.5);
 }
 
 @mixin select {
@@ -15,16 +15,20 @@
   font-family: var(--font-sans);
   font-size: var(--font-size-13);
   font-weight: 600;
-  color: var(--dgns-ui-primary);
+  color: var(--dgns-text-color-primary);
   text-transform: uppercase;
 
-  background-color: var(--dgns-ui-control-bg);
+  background-color: var(--dgns-control-bg-default);
   border: var(--dgns-line-width) solid
-    rgba(from var(--dgns-ui-secondary) r g b / 0.3);
+    rgba(from var(--dgns-color-secondary) r g b / 0.3);
 
   box-sizing: border-box;
   line-height: 1;
   align-items: center;
+
+  &:disabled {
+    opacity: 0.4;
+  }
 
   option:checked,
   option:focus,
@@ -35,12 +39,12 @@
 
   &::picker(select) {
     scrollbar-width: thin;
-    scrollbar-color: var(--dgns-ui-primary) transparent;
+    scrollbar-color: var(--dgns-color-primary) transparent;
 
     appearance: base-select;
-    color: var(--dgns-ui-primary);
+    color: var(--dgns-text-color-primary);
     font-size: var(--font-size-12);
-    border: var(--dgns-line-width) solid var(--dgns-ui-secondary);
+    border: var(--dgns-line-width) solid var(--dgns-color-secondary);
     border-radius: 5px;
 
     transition:
@@ -72,7 +76,7 @@
 
   transform: rotate(45deg);
 
-  border: $calculated-border solid var(--dgns-ui-primary);
+  border: $calculated-border solid var(--dgns-color-primary);
 
   margin: 0;
 
@@ -88,7 +92,7 @@
   &::before {
     border-radius: 0;
     transform: scale(0);
-    background-color: var(--dgns-ui-primary);
+    background-color: var(--dgns-color-primary);
   }
 
   &:checked::before {
@@ -98,16 +102,16 @@
 }
 
 @mixin fieldset {
-  border: var(--dgns-line-width) solid
-    rgba(from var(--dgns-ui-secondary) r g b / 0.2);
+  border: var(--dgns-line-width) solid var(--dgns-border-color-primary);
   padding: 5px;
 
+  margin-bottom: 5px;
   legend {
-    font-family: var(--font-serif);
-    font-size: var(--font-size-14);
+    font-family: var(--font-sans);
+    font-size: var(--font-size-12);
+    font-weight: var(--dgns-weight-header-sans);
     letter-spacing: 0.15em;
     text-align: center;
-
-    text-transform: uppercase;
+    padding: 0px 10px;
   }
 }

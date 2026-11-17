@@ -1,0 +1,70 @@
+<li class="chat-message message flexcol {{cssClass}}" data-message-id="{{message._id}}"
+    {{#if borderColor}}style="--dgns-speaker: {{borderColor}}" {{/if}}>
+
+    {{log this}}
+
+    <div class="chat-card">
+        {{#if speakerActor}}
+            <img src="{{speakerActor.img}}" class="chat-card-background" />
+        {{/if}}
+
+        <header class="message-header flexrow">
+
+            <div class="title-row">
+                {{#unless speakerActor}}
+                    <div class="avatar">
+                        <img src="{{author.avatar}}" />
+                    </div>
+                {{/unless}}
+                <div class="alias">
+                    {{alias}}
+                </div>
+
+                {{#if borderColor}}
+                    <i class="fas fa-circle speaker-color"></i>
+                {{/if}}
+
+
+
+                <div class="message-metadata">
+                    <time class="message-timestamp">{{timeSince message.timestamp}}</time>
+                    {{#if canDelete}}
+                        <a aria-label="{{localize "COMMON.Delete"}}" class="message-delete" data-action="deleteMessage">
+                            <i class="fa-solid fa-trash" inert></i>
+                        </a>
+                    {{/if}}
+                    {{#if canClose}}
+                        <a aria-label="{{ localize "CHAT.Dismiss" }}" class="message-dismiss"
+                            data-action="dismissMessage">
+                            <i class="fa-solid fa-xmark" inert></i>
+                        </a>
+                    {{/if}}
+                </div>
+
+            </div>
+
+
+
+
+
+
+
+            {{#if isWhisper}}
+                <span class="whisper-to">{{localize 'CHAT.To'}}: {{whisperTo}}</span>
+            {{/if}}
+
+            {{#if message.flavor}}
+                <span class="flavor-text">{{{message.flavor}}}</span>
+            {{/if}}
+        </header>
+        <div class="message-content">
+            {{{message.content}}}
+        </div>
+
+    </div>
+
+
+
+
+
+</li>

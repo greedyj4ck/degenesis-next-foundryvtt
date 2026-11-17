@@ -1,65 +1,98 @@
 <section class="sheet-section tab general {{tab.cssClass}}" data-group="main" data-tab="general">
-  <div class="ccc-container">
 
-    {{> "dgns.actor.culture" }}
-    {{> "dgns.actor.concept" }}
-    {{> "dgns.actor.cult" }}
+  <div class="ccc-container" style="position:relative" data-expand-id="ccc">
 
 
-    <hr>
-    <div class="document-table potential-group">
-      <div class="header">
-        <div class="name">{{localize "DGNS.Potentials"}}</div>
-        <div class="transition">
-          <svg class="line">
-            <line x1="0" y1="50%" x2="75%" y2="50%"></line>
-            <line x1="75%" y1="50%" x2="100%" y2="100%"></line>
-          </svg>
-        </div>
-
-        <div class="legends">
-          <div class="field oriigin ">{{localize "DGNS.Origin"}}</div>
-          <div class="field level ">LVL</div>
-          <div class="field controls" style="min-width:50px">
-
-            <!-- todo: proper sorting -->
-
-            <a data-action="toggleSort" data-group="{{group.id}}">
-              <i class="fa-solid {{group.sortIcon}}"></i>
-            </a>
-            <a data-action="createItem" data-item-type="potential">
-              <i class="fa-solid fa-plus"></i></a>
-          </div>
-        </div>
+    <div class=" card outer">
+      <div class="card inner">
+        {{> "dgns.actor.culture" }}
       </div>
-
-
-      {{>"dgns.actor.potentials" ctx=potentials}}
-
-
     </div>
 
 
-    <!-- BACKGROUNDS -->
-
-
-
-    <div class="backgrounds-container">
-      <div class="header">
-        {{> "dgns.group.header" header="DGNS.GENERAL.backgrounds" }}
+    <div class="card outer">
+      <div class="card inner">
+        {{> "dgns.actor.concept" }}
       </div>
-
-      <div class="backgrounds">
-
-        {{#each system.backgrounds}}
-          <div class="field-under">
-            <input class="field-input" type="number" name="system.backgrounds.{{@key}}" value="{{@this}}" />
-            <label>{{localize @key}}</label>
-          </div>
-        {{/each}}
-      </div>
-
     </div>
+
+    <div class="card outer">
+      <div class="card inner">
+        {{> "dgns.actor.cult" }}
+      </div>
+    </div>
+
+    <dgns-section-toggle data-expand-id="ccc" />
+
+
+    {{!--     <div class="section-dropdown"
+      style="position:absolute; left:50%; transform: translateX(-50%) translateY(100%); bottom:0">
+      <svg width="81px" height="16px" style="fill: var(--dgns-control-bg-default); stroke: var(--dgns-border-primary)">
+        <g transform="matrix(0.64178,0,0,0.651064,-264.123201,-288.971909)">
+          <path d="M412.327,444.613L435.366,467.653L514.209,467.653L536.98,444.882" />
+        </g>
+      </svg>
+      <a style="position:absolute"> <i class="fa-solid fa-caret-up"></i></a>
+
+
+    </div> --}}
+
+  </div>
+
+
+  <div class="document-table potential-group">
+    <div class="header">
+      <div class="name">{{localize "DGNS.Potentials"}}</div>
+      <div class="transition">
+        <svg class="line">
+          <line x1="0" y1="50%" x2="75%" y2="50%"></line>
+          <line x1="75%" y1="50%" x2="100%" y2="100%"></line>
+        </svg>
+      </div>
+
+      <div class="legends">
+        <div class="field oriigin ">{{localize "DGNS.Origin"}}</div>
+        <div class="field level ">LVL</div>
+        <div class="field controls" style="min-width:50px">
+
+          <!-- todo: proper sorting -->
+
+          <a data-action="toggleSort" data-group="{{group.id}}">
+            <i class="fa-solid {{group.sortIcon}}"></i>
+          </a>
+          <a data-action="createItem" data-item-type="potential">
+            <i class="fa-solid fa-plus"></i></a>
+        </div>
+      </div>
+    </div>
+
+
+    {{>"dgns.actor.potentials" ctx=potentials}}
+
+
+  </div>
+
+
+  <!-- BACKGROUNDS -->
+
+
+
+  <div class="backgrounds-container">
+    <div class="header">
+      {{> "dgns.group.header" header="DGNS.GENERAL.backgrounds" }}
+    </div>
+
+    <div class="backgrounds">
+
+      {{#each system.backgrounds}}
+        <div class="field-under">
+          <input class="field-input" type="number" name="system.backgrounds.{{@key}}" value="{{@this}}" />
+          <label>{{localize @key}}</label>
+        </div>
+      {{/each}}
+    </div>
+
+  </div>
 
 
 

@@ -2,10 +2,13 @@
 
 import DGNSActiveEffect from "./active.effect.mjs";
 
-import { WEAPON_GROUPS_SKILLS } from "../logic/config/items.mjs";
-import { Qualities, QUALITY_DEFINITIONS } from "../logic/quality.mjs";
+import { Qualities, QUALITY_DEFINITIONS } from "../logic/quality.logic.mjs";
+import { Combat } from "../logic/combat.logic.mjs";
 
 import { EffectHelper } from "../utils/effect.helper.mjs";
+import { Items } from "../logic/item.logic.mjs";
+
+const { TextEditor } = foundry.applications.ux;
 
 export default class DGNSItem extends Item {
   /* ---------------------------------- */
@@ -96,10 +99,6 @@ export default class DGNSItem extends Item {
     field = null,
     value = null,
   ) {
-    console.log(
-      `Manage quality fired. ${action} | ${qualityKey} | ${field} | ${value}|`,
-    );
-
     if (!qualityKey) return;
 
     switch (action) {
@@ -172,9 +171,6 @@ export default class DGNSItem extends Item {
    */
 
   _handleModifications() {
-    console.log(`HandleModifications for:`);
-    console.log(this);
-
     // Mods are getting resolved as ArrayField contains documents links
     const mods = (this.system.modifications?.installed ?? [])
       .map((uuid) => fromUuidSync(uuid))
@@ -286,9 +282,6 @@ export default class DGNSItem extends Item {
 
     const modToLink = await this._resolveModInstance(mod);
 
-    console.log(`modToLInk:`);
-    console.log(modToLink.id);
-
     if (!modToLink) return; //failsafe
 
     // Duplicate check against already-resolved installed documents
@@ -386,23 +379,30 @@ export default class DGNSItem extends Item {
   /**
    * Return true if it is a weapon within melee range.
    */
-  get isMelee() {
-    if (this.type === "weapon") {
-      return WEAPON_GROUPS_SKILLS[this.system.group] == "projectiles" ||
-        this.system.group == "sonic"
-        ? false
-        : true;
-    }
-  }
-  get isRanged() {
-    if (this.type === "weapon")
-      return (
-        WEAPON_GROUPS_SKILLS[this.system.group] == "projectiles" &&
-        this.group != "sonic"
-      );
+
+  get combatType() {
+    if (this.type !== "weapon") return null;
+    const { group } = this.system;
+    return Items.weapons[group]?.combat ?? null;
   }
 
+  /* ---------------------------------- */
+
+  get combatActions() {
+    return Combat.weaponActions[this.combatType] ?? [];
+  }
+
+  // legacy helpers
+
+  get isMelee() {
+    return this.combatType === "melee";
+  }
+  /* ---------------------------------- */
+  get isRanged() {
+    return this.combatType === "ranged";
+  }
+  /* ---------------------------------- */
   get isSonic() {
-    if ((this.type = "weapon")) return this.system.group == "sonic";
+    return this.combatType === "sonic";
   }
 }

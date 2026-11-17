@@ -34,32 +34,7 @@ export default class DGNSRulesSettings extends HandlebarsApplicationMixin(
     form: { handler: this.updateData, submitOnChange: true },
   };
 
-  static PARTS = {
-    header: {
-      template:
-        "systems/daggerheart/templates/settings/automation-settings/header.hbs",
-    },
-    tabs: {
-      template:
-        "systems/daggerheart/templates/sheets/global/tabs/tab-navigation.hbs",
-    },
-    general: {
-      template:
-        "systems/daggerheart/templates/settings/automation-settings/general.hbs",
-    },
-    rules: {
-      template:
-        "systems/daggerheart/templates/settings/automation-settings/deathMoves.hbs",
-    },
-    roll: {
-      template:
-        "systems/daggerheart/templates/settings/automation-settings/roll.hbs",
-    },
-    footer: {
-      template:
-        "systems/daggerheart/templates/settings/automation-settings/footer.hbs",
-    },
-  };
+  static PARTS = {};
 
   /** @inheritdoc */
   static TABS = {

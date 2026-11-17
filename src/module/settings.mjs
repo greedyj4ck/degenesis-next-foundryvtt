@@ -20,8 +20,8 @@ export function registerSystemSettings() {
       config: false,
     },
   );
-  // 2. Register handling application
 
+  // 2. Register handling application
   game.settings.registerMenu(CONFIG.DEGENESIS.id, "DGNSRulesSettings", {
     name: "Rules", //game.i18n.localize("DAGGERHEART.SETTINGS.Menu.automation.name"),
     label: "Katharsys", // game.i18n.localize("DAGGERHEART.SETTINGS.Menu.automation.label"),

@@ -14,6 +14,7 @@ const {
   BooleanField,
   ArrayField,
   IntegerSortField,
+  ObjectField,
 } = foundry.data.fields;
 
 export default class CharacterData extends foundry.abstract.TypeDataModel {
@@ -36,6 +37,8 @@ export default class CharacterData extends foundry.abstract.TypeDataModel {
       ...DetailsFields.backrounds,
       ...DetailsFields.biography,
       ...IdentityFields.identity, // Culture, concept, class items UUID reference
+      /* ---------------------------------- */
+      special: new ObjectField({ initial: {} }), // gonna be used for special flags,etc, just derived not saved
     };
   }
 
@@ -47,39 +50,17 @@ export default class CharacterData extends foundry.abstract.TypeDataModel {
     this.culture = CachedReferenceField.resolve(this.cultureItem);
     this.concept = CachedReferenceField.resolve(this.conceptItem);
     this.cult = CachedReferenceField.resolve(this.cultItem);
-    this.actionNumbers = this.prepareActionNumbers();
   }
 
   // *------------------------*
 
   /** @inheritdoc */
   /*   prepareDerivedData() {
-    console.log(`Character | DataModel | prepareDerivedData`);
+    
   } */
   // async _preUpdate(changes, options, user) { }
 
   //#endergion
-
-  //#region Preparing data helpers
-  // *========================================*
-
-  /**
-   * Sum attribute value with skill value. Base action number.
-   * @returns {object} Object with skill names as properties.
-   */
-  prepareActionNumbers() {
-    let actionNumbers = {};
-
-    for (let attribute in this.attributes) {
-      for (let skill in this.attributes[attribute].skills) {
-        actionNumbers[skill] =
-          this.attributes[attribute].value +
-          this.attributes[attribute].skills[skill].value;
-      }
-    }
-    return actionNumbers;
-  }
-  // *------------------------*
 
   //#region Helper methods
   // *------------------------*

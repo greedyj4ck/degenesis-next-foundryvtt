@@ -1,4 +1,5 @@
-import { CALIBERS } from "../../../logic/config/items.mjs";
+import { Items } from "../../../logic/item.logic.mjs";
+
 import FormulaField from "../../fields/formula-field.mjs";
 
 const {
@@ -104,7 +105,7 @@ export default class CombatFields {
       ammunition: new SchemaField({
         caliber: new StringField({
           label: "DGNS.Caliber",
-          choices: CALIBERS,
+          choices: Items.calibers,
           blank: true,
           initial: "",
         }),

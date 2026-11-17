@@ -7,13 +7,13 @@
   }
 
   &::-webkit-scrollbar-thumb {
-    border: 1px solid var(--dgns-ui-primary);
-    background-color: var(--dgns-ui-secondary);
+    border: 1px solid var(--dgns-color-primary);
+    background-color: var(--dgns-border-color-primary);
     border-radius: 3px !important;
 
     &:hover {
       //border: 1px solid var(--dgns-ui-accent);
-      background-color: var(--dgns-ui-accent);
+      background-color: var(--dgns-border-color-secondary);
     }
   }
 

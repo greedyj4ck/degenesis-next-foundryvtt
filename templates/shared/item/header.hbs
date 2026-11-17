@@ -38,7 +38,7 @@
             </div>
             <div class="header-field">
                 <select class="field-select" type="text" name="system.group" value="{{system.group}}">
-                    <option value="">None </option>
+                    {{!--  <option value="">None </option>  --}}
                     {{selectOptions system.schema.fields.group.choices 
                   selected=system.group 
                   localize=true}}

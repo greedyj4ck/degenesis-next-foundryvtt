@@ -55,14 +55,7 @@ var { HandlebarsApplicationMixin: HandlebarsApplicationMixin$4, ApplicationV2: A
 			submitOnChange: true
 		}
 	};
-	static PARTS = {
-		header: { template: "systems/daggerheart/templates/settings/automation-settings/header.hbs" },
-		tabs: { template: "systems/daggerheart/templates/sheets/global/tabs/tab-navigation.hbs" },
-		general: { template: "systems/daggerheart/templates/settings/automation-settings/general.hbs" },
-		rules: { template: "systems/daggerheart/templates/settings/automation-settings/deathMoves.hbs" },
-		roll: { template: "systems/daggerheart/templates/settings/automation-settings/roll.hbs" },
-		footer: { template: "systems/daggerheart/templates/settings/automation-settings/footer.hbs" }
-	};
+	static PARTS = {};
 	/** @inheritdoc */
 	static TABS = { main: {
 		tabs: [
@@ -243,6 +236,7 @@ async function registerHandlebarsHelpers() {
 		parts.pop();
 		return game.i18n.localize(parts.join(""));
 	});
+	Handlebars.registerHelper("eq", (a, b) => a === b);
 }
 //#endregion
 //#region src/module/config/settings.config.mjs
@@ -257,7 +251,7 @@ var gameConfig = {
 	subliminals: "subliminals"
 };
 //#endregion
-//#region src/module/logic/damage.mjs
+//#region src/module/logic/damage.logic.mjs
 var Damage = {
 	modifiers: {
 		T: {
@@ -438,7 +432,7 @@ var InputRating = {
 	default: 1
 };
 //#endregion
-//#region src/module/logic/quality.mjs
+//#region src/module/logic/quality.logic.mjs
 /**
 * List of all qualities
 */
@@ -883,7 +877,7 @@ var Qualities = {
 	}
 };
 //#endregion
-//#region src/module/logic/condition.mjs
+//#region src/module/logic/condition.logic.mjs
 var Condition = {
 	calculateMaxTrauma: (bodyValue, psycheValue) => {
 		return bodyValue + psycheValue;
@@ -905,7 +899,102 @@ var Condition = {
 	}
 };
 //#endregion
-//#region src/module/logic/modification.mjs
+//#region src/module/logic/item.logic.mjs
+/**
+* Items logic configuration object.
+*/
+var Items$1 = {
+	weapons: {
+		brawl: {
+			label: "DGNS.WEAPON.brawl",
+			combat: "close",
+			skills: { primary: "brawl" }
+		},
+		melee: {
+			label: "DGNS.WEAPON.melee",
+			combat: "close",
+			skills: { primary: "melee" }
+		},
+		thrown: {
+			label: "DGNS.WEAPON.thrown",
+			combat: "ranged",
+			skills: { primary: "projectiles" }
+		},
+		projectiles: {
+			label: "DGNS.WEAPON.projectiles",
+			combat: "ranged",
+			skills: { primary: "projectiles" }
+		},
+		handguns: {
+			label: "DGNS.WEAPON.handguns",
+			combat: "ranged",
+			skills: { primary: "projectiles" }
+		},
+		rifles: {
+			label: "DGNS.WEAPON.rifles",
+			combat: "ranged",
+			skills: { primary: "projectiles" }
+		},
+		heavy: {
+			label: "DGNS.WEAPON.heavy",
+			combat: "ranged",
+			skills: { primary: "projectiles" }
+		},
+		explosives: {
+			label: "DGNS.WEAPON.explosives",
+			combat: "explosives",
+			skills: {
+				primary: "",
+				secondary: ""
+			}
+		},
+		sonic: {
+			label: "DGNS.WEAPON.sonic",
+			combat: "sonic",
+			skills: {
+				primary: "engineering",
+				secondary: "domination"
+			}
+		},
+		custom: { label: "DGNS.WEAPON.custom" }
+	},
+	calibers: {
+		"50gl": { label: "DGNS.CALIBER.50gl" },
+		357: { label: "DGNS.CALIBER.357" },
+		44: { label: "DGNS.CALIBER.44" },
+		"410sh": { label: "DGNS.CALIBER.410sh" },
+		"410sl": { label: "DGNS.CALIBER.410sl" },
+		556: { label: "DGNS.CALIBER.556" },
+		jacket: { label: "DGNS.CALIBER.jacket" },
+		hollowPoint: { label: "DGNS.CALIBER.hollowPoint" },
+		flechette: { label: "DGNS.CALIBER.flechette" },
+		"46x30": { label: "DGNS.CALIBER.46x30" },
+		"9mm": { label: "DGNS.CALIBER.9mm" },
+		"5x30": { label: "DGNS.CALIBER.5x30" },
+		762: { label: "DGNS.CALIBER.762" },
+		14: { label: "DGNS.CALIBER.14" },
+		buckshot: { label: "DGNS.CALIBER.buckshot" },
+		rifleBarrel: { label: "DGNS.CALIBER.rifleBarrel" },
+		cartridge: { label: "DGNS.CALIBER.cartridge" },
+		grenade: { label: "DGNS.CALIBER.grenade" },
+		missile: { label: "DGNS.CALIBER.missile" },
+		fragger: { label: "DGNS.CALIBER.fragger" },
+		blackpowder: { label: "DGNS.CALIBER.blackpowder" },
+		leadbullet: { label: "DGNS.CALIBER.leadbullet" },
+		Ecube: { label: "DGNS.CALIBER.Ecube" },
+		arrow: { label: "DGNS.CALIBER.arrow" },
+		bolt: { label: "DGNS.CALIBER.bolt" },
+		petro: { label: "DGNS.CALIBER.petro" },
+		harpoon: { label: "DGNS.CALIBER.harpoon" },
+		nail: { label: "DGNS.CALIBER.nail" },
+		coal: { label: "DGNS.CALIBER.coal" },
+		boltcoal: { label: "DGNS.CALIBER.boltcoal" },
+		special: { label: "DGNS.CALIBER.special" },
+		custom: { label: "DGNS.CALIBER.custom" }
+	}
+};
+//#endregion
+//#region src/module/logic/modification.logic.mjs
 var Modification = { type: {
 	melee: "DGNS.MOD.melee",
 	archaicProjectiles: "DGNS.MOD.archaicProjectiles",
@@ -914,65 +1003,378 @@ var Modification = { type: {
 	armor: "DGNS.MOD.armor"
 } };
 //#endregion
-//#region src/module/logic/config/items.mjs
-var WEAPON_GROUPS = {
-	brawl: "DGNS.WEAPON.brawl",
-	armedMelee: "DGNS.WEAPON.armedMelee",
-	thrown: "DGNS.WEAPON.thrown",
-	projectiles: "DGNS.WEAPON.projectiles",
-	handguns: "DGNS.WEAPON.handguns",
-	rifles: "DGNS.WEAPON.rifles",
-	heavy: "DGNS.WEAPON.heavy",
-	explosives: "DGNS.WEAPON.explosives",
-	sonic: "DGNS.WEAPON.sonic",
-	custom: "DGNS.WEAPON.custom"
+//#region src/module/logic/combat.logic.mjs
+/**
+* rollTypes:
+* - weaponAttack: attack that utilizes weapon
+* - attack
+*/
+var Combat = {
+	weaponActions: {
+		melee: [
+			{
+				key: "attack",
+				label: "DGNS.COMBAT.action.attack",
+				rollType: "attack"
+			},
+			{
+				key: "parry",
+				label: "DGNS.COMBAT.action.parry",
+				rollType: "parry"
+			},
+			{
+				key: "disarm",
+				label: "DGNS.COMBAT.action.disarm",
+				rollType: "disarm"
+			}
+		],
+		ranged: [
+			{
+				key: "effectiveShot",
+				label: "DGNS.COMBAT.action.effective",
+				rollType: "attack",
+				modifiers: { d: 0 }
+			},
+			{
+				key: "farShot",
+				label: "DGNS.COMBAT.action.far",
+				rollType: "attack",
+				modifiers: { d: -2 }
+			},
+			{
+				key: "extremeShot",
+				label: "DGNS.COMBAT.action.extreme",
+				rollType: "attack",
+				modifiers: { d: -4 }
+			},
+			{
+				key: "disarm",
+				label: "DGNS.COMBAT.action.disarm",
+				rollType: "disarm"
+			}
+		],
+		sonic: []
+	},
+	combatActions: {
+		general: [{
+			key: "initiative",
+			label: "DGNS.COMBAT.action.initiative",
+			rollType: "initiative",
+			skill: "reaction"
+		}],
+		attack: [
+			{
+				key: "bite",
+				skill: "brawl",
+				label: "DGNS.COMBAT.action.bite",
+				rollType: "brawl"
+			},
+			{
+				key: "kick",
+				skill: "brawl",
+				label: "DGNS.COMBAT.action.kick",
+				rollType: "brawl"
+			},
+			{
+				key: "blow",
+				skill: "brawl",
+				label: "DGNS.COMBAT.action.blow",
+				rollType: "brawl"
+			},
+			{
+				key: "sneak",
+				skill: "stealth",
+				label: "DGNS.COMBAT.action.sneak",
+				rollType: "sneak"
+			},
+			{
+				key: "feint",
+				skill: "cunning",
+				label: "DGNS.COMBAT.action.feint",
+				rollType: "feint"
+			}
+		],
+		defense: [
+			{
+				key: "dodge",
+				skill: "mobility",
+				label: "DGNS.COMBAT.action.dodge",
+				rollType: "activeDefense"
+			},
+			{
+				key: "parry",
+				skill: "brawl",
+				label: "DGNS.COMBAT.action.parry",
+				rollType: "parry"
+			},
+			{
+				key: "mental",
+				skill: "mobility",
+				label: "DGNS.COMBAT.action.mental",
+				rollType: "mentalDefense"
+			}
+		]
+	}
 };
-var WEAPON_GROUPS_SKILLS = {
-	brawl: "brawl",
-	armedMelee: "melee",
-	thrown: "projectiles",
-	projectiles: "projectiles",
-	handguns: "projectiles",
-	rifles: "projectiles",
-	heavy: "projectiles",
-	explosives: "projectiles",
-	sonic: "engineering",
-	custom: ""
+//#endregion
+//#region src/module/logic/scars.logic.mjs
+/**
+* Based on Articfacts extended shared destiny rules
+*/
+var Alignments = {
+	ambition: {
+		label: "DGNS.ALIGNMENT.ambition.label",
+		description: "DGNS.ALIGNMENT.ambition.description",
+		affinity: {
+			key: "background.bonus",
+			value: 1,
+			label: "DGNS.ALIGNMENT.ambition.affinity",
+			concepts: [
+				"creator",
+				"conqueror",
+				"visionary",
+				"ruler"
+			]
+		},
+		aversion: {
+			key: "background.bonus",
+			value: -1,
+			label: "DGNS.ALIGNMENT.ambition.aversion",
+			concepts: ["defiler", "traditionalist"]
+		},
+		constellation: {
+			key: "special.xpCostMultiplier",
+			value: -1,
+			label: "DGNS.ALIGNMENT.ambition.constellation"
+		}
+	},
+	loyalty: {
+		label: "DGNS.ALIGNMENT.loyalty.label",
+		description: "DGNS.ALIGNMENT.loyalty.description",
+		affinity: {
+			key: "ego.max",
+			value: 1,
+			label: "DGNS.ALIGNMENT.loyalty.affinity",
+			concepts: [
+				"mentor",
+				"protector",
+				"martyr",
+				"healer"
+			]
+		},
+		aversion: {
+			key: "ego.max",
+			value: -1,
+			label: "DGNS.ALIGNMENT.loyalty.aversion",
+			concepts: ["abomination", "ruler"]
+		},
+		constellation: {
+			key: "special.egoSuccessConvert",
+			value: 1,
+			label: "DGNS.ALIGNMENT.loyalty.constellation"
+		}
+	},
+	chance: {
+		label: "DGNS.ALIGNMENT.chance.label",
+		description: "DGNS.ALIGNMENT.chance.description",
+		affinity: {
+			key: "assist.dicebonus",
+			value: 1,
+			label: "DGNS.ALIGNMENT.chance.affinity",
+			concepts: [
+				"adventurer",
+				"traveler",
+				"disciple",
+				"mediator"
+			]
+		},
+		aversion: {
+			key: "assist.dicebonus",
+			value: -1,
+			label: "DGNS.ALIGNMENT.chance.aversion",
+			concepts: ["hermit", "destroyer"]
+		},
+		constellation: {
+			key: "special.groupSkillHalfXP",
+			value: 1,
+			label: "DGNS.ALIGNMENT.chance.constellation"
+		}
+	},
+	destiny: {
+		label: "DGNS.ALIGNMENT.destiny.label",
+		description: "DGNS.ALIGNMENT.destiny.description",
+		affinity: {
+			key: "fleshwounds.max",
+			value: 1,
+			label: "DGNS.ALIGNMENT.destiny.affinity",
+			concepts: [
+				"seeker",
+				"chosen",
+				"zealot",
+				"martyr"
+			]
+		},
+		aversion: {
+			key: "fleshwounds.max",
+			value: -1,
+			label: "DGNS.ALIGNMENT.destiny.aversion",
+			concepts: ["traveler", "adventurer"]
+		},
+		constellation: {
+			key: "trauma.max",
+			value: 1,
+			label: "DGNS.ALIGNMENT.destiny.constellation"
+		}
+	},
+	dogma: {
+		label: "DGNS.ALIGNMENT.dogma.label",
+		description: "DGNS.ALIGNMENT.dogma.description",
+		affinity: {
+			key: "mentalDefence.dicebonus",
+			value: 1,
+			label: "DGNS.ALIGNMENT.dogma.affinity",
+			concepts: [
+				"traditionalist",
+				"zealot",
+				"righteous",
+				"protector"
+			]
+		},
+		aversion: {
+			key: "mentalDefence.dicebonus",
+			value: -1,
+			label: "DGNS.ALIGNMENT.dogma.aversion",
+			concepts: ["heretic", "visionary"]
+		},
+		constellation: {
+			key: "special.rerollFailedMentalDefence",
+			value: 1,
+			label: "DGNS.ALIGNMENT.dogma.constellation"
+		}
+	},
+	revenge: {
+		label: "DGNS.ALIGNMENT.revenge.label",
+		description: "DGNS.ALIGNMENT.revenge.description",
+		affinity: {
+			key: "revenge.dicebonus",
+			value: 1,
+			label: "DGNS.ALIGNMENT.revenge.affinity",
+			concepts: [
+				"defiler",
+				"abomination",
+				"heretic",
+				"destroyer"
+			]
+		},
+		aversion: {
+			key: "revenge.dicebonus",
+			value: -1,
+			label: "DGNS.ALIGNMENT.revenge.aversion",
+			concepts: ["healer", "mediator"]
+		},
+		constellation: {
+			key: "special.rerollRevengeAttempts",
+			value: 1,
+			label: "DGNS.ALIGNMENT.revenge.constellation"
+		}
+	}
 };
-var CALIBERS = {
-	"50gl": "DGNS.CALIBER.50gl",
-	357: "DGNS.CALIBER.357",
-	44: "DGNS.CALIBER.44",
-	"410sh": "DGNS.CALIBER.410sh",
-	"410sl": "DGNS.CALIBER.410sl",
-	556: "DGNS.CALIBER.556",
-	jacket: "DGNS.CALIBER.jacket",
-	hollowPoint: "DGNS.CALIBER.hollowPoint",
-	flechette: "DGNS.CALIBER.flechette",
-	"46x30": "DGNS.CALIBER.46x30",
-	"9mm": "DGNS.CALIBER.9mm",
-	"5x30": "DGNS.CALIBER.5x30",
-	762: "DGNS.CALIBER.762",
-	14: "DGNS.CALIBER.14",
-	buckshot: "DGNS.CALIBER.buckshot",
-	rifleBarrel: "DGNS.CALIBER.rifleBarrel",
-	cartridge: "DGNS.CALIBER.cartridge",
-	grenade: "DGNS.CALIBER.grenade",
-	missile: "DGNS.CALIBER.missile",
-	fragger: "DGNS.CALIBER.fragger",
-	blackpowder: "DGNS.CALIBER.blackpowder",
-	leadbullet: "DGNS.CALIBER.leadbullet",
-	Ecube: "DGNS.CALIBER.Ecube",
-	arrow: "DGNS.CALIBER.arrow",
-	bolt: "DGNS.CALIBER.bolt",
-	petro: "DGNS.CALIBER.petro",
-	harpoon: "DGNS.CALIBER.harpoon",
-	nail: "DGNS.CALIBER.nail",
-	coal: "DGNS.CALIBER.coal",
-	boltcoal: "DGNS.CALIBER.boltcoal",
-	special: "DGNS.CALIBER.special",
-	custom: "DGNS.CALIBER.custom"
+var Scars = {
+	get AlignmentsOptions() {
+		const choices = {};
+		for (const [k, v] of Object.entries(Alignments)) choices[k] = v.label;
+		return choices;
+	},
+	get Alignments() {
+		return Alignments;
+	},
+	prepareAligmentModifiers(concept, alignment, groupConcepts, isNewMember = false) {
+		if (!alignment || concept) return [];
+		const base = Alignments[alignment];
+		if (!base) return [];
+		const modifiers = [];
+		const inAffinity = base.affinity.concepts.includes(concept);
+		const inAversion = base.aversion.concepts.includes(concept);
+		if (inAffinity) modifiers.push({
+			key: base.affinity.key,
+			value: base.affinity.value,
+			label: base.affinity.label,
+			source: "alignment.affinity",
+			tripled: false
+		});
+		if (inAversion) modifiers.push({
+			key: base.aversion.key,
+			value: isNewMember ? base.aversion.value * 3 : base.aversion.value,
+			label: base.aversion.label,
+			source: "alignment.aversion",
+			tripled: isNewMember
+		});
+		if (this.isConstellation(base, groupConcepts)) modifiers.push({
+			key: base.constellation.key,
+			value: base.constellation.value,
+			label: base.constellation.label,
+			source: "alignment.constellation",
+			tripled: false
+		});
+		return modifiers;
+	},
+	isConstellation(alignment, groupConcepts) {
+		const defined = groupConcepts.filter(Boolean);
+		if (defined.length === 0) return false;
+		return defined.every((c) => alignment.affinity.concepts.includes(c));
+	},
+	sumModifier(modifiers, key) {
+		return modifiers.filter((m) => m.key === key && typeof m.value === "number").reduce((total, m) => total + m.value, 0);
+	},
+	hasModifierFlag(modifiers, key) {
+		return modifiers.some((m) => m.key === key && m.value === true);
+	}
 };
+//#endregion
+//#region src/module/logic/skills.logic.mjs
+var SKILLS_DEFINITION = {
+	athletics: { label: "DGNS.SKILL.athletics" },
+	brawl: { label: "DGNS.SKILL.brawl" },
+	force: { label: "DGNS.SKILL.force" },
+	melee: { label: "DGNS.SKILL.melee" },
+	stamina: { label: "DGNS.SKILL.stamina" },
+	toughness: { label: "DGNS.SKILL.toughness" },
+	crafting: { label: "DGNS.SKILL.crafting" },
+	dexterity: { label: "DGNS.SKILL.dexterity" },
+	navigation: { label: "DGNS.SKILL.navigation" },
+	mobility: { label: "DGNS.SKILL.mobility" },
+	projectiles: { label: "DGNS.SKILL.projectiles" },
+	leadership: { label: "DGNS.SKILL.leadership" },
+	negotiation: { label: "DGNS.SKILL.negotiation" },
+	seduction: { label: "DGNS.SKILL.seduction" },
+	artifact: { label: "DGNS.SKILL.artifact" },
+	engineering: { label: "DGNS.SKILL.engineering" },
+	focus: { label: "DGNS.SKILL.focus" },
+	legends: { label: "DGNS.SKILL.legends" },
+	medicine: { label: "DGNS.SKILL.medicine" },
+	science: { label: "DGNS.SKILL.science" },
+	cunning: { label: "DGNS.SKILL.cunning" },
+	deception: { label: "DGNS.SKILL.deception" },
+	domination: { label: "DGNS.SKILL.domination" },
+	faith: { label: "DGNS.SKILL.faith" },
+	reaction: { label: "DGNS.SKILL.reaction" },
+	willpower: { label: "DGNS.SKILL.willpower" },
+	empathy: { label: "DGNS.SKILL.empathy" },
+	orienteering: { label: "DGNS.SKILL.orienteering" },
+	perception: { label: "DGNS.SKILL.perception" },
+	primal: { label: "DGNS.SKILL.primal" },
+	survival: { label: "DGNS.SKILL.survival" },
+	taming: { label: "DGNS.SKILL.taming" }
+};
+var cache = null;
+var Skills = { get list() {
+	cache ??= Object.entries(SKILLS_DEFINITION).map(([key, def]) => ({
+		key,
+		value: key,
+		...def
+	})).sort((a, b) => game.i18n.localize(a.label).localeCompare(game.i18n.localize(b.label)));
+	return cache;
+} };
 /**
 * Main object available trough entire system
 */
@@ -984,7 +1386,11 @@ var SYSTEM = {
 		condition: Condition,
 		qualities: Qualities,
 		modification: Modification
-	}
+	},
+	skills: Skills,
+	alignments: Alignments,
+	items: Items$1,
+	combat: { actions: Combat.Actions }
 };
 var DEGENESIS = {};
 DEGENESIS.raptures = {
@@ -1138,7 +1544,6 @@ DEGENESIS.noType = [
 	"damage",
 	"p_defense"
 ];
-DEGENESIS.weaponGroups = WEAPON_GROUPS;
 DEGENESIS.attackGroups = {
 	closeQuarter: "DGNS.CloseQuarter",
 	ranged: "DGNS.Ranged"
@@ -1176,7 +1581,6 @@ DEGENESIS.equipmentGroups = {
 	other: "DGNS.Other",
 	transportation: "DGNS.Transportation"
 };
-DEGENESIS.weaponGroupSkill = WEAPON_GROUPS_SKILLS;
 DEGENESIS.weaponQualities = {
 	areaDamage: "DGNS.AreaDamage",
 	armorPiercing: "DGNS.Armorpiercing",
@@ -1578,6 +1982,7 @@ DEGENESIS.rollResults = {
 };
 /**
 * Calibers are used for validating weapons compatibilities with specific ammo item.
+* @deprecated use item configuration property calibers
 */
 DEGENESIS.calibers = {
 	"50gl": "TYPES.Ammo.50gl",
@@ -1654,19 +2059,11 @@ DEGENESIS.transportationEncumbranceModes = {
 //#region src/module/hooks/apps/sidebar.mjs
 function sidebar_default() {
 	Hooks.on("renderSidebar", async (app, html) => {
-		console.log("hooks.js renderSidebar", {
-			app,
-			html
-		});
 		/** Disable forced theming for V12 compatibility layer */
 		const content = html.querySelector("#sidebar-content");
 		for (let section of content.childNodes) section.classList.remove("themed", "theme-light", "theme-dark");
 	});
 	Hooks.on("renderSettings", async (app, html) => {
-		console.log("hooks.js renderSettings", {
-			app,
-			html
-		});
 		const theme = html.ownerDocument.body.classList.contains("theme-dark") ? "dark" : "light";
 		const info = html.querySelector(".info");
 		const badge = document.createElement("section");
@@ -1677,18 +2074,18 @@ function sidebar_default() {
 	Hooks.on("renderChatLog", (application, element) => {
 		element.querySelector(".chat-log").classList.remove("theme-light");
 	});
-	Hooks.on("renderNotifications", (application, element) => {
-		console.log(`renderChatLogNotifications`);
+	Hooks.on("renderNotifications", (application, element) => {});
+	Hooks.on("renderItemDirectory", (app, html) => {
+		for (const row of html.querySelectorAll("li.directory-item[data-entry-id]")) {
+			const item = game.items.get(row.dataset.entryId);
+			if (item && !row.classList.contains(`item-type-${item.type}`)) row.classList.add(`item-${item.type}`);
+		}
 	});
 }
 //#endregion
 //#region src/module/hooks/apps/menu.mjs
 function menu_default() {
 	Hooks.on("renderMainMenu", async (app, html) => {
-		console.log(`Hooks.js renderMainMenu`, {
-			app,
-			html
-		});
 		html.classList.remove("themed", "theme-dark", "theme-light");
 	});
 }
@@ -1696,7 +2093,6 @@ function menu_default() {
 //#region src/module/hooks/apps/pause.mjs
 function pause_default() {
 	Hooks.on("renderGamePause", async (app, html, settings) => {
-		console.log(app);
 		settings.icon = "systems/degenesisnext/ui/marauders.svg";
 	});
 }
@@ -1717,36 +2113,82 @@ function RegisterItemHooks() {
 //#endregion
 //#region src/module/hooks/actor.hooks.mjs
 function RegisterActorHooks() {
-	Hooks.on("preUpdateActor", (actor, changes, options, userId) => {
-		console.log("Actor update triggered:", changes);
-	});
+	Hooks.on("preUpdateActor", (actor, changes, options, userId) => {});
 }
 //#endregion
 //#region src/module/hooks/apps/chat.message.mjs
 function chat_message_default() {
-	Hooks.on("renderChatMessageHTML ", async (message, html, context) => {
-		console.log(`RenderChatMessage Fired`);
-		console.log(message);
-		if (!message.rolls || message.rolls.length === 0) return;
-		message.rolls.forEach((roll) => {
-			roll.dice.forEach((die) => {
-				die.results.forEach((r) => {
-					if (!r.img) r.img = `systems/degenesisnext/ui/dice-faces/d${r.result}.svg`;
-				});
-			});
+	Hooks.on("renderChatMessageHTML", async (message, html, context) => {
+		const template = document.createElement("template");
+		template.innerHTML = message.content;
+		template.content.querySelectorAll(".dgns-die").forEach((host) => {
+			const die = document.createElement("dgns-die");
+			die.setAttribute("value", host.dataset.value);
+			host.replaceWith(die);
 		});
-		html.addClass("degenesis-roll");
+		message.content = template.innerHTML;
+		console.log(template);
+		console.log(message);
+		console.log(html);
+		if (!message.rolls || message.rolls.length === 0) return;
 	});
 }
 //#endregion
 //#region src/module/hooks/_module.mjs
-function _module_default() {
+function _module_default$1() {
 	menu_default();
 	pause_default();
 	sidebar_default();
 	chat_message_default();
 	RegisterItemHooks();
 	RegisterActorHooks();
+}
+//#endregion
+//#region src/module/integrations/dsn.mjs
+var DICE_PRESETS = {
+	rebirthBlack: {
+		system: {
+			id: "degenesisnext-black",
+			name: "Degenesis (Next) // Black",
+			default: true
+		},
+		presets: [{
+			type: "d6",
+			modelFile: "systems/degenesisnext/assets/dsn/degenesix_black.gltf"
+		}],
+		mode: "preffered"
+	},
+	rebirthWhite: {
+		system: {
+			id: "degenesisnext-white",
+			name: "Degenesis (Next) // White"
+		},
+		presets: [{
+			type: "d6",
+			modelFile: "systems/degenesisnext/assets/dsn/degenesix_white.gltf"
+		}],
+		mode: "default"
+	}
+};
+function useDSN() {
+	Hooks.once("diceSoNiceReady", (dice3d) => {
+		for (const system in DICE_PRESETS) {
+			let dice = DICE_PRESETS[system];
+			dice3d.addSystem(dice.system, dice.mode);
+			dice.presets.forEach((die) => {
+				dice3d.addDicePreset({
+					type: die.type,
+					modelFile: die.modelFile,
+					system: dice.system.id
+				});
+			});
+		}
+	});
+}
+//#endregion
+//#region src/module/integrations/_module.mjs
+function _module_default() {
+	useDSN();
 }
 //#endregion
 //#region src/module/applications/actor/actor.sheet.mixin.mjs
@@ -1782,6 +2224,7 @@ function ActorSheetMixin(Base) {
 				deleteItem: DGNSActorSheet.prototype._onDeleteItem,
 				rollAction: DGNSActorSheet.prototype._onActionRoll,
 				rollCombination: DGNSActorSheet.prototype._onCombinationRoll,
+				rollWeapon: DGNSActorSheet.prototype._onWeaponRoll,
 				manageEffect: DGNSActorSheet.prototype._onManageEffect
 			},
 			contextMenus: [{
@@ -1930,9 +2373,12 @@ function ActorSheetMixin(Base) {
 		static #toggleExpanded(event, target) {
 			const collapsible = target.closest(".collapsible");
 			if (!collapsible) return;
+			const expandId = target.closest("[data-expand-id]")?.dataset.expandId;
 			collapsible.classList.remove("expanded--restored");
 			collapsible.classList.toggle("expanded");
-			this.#expandedSections.set(target.closest("[data-expand-id]")?.dataset.expandId, collapsible.classList.contains("expanded"));
+			const isExpanded = collapsible.classList.contains("expanded");
+			this.#expandedSections.set(expandId, isExpanded);
+			if (expandId) this.actor.update({ [`flags.${CONFIG.DEGENESIS.id}.expandedSections.${expandId}`]: isExpanded }, { render: false });
 		}
 		/**
 		* Display linked Item, and fallback to cached one if main do not exist anymore.
@@ -2072,8 +2518,6 @@ function ActorSheetMixin(Base) {
 		async _onDrop(event) {
 			event.preventDefault();
 			const data = TextEditor$10.getDragEventData(event);
-			console.log(`onDropData`);
-			console.log(data);
 			if (!data.type) return super._onDrop(event);
 			const handlerName = `_onDrop${data.type}`;
 			if (typeof this[handlerName] === "function") return this[handlerName](event, data);
@@ -2102,9 +2546,7 @@ function ActorSheetMixin(Base) {
 			if (isSameActor) {
 				if (targetItem) {
 					if (item.id === targetItem.id) return false;
-					const sortMode = (this.actor.getFlag(CONFIG.DEGENESIS.id, "inventorySortModes") || {})[targetItem.type] || "manual";
-					console.log(sortMode);
-					if (sortMode === "manual") return this._handleInventorySort(item, targetItem);
+					if (((this.actor.getFlag(CONFIG.DEGENESIS.id, "inventorySortModes") || {})[targetItem.type] || "manual") === "manual") return this._handleInventorySort(item, targetItem);
 					else {
 						ui.notifications.warn("Disable alphabetical sorting first. ");
 						return false;
@@ -2132,11 +2574,7 @@ function ActorSheetMixin(Base) {
 			return async function(event, target) {
 				const itemId = target.closest("[data-item-id]").dataset.itemId;
 				const item = this.document.items.get(itemId);
-				console.log(`Toggle item prop`);
-				console.log(item);
-				console.log(propPath);
 				const currentValue = foundry.utils.getProperty(item, propPath);
-				console.log(currentValue);
 				await item.update({ [propPath]: !currentValue });
 			};
 		}
@@ -2166,6 +2604,22 @@ function ActorSheetMixin(Base) {
 			const skill = target.dataset.skill;
 			const attribute = target.dataset.attribute;
 			await this.actor.actionRoll(attribute, skill);
+		}
+		async _onWeaponRoll(event, target) {
+			if (event) event.preventDefault();
+			const weapon = this.document.items.get(target.closest("[data-item-id]").dataset.itemId);
+			await this.document.weaponRoll(weapon);
+		}
+		static #groupRoll(event, target) {
+			return this.document.rollCombat({});
+		}
+		static #weaponRoll(event, target) {
+			const item = this.document.items.get(target.closest("[data-item-id]").dataset.itemId);
+			return this.document.rollCombat({
+				options: item.system.rollOptions,
+				skill: item.system.skill,
+				definition: { itemUuid: item.uuid }
+			});
 		}
 		/**
 		* Manage effect on Actor's side.
@@ -2377,6 +2831,7 @@ var DGNSCharacterSheet = class DGNSCharacterSheet extends ActorSheetMixin(sheets
 			legacies: this.actor._prepareLegacies(),
 			inventory: this.actor._prepareInventory(),
 			effects: await this.actor._prepareEffects(),
+			combatActions: this.actor.combatActions,
 			tabGroups: this.tabGroups,
 			mainTabs: this._prepareTabs("main"),
 			headerTabs: this._prepareTabs("header"),
@@ -2410,7 +2865,6 @@ var DGNSCharacterSheet = class DGNSCharacterSheet extends ActorSheetMixin(sheets
 	/** @inheritdoc */
 	_onRender(context, options) {
 		super._onRender(context, options);
-		console.log(this);
 	}
 	async _renderFrame(options) {
 		return await super._renderFrame(options);
@@ -2419,211 +2873,11 @@ var DGNSCharacterSheet = class DGNSCharacterSheet extends ActorSheetMixin(sheets
 		super._onResize(event);
 	}
 	async _onDropActor(event, data) {
-		console.log(`character sheet mixin`);
-		console.log(event, data);
 		const actor = await Actor.implementation.fromDropData(data);
 		if (actor.type === "group") await this.actor.setGroup(actor);
 	}
 	async unsetGroup() {
 		await this.actor.unsetGroup();
-	}
-};
-//#endregion
-//#region src/module/logic/scars.mjs
-/**
-* Based on Articfacts extended shared destiny rules
-*/
-var ALIGNMENTS_DEFINITIONS = {
-	ambition: {
-		label: "DGNS.ALIGNMENT.ambition.label",
-		description: "DGNS.ALIGNMENT.ambition.description",
-		affinity: {
-			key: "background.bonus",
-			value: 1,
-			label: "DGNS.ALIGNMENT.ambition.affinity",
-			concepts: [
-				"creator",
-				"conqueror",
-				"visionary",
-				"ruler"
-			]
-		},
-		aversion: {
-			key: "background.bonus",
-			value: -1,
-			label: "DGNS.ALIGNMENT.ambition.aversion",
-			concepts: ["defiler", "traditionalist"]
-		},
-		constellation: {
-			key: "special.xpCostMultiplier",
-			value: -1,
-			label: "DGNS.ALIGNMENT.ambition.constellation"
-		}
-	},
-	loyalty: {
-		label: "DGNS.ALIGNMENT.loyalty.label",
-		description: "DGNS.ALIGNMENT.loyalty.description",
-		affinity: {
-			key: "ego.max",
-			value: 1,
-			label: "DGNS.ALIGNMENT.loyalty.affinity",
-			concepts: [
-				"mentor",
-				"protector",
-				"martyr",
-				"healer"
-			]
-		},
-		aversion: {
-			key: "ego.max",
-			value: -1,
-			label: "DGNS.ALIGNMENT.loyalty.aversion",
-			concepts: ["abomination", "ruler"]
-		},
-		constellation: {
-			key: "special.egoSuccessConvert",
-			value: 1,
-			label: "DGNS.ALIGNMENT.loyalty.constellation"
-		}
-	},
-	chance: {
-		label: "DGNS.ALIGNMENT.chance.label",
-		description: "DGNS.ALIGNMENT.chance.description",
-		affinity: {
-			key: "assist.dicebonus",
-			value: 1,
-			label: "DGNS.ALIGNMENT.chance.affinity",
-			concepts: [
-				"adventurer",
-				"traveler",
-				"disciple",
-				"mediator"
-			]
-		},
-		aversion: {
-			key: "assist.dicebonus",
-			value: -1,
-			label: "DGNS.ALIGNMENT.chance.aversion",
-			concepts: ["hermit", "destroyer"]
-		},
-		constellation: {
-			key: "special.groupSkillHalfXP",
-			value: 1,
-			label: "DGNS.ALIGNMENT.chance.constellation"
-		}
-	},
-	destiny: {
-		label: "DGNS.ALIGNMENT.destiny.label",
-		description: "DGNS.ALIGNMENT.destiny.description",
-		affinity: {
-			key: "fleshwounds.max",
-			value: 1,
-			label: "DGNS.ALIGNMENT.destiny.affinity",
-			concepts: [
-				"seeker",
-				"chosen",
-				"zealot",
-				"martyr"
-			]
-		},
-		aversion: {
-			key: "fleshwounds.max",
-			value: -1,
-			label: "DGNS.ALIGNMENT.destiny.aversion",
-			concepts: ["traveler", "adventurer"]
-		},
-		constellation: {
-			key: "trauma.max",
-			value: 1,
-			label: "DGNS.ALIGNMENT.destiny.constellation"
-		}
-	},
-	dogma: {
-		label: "DGNS.ALIGNMENT.dogma.label",
-		description: "DGNS.ALIGNMENT.dogma.description",
-		affinity: {
-			key: "mentalDefence.dicebonus",
-			value: 1,
-			label: "DGNS.ALIGNMENT.dogma.affinity",
-			concepts: [
-				"traditionalist",
-				"zealot",
-				"righteous",
-				"protector"
-			]
-		},
-		aversion: {
-			key: "mentalDefence.dicebonus",
-			value: -1,
-			label: "DGNS.ALIGNMENT.dogma.aversion",
-			concepts: ["heretic", "visionary"]
-		},
-		constellation: {
-			key: "special.rerollFailedMentalDefence",
-			value: 1,
-			label: "DGNS.ALIGNMENT.dogma.constellation"
-		}
-	},
-	revenge: {
-		label: "DGNS.ALIGNMENT.revenge.label",
-		description: "DGNS.ALIGNMENT.revenge.description",
-		affinity: {
-			key: "revenge.dicebonus",
-			value: 1,
-			label: "DGNS.ALIGNMENT.revenge.affinity",
-			concepts: [
-				"defiler",
-				"abomination",
-				"heretic",
-				"destroyer"
-			]
-		},
-		aversion: {
-			key: "revenge.dicebonus",
-			value: -1,
-			label: "DGNS.ALIGNMENT.revenge.aversion",
-			concepts: ["healer", "mediator"]
-		},
-		constellation: {
-			key: "special.rerollRevengeAttempts",
-			value: 1,
-			label: "DGNS.ALIGNMENT.revenge.constellation"
-		}
-	}
-};
-var Scars = {
-	get AlignmentsOptions() {
-		const choices = {};
-		for (const [k, v] of Object.entries(ALIGNMENTS_DEFINITIONS)) choices[k] = v.label;
-		return choices;
-	},
-	get Alignments() {
-		return ALIGNMENTS_DEFINITIONS;
-	},
-	prepareAligmentModifiers(concept, alignment, groupConcepts, isNewMember = false) {
-		if (!alignment || concept) return [];
-		const base = ALIGNMENTS_DEFINITIONS[alignment];
-		if (!base) return [];
-		const inAffinity = base.affinity.concepts.includes(concept);
-		const inAversion = base.aversion.concepts.includes(concept);
-		if (inAffinity) {}
-		if (inAversion) {}
-	},
-	buildGroupModifiers(group, newMemberIds = /* @__PURE__ */ new Set()) {
-		const modifiers = /* @__PURE__ */ new Map();
-		const { alignment, memberActors, memberConcepts } = group.system;
-		for (const actor of memberActors) {
-			if (!alignment) {
-				modifiers.set(actor.id, []);
-				continue;
-			}
-			actor.system.concept.id;
-		}
-	},
-	isConstellation(alignment, groupConcepts) {
-		const defined = groupConcepts.filter(Boolean);
-		if (defined.length === 0) return false;
-		return defined.every((c) => alignment.affinity.concepts.includes(c));
 	}
 };
 //#endregion
@@ -2718,11 +2972,9 @@ var DGNSGroupSheet = class DGNSGroupSheet extends ActorSheetMixin(sheets$8.Actor
 		context.alignmentData = Scars.Alignments[system.alignment] ?? null;
 		context.milestones = this.document.system.milestones;
 		context.members = system.members;
-		context.membersConcepts = system.membersConcepts;
+		context.membersConcepts = system.membersConcept;
 		context.mainTabs = this._prepareTabs("main");
 		context.enriched = {};
-		console.log(`Milestone debug`);
-		console.log(context.milestones[0].description);
 		if (context.inventory?.groups) for (const group of context.inventory.groups) for (const item of group.items) {
 			item.expanded = await item._getChatData({ secrets: item.isOwner });
 			if (!this.expandedSections.has(item.id)) continue;
@@ -2732,7 +2984,7 @@ var DGNSGroupSheet = class DGNSGroupSheet extends ActorSheetMixin(sheets$8.Actor
 			}
 			item.isExpanded = true;
 		}
-		console.log(`Context for group actor: ${this.name}`);
+		console.log(`Context for group actor: ${this.actor.name}`);
 		console.dir(context);
 		return context;
 	}
@@ -2755,7 +3007,6 @@ var DGNSGroupSheet = class DGNSGroupSheet extends ActorSheetMixin(sheets$8.Actor
 	}
 	/** @inheritdoc */
 	_onRender(context, options) {
-		console.log(this);
 		super._onRender(context, options);
 	}
 	async _renderFrame(options) {
@@ -2770,8 +3021,6 @@ var DGNSGroupSheet = class DGNSGroupSheet extends ActorSheetMixin(sheets$8.Actor
 	}
 	async onCreateMilestone() {
 		const milestones = this.document.system.milestones ?? [];
-		console.log(`Adding new mielstone`);
-		console.log(milestones);
 		await this.document.update({ "system.milestones": [...milestones, {
 			id: foundry.utils.randomID(),
 			label: "Milestone",
@@ -2784,7 +3033,7 @@ var DGNSGroupSheet = class DGNSGroupSheet extends ActorSheetMixin(sheets$8.Actor
 };
 //#endregion
 //#region src/module/applications/actor/_module.mjs
-var _module_exports$5 = /* @__PURE__ */ __exportAll({
+var _module_exports$6 = /* @__PURE__ */ __exportAll({
 	ActorSheetMixin: () => ActorSheetMixin,
 	DGNSCharacterSheet: () => DGNSCharacterSheet,
 	DGNSGroupSheet: () => DGNSGroupSheet
@@ -2815,16 +3064,13 @@ function ItemSheetMixin(Base) {
 		}
 		/** @inheritdoc */
 		async _render(force, { mode, ...options } = {}) {
-			console.log(`ItemSheetMixin _render`);
 			return super._render(force, {mode, ...options} = {});
 		}
 		/** @inheritdoc */
 		async _renderHTML(context, options) {
-			console.log(`ItemSheetMixin _renderHTML`);
 			return super._renderHTML(context, options);
 		}
 		async _renderFrame(options) {
-			console.log(`ItemSheetMixin _renderFrame`);
 			const html = await super._renderFrame(options);
 			const header = html.children[0];
 			if (this.isEditable) {
@@ -2877,12 +3123,10 @@ function ItemSheetMixin(Base) {
 			toggle.setAttribute("aria-label", label);
 			this._mode = toggle.checked ? MODES.EDIT : MODES.PLAY;
 			await this.submit();
-			console.log(`Current mode`, this._mode);
 			this.render();
 		}
 		_onChangeTab(event, tabs, active) {
 			super._onChangeTab(event, tabs, active);
-			console.log(`Tab Change fired`);
 			this.form.className = this.form.className.replace(/tab-\w+/g, "");
 			this.form.classList.add(`tab-${active}`);
 		}
@@ -2897,16 +3141,10 @@ function ItemSheetMixin(Base) {
 		/** Dropdown sections handling  */
 		_onDropdownToggle(event) {
 			try {
-				let target = event.currentTarget;
-				target.dataset.dropdown;
-				console.log(target.attributes);
-			} catch (err) {
-				console.log(err);
-			}
+				event.currentTarget.dataset.dropdown;
+			} catch (err) {}
 		}
 		static async #onManageQuality(event, target) {
-			console.log(`onManageQuality mixin fired`);
-			console.log(this);
 			if (event) event.preventDefault();
 			let { field = null, value = null } = {};
 			const action = target.dataset.type;
@@ -3090,16 +3328,13 @@ var DegenesisWeaponSheet = class extends ItemSheetMixin(sheets$6.ItemSheetV2) {
 					}))
 				};
 			}),
+			skills: Skills.list,
 			effects: await this.item._prepareEffects(),
 			modifications: this.document.system.modifications,
 			tabGroups: this.tabGroups,
 			mainTabs: this._prepareTabs("main"),
 			enriched: { description: await TextEditor$7.enrichHTML(this.document.system.description) }
 		});
-		console.log(`WeaponSheet | Context`);
-		console.log(context);
-		console.log(`WeaponSheet | Qualities`);
-		console.log(context.system.qualities);
 		return context;
 	}
 	async _preparePartContext(partId, context, options) {
@@ -3116,8 +3351,6 @@ var DegenesisWeaponSheet = class extends ItemSheetMixin(sheets$6.ItemSheetV2) {
 		super.activateListeners(this.element);
 	}
 	async _onDrop(event) {
-		console.log(`Weapon _onDropEvent`);
-		console.log(event);
 		const data = TextEditor$7.getDragEventData(event);
 		if (data.type !== "Item") return super._onDrop(event);
 		const droppedItem = await fromUuid(data.uuid);
@@ -3212,8 +3445,6 @@ var DegenesisModificationSheet = class extends ItemSheetMixin(sheets$5.ItemSheet
 		});
 		console.log(`Modification Sheet | Context`);
 		console.log(context);
-		console.log(`Modification Sheet | Qualities`);
-		console.log(context.system.qualities);
 		return context;
 	}
 	async _preparePartContext(partId, context, options) {
@@ -3412,8 +3643,6 @@ var DegenesisCultureSheet = class extends BackgroundSheetMixin(ItemSheetMixin(sh
 		context.tabs = this.getTabs();
 		context.mode = this._mode;
 		context.enriched = { description: await TextEditor$3.enrichHTML(this.document.system.description) };
-		console.log(`Sheet context:`);
-		console.log(context);
 		return context;
 	}
 	async _preparePartContext(partId, context) {
@@ -3563,14 +3792,12 @@ var DegenesisCultSheet = class extends BackgroundSheetMixin(ItemSheetMixin(sheet
 		context.isEditable = this.isEditable;
 		context.mode = this._mode;
 		context.enriched = { description: await TextEditor$1.enrichHTML(this.document.system.description) };
-		console.log(`CultSheet | Context`);
-		console.log(context);
 		return context;
 	}
 };
 //#endregion
 //#region src/module/applications/item/_module.mjs
-var _module_exports$4 = /* @__PURE__ */ __exportAll({
+var _module_exports$5 = /* @__PURE__ */ __exportAll({
 	BackgroundSheetMixin: () => BackgroundSheetMixin,
 	DGNSConceptSheet: () => DegenesisConceptSheet,
 	DGNSCultSheet: () => DegenesisCultSheet,
@@ -3811,7 +4038,7 @@ var DGNSEffectConfig = class DGNSEffectConfig extends HandlebarsApplicationMixin
 };
 //#endregion
 //#region src/module/applications/effect/_module.mjs
-var _module_exports$3 = /* @__PURE__ */ __exportAll({ DGNSEffectConfig: () => DGNSEffectConfig });
+var _module_exports$4 = /* @__PURE__ */ __exportAll({ DGNSEffectConfig: () => DGNSEffectConfig });
 //#endregion
 //#region src/module/applications/components/stylesheet-mixin.mjs
 /**
@@ -4618,24 +4845,211 @@ var FaithWillSwitch = class extends StyleSheetMixin(foundry.applications.element
 	}
 };
 //#endregion
+//#region src/module/applications/components/section-toggle.mjs
+var SectionToggleElement = class SectionToggleElement extends HTMLElement {
+	static tagName = "dgns-section-toggle";
+	static useShadowRoot = false;
+	static POSITIONS = [
+		"bottom",
+		"top",
+		"left",
+		"right"
+	];
+	get storageKey() {
+		return this.dataset.expandId || this.dataset.key || this.id || null;
+	}
+	get position() {
+		const value = this.dataset.position;
+		if (!value) this.dataset.position = "bottom";
+		return SectionToggleElement.POSITIONS.includes(value) ? value : SectionToggleElement.POSITIONS[0];
+	}
+	get sheet() {
+		const appId = this.closest(".application[id]")?.id;
+		return appId ? foundry.applications.instances.get(appId) : null;
+	}
+	get document() {
+		return this.sheet?.document ?? null;
+	}
+	get target() {
+		return this.parentElement;
+	}
+	connectedCallback() {
+		this.replaceChildren(...this._buildElements());
+		const stored = this._readState();
+		if (stored !== null) this.target?.toggleAttribute("collapsed", stored);
+		this.toggleAttribute("collapsed", this.target?.hasAttribute("collapsed") ?? false);
+		this._activateListeners();
+	}
+	_buildElements() {
+		const template = document.createElement("template");
+		template.innerHTML = `
+      <div class="section-toggle-dropdown section-toggle-dropdown--${this.position}">
+        <svg class="section-toggle-dropdown__shape" width="81" height="16" viewBox="0 0 81 16">
+          <g transform="matrix(0.64178,0,0,0.651064,-264.123201,-288.971909)">
+            <path d="M412.327,444.613L435.366,467.653L514.209,467.653L536.98,444.882" />
+          </g>
+        </svg>
+        <a class="section-toggle-dropdown__handle"><i class="fa-solid fa-caret-up"></i></a>
+      </div>
+    `.trim();
+		return Array.from(template.content.childNodes);
+	}
+	disconnectedCallback() {
+		this.removeEventListener("click", this._onToggle);
+	}
+	_activateListeners() {
+		this._onToggle = this._onToggle.bind(this);
+		this.addEventListener("click", this._onToggle);
+	}
+	async _onToggle(event) {
+		event.preventDefault();
+		if (!this.target) return;
+		const collapsed = !this.target.hasAttribute("collapsed");
+		this._applyState(collapsed);
+		await this._persistState(collapsed);
+		this.dispatchEvent(new CustomEvent("toggle", {
+			bubbles: true,
+			detail: { collapsed }
+		}));
+	}
+	_applyState(collapsed) {
+		this.target?.toggleAttribute("collapsed", collapsed);
+		this.toggleAttribute("collapsed", collapsed);
+	}
+	_readState() {
+		const key = this.storageKey;
+		const doc = this.document;
+		if (!key || !doc) return null;
+		const expanded = doc.getFlag(CONFIG.DEGENESIS.id, `expandedSections.${key}`);
+		return expanded === void 0 ? null : !expanded;
+	}
+	async _persistState(collapsed) {
+		const key = this.storageKey;
+		const doc = this.document;
+		if (!key || !doc) return;
+		await doc.update({ [`flags.${CONFIG.DEGENESIS.id}.expandedSections.${key}`]: !collapsed }, { render: false });
+	}
+};
+//#endregion
+//#region src/module/applications/components/die.mjs
+var svgCache = /* @__PURE__ */ new Map();
+function loadSvgMarkup(path) {
+	if (!svgCache.has(path)) svgCache.set(path, fetch(path).then((r) => r.text()));
+	return svgCache.get(path);
+}
+var DieElement = class extends HTMLElement {
+	static tagName = "dgns-die";
+	static BASE_PATH = "systems/degenesisnext/ui/dice";
+	static get observedAttributes() {
+		return ["value"];
+	}
+	attributeChangedCallback(name, oldValue, newValue) {
+		if (name === "value" && oldValue !== newValue) this._render();
+	}
+	async connectedCallback() {
+		if (this._initialized) return;
+		this._initialized = true;
+		await this._render();
+	}
+	async _render() {
+		const value = this.getAttribute("value");
+		this.innerHTML = await loadSvgMarkup(`${this.constructor.BASE_PATH}/d${value}.min.svg`);
+	}
+};
+//#endregion
+//#region src/module/applications/components/base/base.popover.mjs
+var BasePopover = class extends StyleSheetMixin(HTMLElement) {
+	/** @override */
+	static CSS = ``;
+	#controller;
+	get document() {
+		return foundry.applications.instances.get(this.closest(".application")?.id)?.document ?? fromUuidSync(this.getAttribute("uuid"));
+	}
+	get system() {
+		return this.document?.system;
+	}
+	_buttonContent() {
+		return "";
+	}
+	_panelContent() {
+		return [];
+	}
+	connectedCallback() {
+		this._adoptStyleSheet(this._getStyleSheet());
+		const button = document.createElement("button");
+		button.type = "button";
+		button.className = "popover-button";
+		button.innerHTML = this._buttonContent();
+		const panel = document.createElement("div");
+		panel.className = "popover-panel";
+		panel.append(...this._panelContent());
+		this.replaceChildren(button, panel);
+		const { signal } = this.#controller = new AbortController();
+		button.addEventListener("click", () => panel.classList.toggle("active"), { signal });
+		document.addEventListener("click", (ev) => {
+			if (!this.contains(ev.target)) panel.classList.remove("active");
+		}, { signal });
+	}
+	disconnectedCallback() {
+		this.#controller?.abort();
+	}
+	/** Small helper for building text rows. */
+	_row(text, className = "") {
+		const el = document.createElement("div");
+		el.className = className;
+		el.textContent = text;
+		return el;
+	}
+};
+//#endregion
+//#region src/module/applications/components/movement.popover.mjs
+var MovementPopover = class extends BasePopover {
+	static tagName = "dgns-movement";
+	_buttonContent() {
+		return `<i class="di di-movement"></i><span>${this.system.general.movement}</span>`;
+	}
+	_panelContent() {
+		return [this._row(`Movement:  ${this.system.general.movement}`)];
+	}
+};
+//#endregion
+//#region src/module/applications/components/encumbrance.popover.mjs
+var EncumbrancePopover = class extends BasePopover {
+	static tagName = "dgns-encumbrance";
+	_buttonContent() {
+		return `<i class="di di-movement"></i><span>${this.system.general.encumbrance.current} / ${this.system.general.encumbrance.max}</span>`;
+	}
+	_panelContent() {
+		return [this._row(`Enc:  ${this.system.general.encumbrance.current}`)];
+	}
+};
+//#endregion
 //#region src/module/applications/components/_module.mjs
 /**
 * Custom HTML Elements based on DND5E Implementation
 */
-var _module_exports$2 = /* @__PURE__ */ __exportAll({
+var _module_exports$3 = /* @__PURE__ */ __exportAll({
 	CheckboxElement: () => CheckboxElement,
+	DieElement: () => DieElement,
 	DiscomfortElement: () => DiscomfortElement,
+	EncumbrancePopover: () => EncumbrancePopover,
 	FaithWillSwitch: () => FaithWillSwitch,
+	MovementPopover: () => MovementPopover,
 	PrimalFocusSwitch: () => PrimalFocusSwitch,
+	SectionToggleElement: () => SectionToggleElement,
 	SlideToggleElement: () => SlideToggleElement,
 	VisionElement: () => VisionElement
 });
-window.customElements.define("dgns-checkbox", CheckboxElement);
-window.customElements.define("dgns-slidetoggle", SlideToggleElement);
-window.customElements.define("dgns-vision", VisionElement);
-window.customElements.define("dgns-discomfort", DiscomfortElement);
-window.customElements.define("dgns-primal-focus", PrimalFocusSwitch);
-window.customElements.define("dgns-faith-will", FaithWillSwitch);
+window.customElements.define(CheckboxElement.tagName, CheckboxElement);
+window.customElements.define(SlideToggleElement.tagName, SlideToggleElement);
+window.customElements.define(VisionElement.tagName, VisionElement);
+window.customElements.define(DiscomfortElement.tagName, DiscomfortElement);
+window.customElements.define(PrimalFocusSwitch.tagName, PrimalFocusSwitch);
+window.customElements.define(FaithWillSwitch.tagName, FaithWillSwitch);
+window.customElements.define(SectionToggleElement.tagName, SectionToggleElement);
+window.customElements.define(DieElement.tagName, DieElement);
+window.customElements.define(MovementPopover.tagName, MovementPopover);
+window.customElements.define(EncumbrancePopover.tagName, EncumbrancePopover);
 //#endregion
 //#region src/module/applications/ui/gamePause.mjs
 var DGNSGamePause = class extends foundry.applications.ui.GamePause {
@@ -4665,15 +5079,32 @@ var DGNSGamePause = class extends foundry.applications.ui.GamePause {
 };
 //#endregion
 //#region src/module/applications/ui/_module.mjs
-var _module_exports$1 = /* @__PURE__ */ __exportAll({ DGNSGamePause: () => DGNSGamePause });
+var _module_exports$2 = /* @__PURE__ */ __exportAll({ DGNSGamePause: () => DGNSGamePause });
+//#endregion
+//#region src/module/applications/foundry/chat.log.mjs
+var { ChatLog } = foundry.applications.sidebar.tabs;
+/**
+* The sidebar chat tab.
+* @inherit
+*/
+var DGNSChatLog = class extends ChatLog {
+	static PARTS = foundry.utils.mergeObject(super.PARTS, { log: {
+		template: "systems/degenesisnext/templates/foundry/chat/log.hbs",
+		templates: ["systems/degenesisnext/templates/foundry/chat/notifications.hbs"]
+	} }, { inplace: false });
+};
+//#endregion
+//#region src/module/applications/foundry/_module.mjs
+var _module_exports$1 = /* @__PURE__ */ __exportAll({ DGNSChatLog: () => DGNSChatLog });
 //#endregion
 //#region src/module/applications/_module.mjs
 var _module_exports = /* @__PURE__ */ __exportAll({
-	actor: () => _module_exports$5,
-	components: () => _module_exports$2,
-	effect: () => _module_exports$3,
-	item: () => _module_exports$4,
-	ui: () => _module_exports$1
+	actor: () => _module_exports$6,
+	components: () => _module_exports$3,
+	effect: () => _module_exports$4,
+	foundry: () => _module_exports$1,
+	item: () => _module_exports$5,
+	ui: () => _module_exports$2
 });
 //#endregion
 //#region src/module/data/fields/local-document-field.mjs
@@ -4870,9 +5301,6 @@ var DGNSActiveEffect = class DGNSActiveEffect extends ActiveEffect {
 	* @param {EffectChangeData} change
 	*/
 	_applyToItem(item, change) {
-		console.log(`Applying mods to items:`);
-		console.log(item);
-		console.log(change);
 		const current = foundry.utils.getProperty(item, change.key) ?? null;
 		let value = change.value;
 		switch (change.type) {
@@ -4898,8 +5326,6 @@ var DGNSActiveEffect = class DGNSActiveEffect extends ActiveEffect {
 	}
 	static applyToTargets(actor, effectKeys) {
 		if (!actor) return null;
-		console.log(`calling applyToTargets for ${actor.name}`);
-		console.log(actor.appliedEffects);
 		for (const effect of actor.appliedEffects) {
 			if (effect.disabled) continue;
 			for (const change of effect.changes) {
@@ -4941,6 +5367,28 @@ var DGNSActiveEffect = class DGNSActiveEffect extends ActiveEffect {
 	}
 };
 //#endregion
+//#region src/module/logic/dicepool.logic.mjs
+/**
+* Dice resolution logic.
+*/
+var DicePool = class {
+	static MAX_DICE = 12;
+	/**
+	*
+	* @param {*} actionNumber
+	* @param {*} modifiers
+	*/
+	static resolve(actionNumber = 0, modifiers = {}) {
+		const diceMod = modifiers.d || 0;
+		const totalActionNumber = Math.max(0, Number(actionNumber) || 0) + diceMod;
+		return {
+			totalActionNumber,
+			rolledDice: Math.min(totalActionNumber, this.MAX_DICE),
+			autoSuccesses: Math.max(0, totalActionNumber - this.MAX_DICE)
+		};
+	}
+};
+//#endregion
 //#region src/module/applications/roll/action.dialog.mjs
 /** @import HandlebarsApplicationMixin from '@client/applications/api/handlebars-application.mjs*/
 var { HandlebarsApplicationMixin: HandlebarsApplicationMixin$1, ApplicationV2: ApplicationV2$1 } = foundry.applications.api;
@@ -4958,6 +5406,8 @@ var DGNSActionRollDialog = class extends HandlebarsApplicationMixin$1(Applicatio
 		super(rollConfig, options);
 		this._actor = rollConfig.actor;
 		this._rollDefinition = foundry.utils.mergeObject(this._rollDefinition, rollConfig.definition);
+		this._actions = rollConfig.actions ?? [];
+		this._action = this._actions[0]?.key;
 	}
 	_rollDefinition = {
 		attribute: null,
@@ -4975,7 +5425,8 @@ var DGNSActionRollDialog = class extends HandlebarsApplicationMixin$1(Applicatio
 		classes: ["dgns-roll"],
 		actions: {
 			manageDifficulty: this.#onManageDifficulty,
-			execute: this.#submitHandler
+			execute: this.#submitHandler,
+			selectAction: this.#onSelectAction
 		},
 		form: {
 			submitOnChange: false,
@@ -4983,7 +5434,7 @@ var DGNSActionRollDialog = class extends HandlebarsApplicationMixin$1(Applicatio
 		},
 		position: {
 			width: 450,
-			height: 550
+			height: "auto"
 		},
 		timeout: null,
 		window: {
@@ -4994,6 +5445,7 @@ var DGNSActionRollDialog = class extends HandlebarsApplicationMixin$1(Applicatio
 	static PARTS = { rollDialog: {
 		template: "systems/degenesisnext/templates/rolls/roll.action.dialog.hbs",
 		templates: [
+			"systems/degenesisnext/templates/rolls/partials/roll.actions.hbs",
 			"systems/degenesisnext/templates/rolls/partials/roll.action.hbs",
 			"systems/degenesisnext/templates/rolls/partials/roll.configuration.hbs",
 			"systems/degenesisnext/templates/rolls/partials/roll.effects.hbs",
@@ -5005,10 +5457,19 @@ var DGNSActionRollDialog = class extends HandlebarsApplicationMixin$1(Applicatio
 		const context = await super._prepareContext(options);
 		context.attribute = this._rollDefinition.attribute;
 		context.skill = this._rollDefinition.skill;
+		context.actions = this._actions.map((a) => {
+			const { actionNumber, modifiers } = a.definition.primary ?? a.definition;
+			return {
+				key: a.key,
+				label: a.label,
+				active: a.key === this._action,
+				dice: DicePool.resolve(actionNumber, modifiers).rolledDice
+			};
+		});
 		/** Universal structure for all type of rolls (passing  prefix
 		* to differentiatie in case of multiple roll).
 		*/
-		context.roll = context.roll = {
+		context.roll = {
 			...this._rollDefinition,
 			prefix: "roll",
 			totals: {
@@ -5056,17 +5517,39 @@ var DGNSActionRollDialog = class extends HandlebarsApplicationMixin$1(Applicatio
 		else return;
 		this.render();
 	}
+	/**
+	* Handling selecting the actino o
+	* @param {*} event
+	* @param {*} target
+	*/
+	static #onSelectAction(event, target) {
+		const action = this._actions.find((a) => a.key === target.dataset.key);
+		this._action = action.key;
+		foundry.utils.mergeObject(this._rollDefinition, foundry.utils.deepClone(action.definition));
+		this.render();
+	}
+	_applyOption(key) {
+		const option = this._options.find((o) => o.key === key);
+		if (!option) return;
+		this._selected = key;
+		foundry.utils.mergeObject(this._rollDefinition, option.definition);
+	}
 	_getRollData(prefix) {
 		if (prefix === "roll" || !this._rollDefinition.primary) return this._rollDefinition;
 		return this._rollDefinition[prefix];
 	}
 	getTotalDice(prefix = "roll") {
 		const data = this._getRollData(prefix);
-		return (Number(data.actionNumber) || 0) + (Number(data.modifiers?.d) || 0);
+		return DicePool.resolve(data.actionNumber, data.modifiers).rolledDice;
+	}
+	getAutoSuccesses(prefix = "roll") {
+		const data = this._getRollData(prefix);
+		return DicePool.resolve(data.actionNumber, data.modifiers).autoSuccesses;
 	}
 	getTotalSuccesses(prefix = "roll") {
 		const data = this._getRollData(prefix);
-		return (Number(data.successes) || 0) + (Number(data.modifiers?.s) || 0);
+		const { autoSuccesses } = DicePool.resolve(data.actionNumber, data.modifiers);
+		return autoSuccesses + (Number(data.modifiers?.s) || 0);
 	}
 	getTotalTriggers(prefix = "roll") {
 		const data = this._getRollData(prefix);
@@ -5172,7 +5655,6 @@ var DGNSCombinationRollDialog = class extends HandlebarsApplicationMixin(Applica
 			}
 		};
 		context.roll = this._rollDefinition;
-		console.log(context);
 		return context;
 	}
 	_onChangeForm(formConfig, event) {
@@ -5230,12 +5712,9 @@ var DGNSCombinationRollDialog = class extends HandlebarsApplicationMixin(Applica
 		return game.i18n.localize(`DGNS.ROLL.combination`);
 	}
 	static #onManageDifficulty(event, target) {
-		console.log(target);
 		const prefix = target.dataset.prefix;
 		const method = target.dataset.method;
-		console.log(prefix);
 		const targetData = prefix === "roll" ? this._rollDefinition : this._rollDefinition[prefix];
-		console.log(targetData);
 		if (method === "increaseDifficulty" && targetData.difficulty < 12) targetData.difficulty++;
 		else if (method === "decreaseDifficulty" && targetData.difficulty > 1) targetData.difficulty--;
 		else return;
@@ -5280,6 +5759,18 @@ var DGNSCombinationRollDialog = class extends HandlebarsApplicationMixin(Applica
 	}
 };
 //#endregion
+//#region src/module/applications/roll/weapon.dialog.mjs
+var DGNSWeaponRollDialog = class extends DGNSActionRollDialog {
+	constructor(rollConfig, options = {}) {
+		super(rollConfig, options);
+		this._weapon = rollConfig.weapon;
+		console.log(this);
+	}
+	get title() {
+		return this._weapon.name;
+	}
+};
+//#endregion
 //#region src/module/dice/base.roll.mjs
 /** @import Roll from '@client/dice/roll.mjs*/
 var { Roll: Roll$1 } = foundry.dice;
@@ -5293,18 +5784,14 @@ var DGNSRoll = class extends Roll$1 {
 	static CHAT_TEMPLATE = "systems/degenesisnext/templates/chat/action.roll.hbs";
 	/** Parsing options  */
 	constructor(rollDefinition, data, options = {}) {
-		const { actionNumber = 0, difficulty = 0, modifiers = {} } = rollDefinition;
-		const diceMod = modifiers.d || 0;
-		const totalActionNumber = Math.max(0, actionNumber + diceMod);
-		const rolledDice = Math.min(totalActionNumber, 12);
-		const autoSuccesses = Math.max(0, totalActionNumber - 12);
+		const { totalActionNumber, rolledDice, autoSuccesses } = DicePool.resolve(rollDefinition.actionNumber, rollDefinition.modifiers ?? {});
 		const formula = `${rolledDice}d6`;
 		super(formula, data, options);
 		this.definition = rollDefinition;
 		this.actionNumber = totalActionNumber;
 		this.rolledDice = rolledDice;
 		this.autoSuccesses = autoSuccesses;
-		this.difficulty = Number(difficulty);
+		this.difficulty = Number(rollDefinition.difficulty ?? 0);
 		this.modifiers = rollDefinition.modifiers;
 		this._outcome = null;
 	}
@@ -5354,13 +5841,13 @@ var DGNSRoll = class extends Roll$1 {
 		else this._outcome = "failure";
 		else this._outcome = null;
 	}
-	/** Display result to chat  */
-	async toMessage(messageData = {}, { rollMode = null, create = true } = {}) {
-		rollMode = rollMode || game.settings.get("core", "rollMode");
-		console.log(rollMode);
-		const speaker = ChatMessage.getSpeaker();
-		const chatData = {
-			title: game.i18n.localize(`DGNS.ROLL.actionRoll`),
+	/**
+	* Method for preparing chat data.
+	* @returns
+	*/
+	_prepareChatData() {
+		return {
+			title: game.i18n.localize(`DGNS.ROLL.action`),
 			attribute: game.i18n.localize(`DGNS.ATTRIBUTE.${this.definition.attribute}`),
 			skill: game.i18n.localize(`DGNS.SKILL.${this.definition.skill}`),
 			difficulty: this.difficulty,
@@ -5371,17 +5858,20 @@ var DGNSRoll = class extends Roll$1 {
 			result: this.result,
 			resultLabel: game.i18n.localize(`DGNS.ROLL.${this.result}`)
 		};
-		const template = this.constructor.CHAT_TEMPLATE;
-		const content = await renderTemplate$3(template, chatData);
+	}
+	/** Display result to chat  */
+	async toMessage(actor, messageData = {}, { messageMode = null, create = true } = {}) {
+		messageMode = messageMode || game.settings.get("core", "messageMode");
+		const content = await renderTemplate$3(this.constructor.CHAT_TEMPLATE, this._prepareChatData());
 		const messageOptions = foundry.utils.mergeObject({
 			user: game.user.id,
 			style: CONST.CHAT_MESSAGE_STYLES ? CONST.CHAT_MESSAGE_STYLES.ROLL : void 0,
 			content,
 			rolls: [this],
-			speaker,
-			flags: { "core.rollMode": rollMode }
+			speaker: ChatMessage.getSpeaker({ actor }),
+			flags: { "core.messageMode": messageMode }
 		}, messageData);
-		ChatMessage.applyRollMode(messageOptions, rollMode);
+		ChatMessage.applyMode(messageOptions, messageMode);
 		return create ? ChatMessage.create(messageOptions) : messageOptions;
 	}
 	get result() {
@@ -5546,7 +6036,7 @@ var EffectHelper = {
 	}
 };
 //#endregion
-//#region src/module/logic/penalties.mjs
+//#region src/module/logic/penalties.logic.mjs
 var Penalty = {
 	fromTrauma: (traumaValue) => {
 		return traumaValue ?? 0;
@@ -5562,6 +6052,41 @@ var Penalty = {
 /** Custom ActiveEffect document  */
 /** Dialogs  */
 /** Roll logic and helper functions  */
+/** Routine handlers  */
+var HANDLERS = { group: {
+	_onCreate(groupActor, data, options, userId) {},
+	_onUpdate(groupActor, changed, options, userId) {
+		this.propagateGroup(groupActor);
+	},
+	async _onUpdateOperation(groupActor, operation, user) {
+		const diff = operation.updates?.find((u) => u._id === groupActor.id) ?? {};
+		const newAlignment = foundry.utils.hasProperty(diff, "system.alignment");
+		const newMembers = foundry.utils.hasProperty(diff, "system.members");
+		if (newAlignment || newMembers) {
+			groupActor.reset();
+			for (const member of groupActor.system.memberActors) {
+				member.reset();
+				member.sheet?.render({ force: true });
+			}
+		}
+		actor.sheet?.render({ force: true });
+	},
+	async removeMember(groupActor, memberId) {
+		const filtered = groupActor.system.members.filter((x) => x.actor?.id !== memberId);
+		await groupActor.update({ "system.members": filtered });
+	},
+	async applyAlignmentModifiers(groupActor, newMemberIds = /* @__PURE__ */ new Set()) {
+		const updates = [...Scars.prepareGroupModifiers(groupActor, newMemberIds)].map(([actorId, modifiers]) => ({ _id: actorId }));
+		if (updates.length > 0) await groupActor.updateDocuments(updates);
+	},
+	async propagateGroup(groupActor) {
+		if (!groupActor) return;
+		for (const schema of groupActor.system.members) {
+			schema.actor.prepareData();
+			schema.actor.render(false);
+		}
+	}
+} };
 /**
 *
 * Custom Actor document class for Degenesis system.
@@ -5599,41 +6124,94 @@ var DGNSActor = class extends Actor {
 	* Data preparation for Character type.
 	*/
 	_prepareCharacterDerivedData() {
-		console.log(`Character derived data preparations...`);
 		this._prepareConditionMaxima();
 		this._prepareEncumbrance();
 		this._prepareMovement();
+		this._prepareGroupModifiers();
 		this._applyPenalties();
+		this._prepareActionNumbers();
+		this._prepareCombatActions();
 		this._prepareWeapons();
 	}
+	/**
+	* Data preparation for Group type.
+	*/
+	_prepareGroupDerivedData() {}
 	prepareEmbeddedDocuments() {
 		super.prepareEmbeddedDocuments();
 	}
+	/**
+	* For now just the handlers i needed for the development,
+	* but all methods will be exposed here in a future.
+	*/
+	/**
+	* @inheritdoc
+	* @param {*} data
+	* @param {*} options
+	* @param {*} user
+	* @returns
+	*/
 	async _preCreate(data, options, user) {
 		if (await super._preCreate(data, options, user) === false) return false;
+		await HANDLERS[this.type]?._preCreate?.(this, data, options, user);
 	}
-	async _preUpdate(changed, options, user) {
-		if (await super._preUpdate(changed, options, user) === false) return false;
+	/**
+	* @inheritdoc
+	* @param {*} changed
+	* @param {*} options
+	* @param {*} user
+	* @returns
+	*/
+	async _preUpdate(changed, options, userId) {
+		if (await super._preUpdate(changed, options, userId) === false) return false;
+		await HANDLERS[this.type]?._preUpdate?.(this, data, options, userId);
 	}
+	/**
+	* @inheritdoc
+	* @param {*} data
+	* @param {*} options
+	* @param {*} userId
+	*/
 	_onCreate(data, options, userId) {
 		super._onCreate(data, options, userId);
+		HANDLERS[this.type]?._onCreate?.(this, data, options, userId);
 	}
-	_onUpdate(data, options, userId) {
-		super._onUpdate(data, options, userId);
-		if (this.type === "group") this._propagateGroup();
+	/**
+	* @inheritdoc
+	* @param {*} changed
+	* @param {*} options
+	* @param {*} userId
+	*/
+	_onUpdate(changed, options, userId) {
+		super._onUpdate(changed, options, userId);
+		HANDLERS[this.type]?._onUpdate?.(this, changed, options, userId);
 	}
+	/**
+	* @inheritdoc
+	* @param {*} data
+	* @param {*} options
+	* @returns
+	*/
 	async update(data, options = {}) {
-		console.log(`Actor update.`);
-		console.log("Data:", data);
-		console.log("Options:", options);
 		const fieldsToSync = this._getCachedReferenceFields();
 		if (fieldsToSync.length > 0) {
 			const cacheUpdates = await this._prepareCacheUpdates(data, fieldsToSync);
 			if (cacheUpdates) foundry.utils.mergeObject(data, cacheUpdates);
 		}
 		const result = await super.update(data, options);
+		await HANDLERS[this.type]?.update?.(this, data, options);
 		this._syncGroup();
 		return result;
+	}
+	/**
+	* @inheritdoc
+	* @param {*} documents
+	* @param {*} operation
+	* @param {*} user
+	*/
+	static async _onUpdateOperation(documents, operation, user) {
+		await super._onUpdateOperation(documents, operation, user);
+		for (const actor of documents) await HANDLERS[actor.type]?._onUpdateOpereation?.(actor, operation, user);
 	}
 	/**
 	* Main event for syncing stuff with group actor.
@@ -5676,17 +6254,55 @@ var DGNSActor = class extends Actor {
 		general.movement = Condition.calculateMovement(attributes.body.value, attributes.body.skills.athletics.value);
 		DGNSActiveEffect.applyToTargets(this, DGNSActiveEffect.MOVEMENT_KEYS);
 	}
+	/**
+	* Get and apply group modifiers to actor entity.
+	*/
+	_prepareGroupModifiers() {
+		const { group, condition, special } = this.system;
+		const modifiers = group ? group.system.getModifiersForActor(this.id) : [];
+		condition.ego.max += Scars.sumModifier(modifiers, "ego.max");
+		condition.fleshwounds.max += Scars.sumModifier(modifiers, "fleshwounds.max");
+		special.modifiers = {
+			egoSuccessConvert: Scars.hasModifierFlag(modifiers, "special.egoSuccessConvert"),
+			groupSkillHalfXP: Scars.hasModifierFlag(modifiers, "special.groupSkillHalfXP"),
+			rerollFailedMentalDefence: Scars.hasModifierFlag(modifiers, "special.rerollFailedMentalDefence"),
+			rerollRevengeAttempts: Scars.hasModifierFlag(modifiers, "special.rerollRevengeAttempts")
+		};
+		this.groupModifiers = modifiers;
+	}
+	/**
+	* Prepare action numbers for actor entity. Should be called as a last step since
+	* it heavily relies on modifiers and active effects calculations prior to final result.
+	* @returns
+	*/
+	_prepareActionNumbers() {
+		let actionNumbers = {};
+		const { attributes, modes } = this.system;
+		for (let attribute in attributes) for (let skill in attributes[attribute].skills) actionNumbers[skill] = attributes[attribute].value + attributes[attribute].skills[skill].value;
+		actionNumbers.activeDefense = actionNumbers["mobility"];
+		actionNumbers.mentalDefense = actionNumbers[modes.faithWillpower];
+		this.system.actionNumbers = actionNumbers;
+	}
+	_prepareCombatActions() {
+		const actions = {};
+		const { actionNumbers } = this.system;
+		for (const [key, { group, skill, mod = 0 }] of Object.entries(CONFIG.DEGENESIS.combat.actions)) (actions[group] ??= []).push({
+			key,
+			label: `DGNS.COMBAT.action.${key}`,
+			pool: Math.max(0, (actionNumbers[skill] ?? 0) + mod)
+		});
+		this.combatActions = actions;
+	}
 	_applyPenalties() {
 		const { condition, general } = this.system;
 		let totalPenalty = 0;
 		totalPenalty += Penalty.fromTrauma(condition.trauma.value);
 		totalPenalty += Penalty.fromEncumbrance(general.encumbrance.current, general.encumbrance.max);
-		console.log(`Calculated total penalty`);
-		console.log(totalPenalty);
 	}
-	_prepareWeapons() {
-		console.log(`Holding a spot in modifiers queue`);
-	}
+	/**
+	* Prepare data for all the weapon items.
+	*/
+	_prepareWeapons() {}
 	/**
 	* Set actor's group (ForeignField link) and reverse link
 	* @param {*} groupId
@@ -5713,6 +6329,19 @@ var DGNSActor = class extends Actor {
 			schema.actor.prepareData();
 			schema.actor.render(false);
 		}
+	}
+	/**
+	* Helper function for grabiing skill definition
+	* todo: fix the mental shit and stuff
+	* @param {*} skill
+	*/
+	getSkillDefinition(skill) {
+		const { attributes, actionNumbers } = this.system;
+		return {
+			attribute: Object.keys(attributes).find((a) => skill in attributes[a].skills),
+			skill,
+			actionNumber: actionNumbers[skill]
+		};
 	}
 	/**
 	* Discover any CachedReferenceFields from schema.
@@ -5862,7 +6491,7 @@ var DGNSActor = class extends Actor {
 		const roll = new RollClass(definition);
 		await roll.evaluate();
 		await this._postRollEffects(type, roll);
-		await roll.toMessage();
+		await roll.toMessage(this);
 		return roll;
 	}
 	/**
@@ -5911,30 +6540,59 @@ var DGNSActor = class extends Actor {
 	* @param {*} action weapon action string
 	* @returns
 	*/
-	async combatRoll(weapon, action) {
-		if (!action) return null;
-		const { primary, secondary } = weapon.system.skills;
-		const definition = await (secondary ? DGNSCombinationRollDialog : DGNSActionRollDialog).create({
+	async weaponRoll(weapon) {
+		const actions = this._prepareWeaponActions(weapon);
+		if (!actions.length) return null;
+		const combined = Boolean(weapon.system.skills.secondary);
+		const definition = await (combined ? DGNSCombinationRollDialog : DGNSWeaponRollDialog).create({
 			actor: this,
-			definition: {
-				primary: {
-					attribute,
-					skill,
-					actionNumber: this.system.actionNumbers[primary]
-				},
-				...secondary && { secondary: {
-					attribute,
-					skill,
-					actionNumber: this.system.actionNumbers[secondary]
-				} }
-			}
+			weapon,
+			actions,
+			definition: foundry.utils.deepClone(actions[0].definition)
 		});
 		if (!definition) return;
 		return this._executeRoll({
-			type: secondary ? "combination" : "action",
+			type: combined ? "combination" : "action",
 			definition
 		});
 	}
+	_prepareWeaponActions(weapon) {
+		const { primary, secondary } = weapon.system.skills;
+		if (!primary) return [];
+		const zero = () => ({
+			d: 0,
+			s: 0,
+			t: 0
+		});
+		return weapon.combatActions.map(({ key, label, rollType, modifiers }) => {
+			const main = {
+				...this.getSkillDefinition(primary),
+				rollType,
+				modifiers: {
+					...zero(),
+					...modifiers
+				},
+				itemUuid: weapon.uuid
+			};
+			return {
+				key,
+				label,
+				definition: secondary ? {
+					primary: main,
+					secondary: {
+						...this.getSkillDefinition(secondary),
+						modifiers: zero()
+					}
+				} : main
+			};
+		});
+	}
+	/**
+	* Handling common combat  action rolls.
+	* @param {*} action
+	*/
+	async combatActionRoll(action) {}
+	_prepareCombatActions() {}
 	/**
 	* Post roll pipeline. Handling all side effects for actor entity.
 	* For now its basic deduct action number and overload for psychonauts.
@@ -5946,16 +6604,16 @@ var DGNSActor = class extends Actor {
 		if (Object.keys(updates).length > 0) await this.update(updates);
 	}
 	get concept() {
-		return this.system.concept || "";
+		return this.system.concept ?? null;
 	}
 	get culture() {
-		return this.system.culture || "";
+		return this.system.culture ?? null;
 	}
 	get cult() {
-		return this.system.cult || "";
+		return this.system.cult ?? null;
 	}
 	get group() {
-		return this.system?.group || null;
+		return this.system?.group ?? null;
 	}
 	/**
 	* Returning true if there is a linked
@@ -5971,6 +6629,7 @@ var DGNSActor = class extends Actor {
 	* @param {*} targetMap
 	* @param {*} property
 	* @returns
+	* @deprecated
 	*/
 	_applyEffectsToTargets(targetMap, property) {
 		if (!property || !targetMap) return null;
@@ -6007,6 +6666,7 @@ var DGNSActor = class extends Actor {
 //#endregion
 //#region src/module/documents/item.mjs
 /** @import Item from '@common/documents/item.mjs*/
+var { TextEditor } = foundry.applications.ux;
 var DGNSItem = class extends Item {
 	/**
 	* Main data preparation loop. Do not override without specific purpose.
@@ -6059,7 +6719,6 @@ var DGNSItem = class extends Item {
 		};
 	}
 	async _manageQualities(action, qualityKey = null, field = null, value = null) {
-		console.log(`Manage quality fired. ${action} | ${qualityKey} | ${field} | ${value}|`);
 		if (!qualityKey) return;
 		switch (action) {
 			case "toggle": return this._toggleQuality(qualityKey);
@@ -6106,8 +6765,6 @@ var DGNSItem = class extends Item {
 	* Passing and overriding qualities from linked modification items into linked parent.
 	*/
 	_handleModifications() {
-		console.log(`HandleModifications for:`);
-		console.log(this);
 		const mods = (this.system.modifications?.installed ?? []).map((uuid) => fromUuidSync(uuid)).filter((mod) => {
 			if (!mod) console.warn("DGNS | Installed mod resolved to null — UUID may be stale.");
 			return !!mod;
@@ -6164,8 +6821,6 @@ var DGNSItem = class extends Item {
 			return;
 		}
 		const modToLink = await this._resolveModInstance(mod);
-		console.log(`modToLInk:`);
-		console.log(modToLink.id);
 		if (!modToLink) return;
 		if ((this.system.modifications.installed ?? []).some((m) => m?.uuid === modToLink.uuid)) {
 			ui.notifications.warn("Modification already installed.");
@@ -6220,14 +6875,22 @@ var DGNSItem = class extends Item {
 	/**
 	* Return true if it is a weapon within melee range.
 	*/
+	get combatType() {
+		if (this.type !== "weapon") return null;
+		const { group } = this.system;
+		return Items$1.weapons[group]?.combat ?? null;
+	}
+	get combatActions() {
+		return Combat.weaponActions[this.combatType] ?? [];
+	}
 	get isMelee() {
-		if (this.type === "weapon") return WEAPON_GROUPS_SKILLS[this.system.group] == "projectiles" || this.system.group == "sonic" ? false : true;
+		return this.combatType === "melee";
 	}
 	get isRanged() {
-		if (this.type === "weapon") return WEAPON_GROUPS_SKILLS[this.system.group] == "projectiles" && this.group != "sonic";
+		return this.combatType === "ranged";
 	}
 	get isSonic() {
-		if (this.type = "weapon") return this.system.group == "sonic";
+		return this.combatType === "sonic";
 	}
 };
 //#endregion
@@ -6246,6 +6909,7 @@ var DGNSChatMessage = class DGNSChatMessage extends ChatMessage {
 		return {
 			message: this,
 			speaker: this.speaker,
+			actor: this.speakerActor ?? null,
 			isGM: game.user.isGM,
 			isAuthor: this.isAuthor,
 			...this.getFlag(CONFIG.DEGENESIS.id, "actionData") ?? {}
@@ -6254,6 +6918,7 @@ var DGNSChatMessage = class DGNSChatMessage extends ChatMessage {
 	/** Using base Foundry message and inserting proper template  */
 	async renderHTML() {
 		const el = await super.renderHTML();
+		this.#applyTheme(el);
 		const content = await renderTemplate$1(DGNSChatMessage.TEMPLATES[this.customType] ?? DGNSChatMessage.TEMPLATES.default, await this._getTemplateData());
 		el.querySelector(".message-content").innerHTML = content;
 		return el;
@@ -6276,7 +6941,16 @@ var DGNSChatMessage = class DGNSChatMessage extends ChatMessage {
 			...data
 		});
 	}
+	#applyTheme(html) {
+		const scheme = game.settings.get("core", "uiConfig").colorScheme.applications || "dark";
+		html.classList.add("themed");
+		html.classList.remove("theme-light", "theme-dark");
+		html.classList.add(`theme-${scheme}`);
+	}
 };
+//#endregion
+//#region src/module/documents/chat.popout.mjs
+var { ChatPopout } = foundry.applications.sidebar.apps;
 //#endregion
 //#region src/module/data/fields/attribute-field.mjs
 var { SchemaField: SchemaField$27, NumberField: NumberField$28, StringField: StringField$30, BooleanField: BooleanField$25, ArrayField: ArrayField$25, IntegerSortField: IntegerSortField$25 } = foundry.data.fields;
@@ -6744,7 +7418,7 @@ var IdentityFields = class {
 };
 //#endregion
 //#region src/module/data/actor/character.mjs
-var { SchemaField: SchemaField$21, NumberField: NumberField$22, StringField: StringField$23, BooleanField: BooleanField$19, ArrayField: ArrayField$19, IntegerSortField: IntegerSortField$19 } = foundry.data.fields;
+var { SchemaField: SchemaField$21, NumberField: NumberField$22, StringField: StringField$23, BooleanField: BooleanField$19, ArrayField: ArrayField$19, IntegerSortField: IntegerSortField$19, ObjectField: ObjectField$1 } = foundry.data.fields;
 var CharacterData = class extends foundry.abstract.TypeDataModel {
 	/** @inheritdoc */
 	static _systemType = "character";
@@ -6760,7 +7434,8 @@ var CharacterData = class extends foundry.abstract.TypeDataModel {
 			...DetailsFields.currency,
 			...DetailsFields.backrounds,
 			...DetailsFields.biography,
-			...IdentityFields.identity
+			...IdentityFields.identity,
+			special: new ObjectField$1({ initial: {} })
 		};
 	}
 	/** @inheritdoc */
@@ -6768,18 +7443,8 @@ var CharacterData = class extends foundry.abstract.TypeDataModel {
 		this.culture = CachedReferenceField.resolve(this.cultureItem);
 		this.concept = CachedReferenceField.resolve(this.conceptItem);
 		this.cult = CachedReferenceField.resolve(this.cultItem);
-		this.actionNumbers = this.prepareActionNumbers();
 	}
 	/** @inheritdoc */
-	/**
-	* Sum attribute value with skill value. Base action number.
-	* @returns {object} Object with skill names as properties.
-	*/
-	prepareActionNumbers() {
-		let actionNumbers = {};
-		for (let attribute in this.attributes) for (let skill in this.attributes[attribute].skills) actionNumbers[skill] = this.attributes[attribute].value + this.attributes[attribute].skills[skill].value;
-		return actionNumbers;
-	}
 	/** Getter for primary chracter mode.  */
 	get PrimalOrFocus() {
 		return this.modes.primalFocus;
@@ -6832,7 +7497,6 @@ var NPCData = class extends foundry.abstract.TypeDataModel {
 	/** @inheritdoc */
 	static _systemType = "npc";
 	static defineSchema() {
-		console.log(`Defining schema for NPC...`);
 		return {
 			...AttributesSkillsFields.attributes,
 			...GeneralFields$1.general,
@@ -6950,10 +7614,13 @@ var GroupData = class extends foundry.abstract.TypeDataModel {
 	static defineSchema() {
 		return {
 			description: new HTMLField$9({ initial: "" }),
-			members: new ArrayField$14(new SchemaField$14({ actor: new ForeignDocumentField$4(BaseActor$1, {
-				nullable: true,
-				idOnly: false
-			}, { label: "DGNS.GENERAL.members" }) })),
+			members: new ArrayField$14(new SchemaField$14({
+				actor: new ForeignDocumentField$4(BaseActor$1, {
+					nullable: true,
+					idOnly: false
+				}, { label: "DGNS.GENERAL.members" }),
+				isNew: new BooleanField$14({ initial: true })
+			})),
 			alignment: new StringField$16({
 				required: false,
 				blank: true,
@@ -7000,11 +7667,32 @@ var GroupData = class extends foundry.abstract.TypeDataModel {
 			})
 		};
 	}
+	prepareDerivedData() {
+		this.modifiersByActor = {};
+		if (!this.alignment) {
+			for (const actor of this.memberActors) this.modifiersByActor[actor.id] = [];
+			return;
+		}
+		const concepts = this.memberConcepts;
+		for (const entry of this.members) {
+			const actor = entry.actor;
+			if (!actor) continue;
+			const concept = actor.system.concept?.id ?? "";
+			const isNew = entry.isNew;
+			this.modifiersByActor[actor.id] = Scars.prepareAligmentModifiers(concept, this.alignment, concepts, isNew);
+		}
+	}
+	get hasAlignment() {
+		return !!this.alignment;
+	}
 	get memberActors() {
 		return this.members.map((entry) => entry.actor).filter(Boolean);
 	}
 	get memberConcepts() {
 		return this.memberActors.map((actor) => actor.system.concept ?? "").filter(Boolean);
+	}
+	getModifiersForActor(actorId) {
+		return this.modifiersByActor?.[actorId] ?? [];
 	}
 };
 //#endregion
@@ -7058,9 +7746,9 @@ var GeneralFields = class {
 	static get weaponGroup() {
 		return { group: new StringField$15({
 			label: "DGNS.Group",
-			choices: WEAPON_GROUPS,
-			required: false,
-			blank: true
+			choices: Items$1.weapons,
+			required: true,
+			initial: Object.keys(Items$1.weapons)[0]
 		}) };
 	}
 	static get rules() {
@@ -7342,7 +8030,7 @@ var CombatFields = class {
 		return { ammunition: new SchemaField$6({
 			caliber: new StringField$8({
 				label: "DGNS.Caliber",
-				choices: CALIBERS,
+				choices: Items$1.calibers,
 				blank: true,
 				initial: ""
 			}),
@@ -7638,6 +8326,29 @@ var WeaponData = class extends BaseItemData {
 			...CombatFields.skills
 		};
 	}
+	prepareDerivedData() {
+		const def = Items$1.weapons[this.group];
+		if (def?.skills) this.skills = {
+			primary: def.skills.primary ?? "",
+			secondary: def.skills.secondary ?? ""
+		};
+	}
+	/**
+	* Helper to resolve skills for weapon.
+	* @param {*} group
+	* @param {*} stored
+	* @param {*} groups
+	* @returns
+	*/
+	get rollOptions() {
+		return Combat.Actions[this.category];
+	}
+	get isCustom() {
+		return this.group === "custom";
+	}
+	get resolvedSkills() {
+		return this.resolveSkills(this.group, this.skills);
+	}
 };
 //#endregion
 //#region src/module/data/item/_module.mjs
@@ -7684,7 +8395,7 @@ var config = {
 	modification: DGNSModEffectData
 };
 //#endregion
-//#region src/degenesis.mjs
+//#region src/system.mjs
 var { DocumentSheetConfig } = foundry.applications.apps;
 var { Actors, Items, Effects } = foundry.documents.collections;
 var { ActorSheet, ItemSheet } = foundry.appv1.sheets;
@@ -7694,6 +8405,7 @@ CONFIG.Dice.rolls = [Roll, DGNSRoll];
 CONFIG.Dice.DGNSRoll = DGNSRoll;
 CONFIG.Actor.documentClass = DGNSActor;
 CONFIG.Item.documentClass = DGNSItem;
+CONFIG.ChatMessage.template = "systems/degenesisnext/templates/chat/chat.message.hbs";
 CONFIG.ChatMessage.documentClass = DGNSChatMessage;
 CONFIG.ActiveEffect.documentClass = DGNSActiveEffect;
 CONFIG.Actor.dataModels = config$2;
@@ -7809,6 +8521,7 @@ Hooks.once("init", async function() {
 			light: "SETTINGS.UI.FIELDS.colorScheme.light"
 		}
 	});
+	_module_default$1();
 	_module_default();
 	CONFIG.canvasTextStyle = new PIXI.TextStyle({
 		fontFamily: "Calluna",

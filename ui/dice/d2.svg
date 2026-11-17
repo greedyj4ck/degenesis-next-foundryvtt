@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg width="100%"
+    height="100%" viewBox="0 0 256 257" version="1.1" xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/"
+    style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2; --dgns-die-surface: white">
+
+    <rect x="0" y="0.589" width="256" height="256" style="fill:var(--dgns-die-surface);" />
+    <g>
+        <path
+            d="M128.9,224.089L128,224.989L127,224.089L84.6,181.789L83.7,180.889L84.6,179.889L127,137.689L128,136.689L128.9,137.689L171.3,179.889L172.3,180.889L171.3,181.789L128.9,224.089ZM104.898,180.851L127.95,203.849L151.002,180.851L127.95,157.907L104.898,180.851Z"
+            style="fill:var(--dgns-die-symbol);" />
+        <path
+            d="M128.9,119.589L128,120.489L127,119.589L84.6,77.289L83.7,76.389L84.6,75.389L127,33.189L128,32.189L128.9,33.189L171.3,75.389L172.3,76.389L171.3,77.289L128.9,119.589ZM104.898,76.351L127.95,99.349L151.002,76.351L127.95,53.407L104.898,76.351Z"
+            style="fill:var(--dgns-die-symbol);" />
+    </g>
+</svg>

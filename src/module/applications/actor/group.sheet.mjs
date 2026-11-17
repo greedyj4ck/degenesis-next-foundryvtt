@@ -8,7 +8,7 @@ const { TextEditor } = foundry.applications.ux;
 
 import ActorSheetMixin from "./actor.sheet.mixin.mjs";
 
-import { Scars } from "../../logic/scars.mjs";
+import { Scars } from "../../logic/scars.logic.mjs";
 
 export default class DGNSGroupSheet extends ActorSheetMixin(
   sheets.ActorSheetV2,
@@ -111,13 +111,10 @@ export default class DGNSGroupSheet extends ActorSheetMixin(
     context.alignmentData = Scars.Alignments[system.alignment] ?? null;
     context.milestones = this.document.system.milestones;
     context.members = system.members;
-    context.membersConcepts = system.membersConcepts;
+    context.membersConcepts = system.membersConcept;
     context.mainTabs = this._prepareTabs("main");
 
     context.enriched = {};
-
-    console.log(`Milestone debug`);
-    console.log(context.milestones[0].description);
 
     // Preparing expanded sections.
 
@@ -138,7 +135,7 @@ export default class DGNSGroupSheet extends ActorSheetMixin(
       }
     }
 
-    console.log(`Context for group actor: ${this.name}`);
+    console.log(`Context for group actor: ${this.actor.name}`);
     console.dir(context);
 
     return context;
@@ -175,7 +172,6 @@ export default class DGNSGroupSheet extends ActorSheetMixin(
     // You may want to add other special handling here
     // Foundry comes with a large number of utility classes, e.g. SearchFilter
     // That you may want to implement yourself.
-    console.log(this);
 
     super._onRender(context, options);
   }
@@ -200,9 +196,6 @@ export default class DGNSGroupSheet extends ActorSheetMixin(
 
   async onCreateMilestone() {
     const milestones = this.document.system.milestones ?? [];
-
-    console.log(`Adding new mielstone`);
-    console.log(milestones);
 
     await this.document.update({
       "system.milestones": [

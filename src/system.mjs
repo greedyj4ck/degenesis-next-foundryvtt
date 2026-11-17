@@ -17,6 +17,7 @@ import { registerHandlebarsHelpers } from "./module/handlebars.mjs";
 import { SYSTEM } from "./module/config/system.mjs";
 
 import hooks from "./module/hooks/_module.mjs";
+import integrations from "./module/integrations/_module.mjs";
 
 // Module Imports
 import * as applications from "./module/applications/_module.mjs";
@@ -53,7 +54,12 @@ CONFIG.Dice.DGNSRoll = DGNSRoll;
 // Configuring document class
 CONFIG.Actor.documentClass = documents.DGNSActor;
 CONFIG.Item.documentClass = documents.DGNSItem;
+
+CONFIG.ChatMessage.template =
+  "systems/degenesisnext/templates/chat/chat.message.hbs";
 CONFIG.ChatMessage.documentClass = documents.DGNSChatMessage;
+
+//CONFIG.ChatMessage.popoutClass = documents.DGNSChatPopout;
 CONFIG.ActiveEffect.documentClass = documents.DGNSActiveEffect;
 
 // Configuring data models
@@ -63,6 +69,7 @@ CONFIG.ActiveEffect.dataModels = dataModels.effect.config;
 
 // Overriding foundry applications with custom ones
 CONFIG.ui.pause = applications.ui.DGNSGamePause;
+//CONFIG.ui.chat = applications.foundry.DGNSChatLog;
 
 // Temporary V14 fix
 CONFIG.ActiveEffect.phases = {
@@ -239,6 +246,7 @@ Hooks.once("init", async function () {
   );
 
   hooks();
+  integrations();
 
   // SETTING FONTS FOR USAGE (COULD BE REPLACED WITH CSS?)
 

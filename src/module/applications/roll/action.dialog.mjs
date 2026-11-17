@@ -1,8 +1,11 @@
 /** @import HandlebarsApplicationMixin from '@client/applications/api/handlebars-application.mjs*/
 
+import { DicePool } from "../../logic/dicepool.logic.mjs";
+
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 const { FormDataExtended } = foundry.applications.ux;
 const { deepClone } = foundry.utils;
+
 /**
  * Application: Action roll dialog
  * Used for setting up data for rolls. Main execution still lies within
@@ -21,6 +24,12 @@ export default class DGNSActionRollDialog extends HandlebarsApplicationMixin(
       this._rollDefinition,
       rollConfig.definition,
     );
+    /* ---------------------------------- */
+    // incorporating possibility of building action dialogs with options for attack, defense, parrying etc.
+    /* ---------------------------------- */
+    this._actions = rollConfig.actions ?? [];
+    this._action = this._actions[0]?.key;
+    /* ---------------------------------- */
   }
 
   // Template for roll definition
@@ -43,6 +52,8 @@ export default class DGNSActionRollDialog extends HandlebarsApplicationMixin(
     actions: {
       manageDifficulty: this.#onManageDifficulty,
       execute: this.#submitHandler,
+      /* ---------------------------------- */
+      selectAction: this.#onSelectAction,
     },
 
     form: {
@@ -53,7 +64,7 @@ export default class DGNSActionRollDialog extends HandlebarsApplicationMixin(
 
     position: {
       width: 450,
-      height: 550,
+      height: "auto",
     },
     timeout: null,
 
@@ -67,6 +78,7 @@ export default class DGNSActionRollDialog extends HandlebarsApplicationMixin(
     rollDialog: {
       template: "systems/degenesisnext/templates/rolls/roll.action.dialog.hbs",
       templates: [
+        "systems/degenesisnext/templates/rolls/partials/roll.actions.hbs",
         "systems/degenesisnext/templates/rolls/partials/roll.action.hbs",
         "systems/degenesisnext/templates/rolls/partials/roll.configuration.hbs",
         "systems/degenesisnext/templates/rolls/partials/roll.effects.hbs",
@@ -82,11 +94,25 @@ export default class DGNSActionRollDialog extends HandlebarsApplicationMixin(
     context.attribute = this._rollDefinition.attribute;
     context.skill = this._rollDefinition.skill;
 
+    // Preparing options
+    // todo: move to helper function to clean up the code ?
+    /* ---------------------------------- */
+    context.actions = this._actions.map((a) => {
+      const { actionNumber, modifiers } = a.definition.primary ?? a.definition; // a combination uses its primary part
+      return {
+        key: a.key,
+        label: a.label,
+        active: a.key === this._action,
+        dice: DicePool.resolve(actionNumber, modifiers).rolledDice,
+      };
+    });
+    /* ---------------------------------- */
+
     /** Universal structure for all type of rolls (passing  prefix
      * to differentiatie in case of multiple roll).
      */
 
-    context.roll = context.roll = {
+    context.roll = {
       ...this._rollDefinition,
       prefix: "roll",
       totals: {
@@ -120,6 +146,8 @@ export default class DGNSActionRollDialog extends HandlebarsApplicationMixin(
     return promise;
   }
 
+  /* ---------------------------------- */
+
   _onChangeForm(formConfig, event) {
     super._onChangeForm(formConfig, event);
 
@@ -139,6 +167,7 @@ export default class DGNSActionRollDialog extends HandlebarsApplicationMixin(
     this.render();
   }
 
+  /* ---------------------------------- */
   static #onManageDifficulty(event, target) {
     const prefix = target.dataset.prefix;
     const method = target.dataset.method;
@@ -155,6 +184,32 @@ export default class DGNSActionRollDialog extends HandlebarsApplicationMixin(
     this.render();
   }
 
+  /**
+   * Handling selecting the actino o
+   * @param {*} event
+   * @param {*} target
+   */
+  static #onSelectAction(event, target) {
+    const action = this._actions.find((a) => a.key === target.dataset.key);
+    this._action = action.key;
+    foundry.utils.mergeObject(
+      this._rollDefinition,
+      foundry.utils.deepClone(action.definition),
+    );
+    this.render();
+  }
+
+  /* --- Option Rolls implementation -- */
+
+  _applyOption(key) {
+    const option = this._options.find((o) => o.key === key);
+    if (!option) return;
+    this._selected = key;
+    foundry.utils.mergeObject(this._rollDefinition, option.definition);
+  }
+
+  /* ---------------------------------- */
+
   // *----- Helpers Functions ----*
 
   _getRollData(prefix) {
@@ -166,12 +221,21 @@ export default class DGNSActionRollDialog extends HandlebarsApplicationMixin(
 
   getTotalDice(prefix = "roll") {
     const data = this._getRollData(prefix);
-    return (Number(data.actionNumber) || 0) + (Number(data.modifiers?.d) || 0);
+    return DicePool.resolve(data.actionNumber, data.modifiers).rolledDice;
+  }
+
+  getAutoSuccesses(prefix = "roll") {
+    const data = this._getRollData(prefix);
+    return DicePool.resolve(data.actionNumber, data.modifiers).autoSuccesses;
   }
 
   getTotalSuccesses(prefix = "roll") {
     const data = this._getRollData(prefix);
-    return (Number(data.successes) || 0) + (Number(data.modifiers?.s) || 0);
+    const { autoSuccesses } = DicePool.resolve(
+      data.actionNumber,
+      data.modifiers,
+    );
+    return autoSuccesses + (Number(data.modifiers?.s) || 0);
   }
 
   getTotalTriggers(prefix = "roll") {

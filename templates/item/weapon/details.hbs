@@ -34,7 +34,7 @@
             <fieldset class="column two-third">
                 <legend>Distance</legend>
 
-                {{#if document.isMelee}}
+                {{#if (eq document.combatType "close")}}
                     <div class="field full centered">
                         <input class="field-input" type="text" name="system.distance.melee"
                             value="{{system.distance.melee}}" />
@@ -61,17 +61,23 @@
                 <legend>Skills</legend>
                 <div class="field half centered">
                     <select class="field-input" type="text" name="system.skills.primary"
-                        value="{{system.skills.primary}}"></select>
+                        {{#unless system.isCustom}}disabled{{/unless}} value="{{system.skills.primary}}">
+                        <option value="">None </option>
+                        {{selectOptions skills selected=system.skills.primary localize=true}}
+                    </select>
                     <label class="field-label">Primary</label>
                 </div>
                 <div class="field half centered">
-                    <select class="field-input" type="text" name="system.skills.primary"
-                        value="{{system.skills.primary}}"></select>
+                    <select class="field-input" type="text" name="system.skills.secondary"
+                        {{#unless system.isCustom}}disabled{{/unless}} value="{{system.skills.secondary}}">
+                        <option value="">None </option>
+                        {{selectOptions skills selected=system.skills.secondary localize=true}}
+                    </select>
                     <label class="field-label">Secondary</label>
                 </div>
             </fieldset>
 
-            {{#if document.isRanged}}
+            {{#if (eq document.combatType "ranged")}}
                 <fieldset class="column">
                     <legend>Magazine</legend>
                     <div class="field two-third">
@@ -100,12 +106,6 @@
                 </fieldset>
 
             {{/if}}
-
-
-
-
-
-
 
 
         </div>

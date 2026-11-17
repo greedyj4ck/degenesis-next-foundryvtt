@@ -15,13 +15,13 @@ export default defineConfig({
     sourcemap: true, // important for debugging
     minify: false,
     lib: {
-      entry: path.resolve(__dirname, "src/degenesis.mjs"),
+      entry: path.resolve(__dirname, "src/system.mjs"),
       formats: ["es"],
       fileName: "degenesis-bundle",
     },
     rollupOptions: {
       output: {
-        entryFileNames: "[name].mjs",
+        entryFileNames: "degenesis.mjs",
         assetFileNames: (assetInfo) => {
           const names = assetInfo.names || [];
           const isCss = names.some((n) => n.endsWith(".css"));

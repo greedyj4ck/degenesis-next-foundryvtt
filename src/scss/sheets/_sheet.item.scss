@@ -13,8 +13,8 @@
         height: 26px;
         font-family: var(--font-sans);
         font-size: var(--font-size-14);
-        font-weight: 700;
-        color: var(--dgns-ui-primary);
+        font-weight: var(--dgns-weight-subheader-sans);
+        color: var(--dgns-text-color-primary);
         text-transform: uppercase;
         align-items: center;
       }
@@ -25,8 +25,8 @@
         padding-left: 10px;
         font-family: var(--font-sans);
         font-size: var(--font-size-14);
-        font-weight: 700;
-        color: var(--dgns-ui-primary);
+        font-weight: var(--dgns-weight-subheader-sans);
+        color: var(--dgns-text-color-primary);
         text-transform: uppercase;
         align-items: center;
       }

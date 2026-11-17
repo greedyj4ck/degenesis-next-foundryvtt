@@ -1,4 +1,11 @@
 <div class="cult" data-action="showCult">
+
+    {{#if cult.system.backgroundImage}}
+        <div class="card background">
+            <img src="{{cult.system.backgroundImage}}" />
+        </div>
+    {{/if}}
+
     {{#if cult}}
         <div class="controls">
             <label class="header">
@@ -28,5 +35,4 @@
         </div>
     {{/if}}
 
-</div>
 </div>

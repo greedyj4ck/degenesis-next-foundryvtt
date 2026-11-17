@@ -1,18 +1,24 @@
 <div class="action-roll-card">
 
-    <h2>{{title}}</h2>
-    <h3>{{attribute}} + {{skill}} ({{difficulty}})</h3>
-    <div class="roll-result">
+    <h2 class="action-title">{{title}}</h2>
+    <h3 class="action-skill">{{attribute}} + {{skill}} {{#if difficulty}}({{difficulty}}){{/if}} </h3>
+    <div class="roll-results">
         <div>{{successes}}{{localize "DGNS.UI.S"}}</div>
         <div>{{triggers}}{{localize "DGNS.UI.T"}}</div>
     </div>
     {{#if result}}
-        <h2 class="{{result}}">{{resultLabel}}</h2>
+        <h2 class="roll-result {{result}}">{{resultLabel}}</h2>
     {{/if}}
 
     <div class="dice">
+
+        {{log dice}}
+
         {{#each dice as |die d|}}
-            <span class="die {{die.class}}">{{die.result}}</span>
+            <span class="dgns-die" data-value="{{die.result}}"></span>
         {{/each}}
     </div>
+
+
+
 </div>

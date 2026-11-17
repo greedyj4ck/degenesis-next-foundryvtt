@@ -1,0 +1,33 @@
+@use "../colors";
+
+@layer dgns.apps {
+  #sidebar-content {
+    section#scenes {
+      li.entry {
+        border: var(--dgns-border-color-primary) solid 1px;
+
+        a.entry-name {
+          display: flex;
+          align-self: stretch;
+          align-items: flex-end;
+          padding-bottom: 5px;
+
+          color: var(--dgns-text-color-primary);
+          font-family: var(--font-sans);
+          font-size: var(--font-size-14);
+          font-variant: small-caps;
+          font-weight: 800;
+
+          letter-spacing: 0.05rem;
+        }
+      }
+    }
+
+    section#items {
+      li {
+        &.item-potential {
+        }
+      }
+    }
+  }
+}

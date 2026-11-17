@@ -13,8 +13,8 @@
   /*                                Weapon Sheet                                */
   /* -------------------------------------------------------------------------- */
   .application.sheet.dgns-weapon {
-    background: (var(--dgns-ui-background));
-    border: var(--dgns-line-width) solid var(--dgns-ui-secondary);
+    background: (var(--dgns-surface-base));
+    border: var(--dgns-line-width) solid var(--dgns-color-secondary);
 
     &:not(.minimized, .minimizing, .maximizing) {
       min-height: 600px;

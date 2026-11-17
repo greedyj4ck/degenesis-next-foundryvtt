@@ -1,0 +1,14 @@
+{{!-- todo: proper scss stylings  --}}
+<div class="section-selection">
+    <fieldset>
+        <legend>Actions</legend>
+        {{#each actions}}
+
+            <button type="button" class="{{#if active}}active{{/if}}" aria-pressed="{{active}}"
+                data-action="selectAction" data-key="{{key}}">
+                {{localize label}} <span class="dice">{{dice}}D</span>
+            </button>
+        {{/each}}
+    </fieldset>
+
+</div>

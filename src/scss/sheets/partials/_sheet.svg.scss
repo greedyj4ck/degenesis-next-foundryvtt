@@ -4,12 +4,12 @@ svg {
 
   .rectangle {
     fill: none;
-    stroke: var(--dgns-ui-primary);
+    stroke: var(--dgns-border-color-secondary);
     stroke-width: var(--dgns-line-width);
   }
   path.line {
     fill: none;
-    stroke: var(--dgns-ui-primary);
+    stroke: var(--dgns-border-color-secondary);
     stroke-width: var(--dgns-line-width);
   }
 }

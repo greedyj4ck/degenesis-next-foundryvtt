@@ -1,7 +1,5 @@
 export default function () {
   Hooks.on("renderSidebar", async (app, html) => {
-    console.log("hooks.js renderSidebar", { app, html });
-
     /** Disable forced theming for V12 compatibility layer */
 
     const content = html.querySelector("#sidebar-content");
@@ -13,7 +11,7 @@ export default function () {
     /*
     const tabsArray = [...html.firstElementChild.children];
 
-    console.log(tabsArray);
+    
 
     tabsArray.forEach((tab) => {
       let name = tab.getAttribute("data-tab");
@@ -31,8 +29,6 @@ export default function () {
   });
 
   Hooks.on("renderSettings", async (app, html) => {
-    console.log("hooks.js renderSettings", { app, html });
-
     const theme = html.ownerDocument.body.classList.contains("theme-dark")
       ? "dark"
       : "light";
@@ -56,8 +52,19 @@ export default function () {
     chatLog.classList.remove("theme-light");
   });
 
-  Hooks.on("renderNotifications", (application, element) => {
-    console.log(`renderChatLogNotifications`);
+  Hooks.on("renderNotifications", (application, element) => {});
+
+  // Experimental adding class to items on sidebabr for styling purposes.
+
+  Hooks.on("renderItemDirectory", (app, html) => {
+    for (const row of html.querySelectorAll(
+      "li.directory-item[data-entry-id]",
+    )) {
+      const item = game.items.get(row.dataset.entryId);
+      if (item && !row.classList.contains(`item-type-${item.type}`)) {
+        row.classList.add(`item-${item.type}`);
+      }
+    }
   });
 }
 

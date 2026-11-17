@@ -58,8 +58,6 @@ export default class DegenesisCultSheet extends BackgroundSheetMixin(
       ),
     };
 
-    console.log(`CultSheet | Context`);
-    console.log(context);
     return context;
   }
 

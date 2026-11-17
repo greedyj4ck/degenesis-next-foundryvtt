@@ -55,9 +55,9 @@
     },
 
     "UI": {
-      "d": "D",
-      "s": "S",
-      "t": "T",
+      "D": "D",
+      "S": "S",
+      "T": "T",
 
       "current": "Current",
       "spent": "Spent",
@@ -313,7 +313,7 @@
 
     "WEAPON": {
       "brawl": "Brawl",
-      "armedMelee": "Armed Melee",
+      "melee": "Armed Melee",
       "thrown": "Thrown",
       "projectiles": "Projectiles",
       "handguns": "Handguns",
@@ -357,6 +357,22 @@
       "boltcoal": "Bolt & Coal",
       "special": "Special",
       "custom": "Custom"
+    },
+
+    "COMBAT": {
+      "action": {
+        "brawl": "Brawl",
+        "sneak": "Sneak",
+        "feint": "Feint",
+        "dodge": "Dodge",
+        "mental": "Mental defense",
+        "initiative": "Initiative",
+        "disarm": "Disarm",
+        "effective": "Effective Shot",
+        "far": "Far Shot",
+        "extreme": "Extreme Shot"
+      },
+      "state": {}
     },
 
     "DEFENSE": {

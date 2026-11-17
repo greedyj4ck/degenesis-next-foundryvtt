@@ -17,6 +17,7 @@ export const QUALITY_DEFINITIONS = {
     onPostRoll: null,
     activeEffects: null,
   },
+
   armorPiercing: {
     label: "DGNS.QUALITY.armorPiercing.name",
     description: "DGNS.QUALITY.armorPiercing.description",

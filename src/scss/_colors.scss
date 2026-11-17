@@ -5,6 +5,13 @@
 
 /* COLORS DEFINITIONS */
 
+:root {
+  --color-gold-next: oklch(43.03% 0.04404 64.866);
+  --color-purple-next: oklch(45.419% 0.18526 295.83);
+  --color-gold-artifacts: oklch(56.549% 0.0579 90.546);
+  --color-red-primal: oklch(59.415% 0.22779 23.112);
+}
+
 $colors: (
   "gold": "131,117,78",
   "gold-0": "245, 244, 239",

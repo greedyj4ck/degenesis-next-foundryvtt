@@ -2,7 +2,7 @@
  * Based on Articfacts extended shared destiny rules
  */
 
-export const ALIGNMENTS_DEFINITIONS = {
+export const Alignments = {
   ambition: {
     label: "DGNS.ALIGNMENT.ambition.label",
     description: "DGNS.ALIGNMENT.ambition.description",
@@ -133,28 +133,31 @@ export const ALIGNMENTS_DEFINITIONS = {
   },
 };
 
+/* ---------------------------------- */
+
 export const Scars = {
   // Generate options for group sheet
   get AlignmentsOptions() {
     const choices = {};
-    for (const [k, v] of Object.entries(ALIGNMENTS_DEFINITIONS)) {
+    for (const [k, v] of Object.entries(Alignments)) {
       choices[k] = v.label;
     }
     return choices;
   },
 
   get Alignments() {
-    return ALIGNMENTS_DEFINITIONS;
+    return Alignments;
   },
 
   /**
-   * Calculates the modifiers applied to current member.
+   * Calculates the modifiers based on Actor's data.
    * @param {*} concept
    * @param {*} alignment
    * @param {*} groupConcepts
    * @param {*} isNewMember
    * @returns
    */
+
   prepareAligmentModifiers(
     concept,
     alignment,
@@ -163,7 +166,7 @@ export const Scars = {
   ) {
     if (!alignment || concept) return [];
 
-    const base = ALIGNMENTS_DEFINITIONS[alignment]; // load data from
+    const base = Alignments[alignment]; // load data from
     if (!base) return [];
 
     const modifiers = [];
@@ -171,30 +174,35 @@ export const Scars = {
     const inAversion = base.aversion.concepts.includes(concept);
 
     if (inAffinity) {
+      modifiers.push({
+        key: base.affinity.key,
+        value: base.affinity.value,
+        label: base.affinity.label,
+        source: "alignment.affinity",
+        tripled: false,
+      });
     }
 
     if (inAversion) {
+      modifiers.push({
+        key: base.aversion.key,
+        value: isNewMember ? base.aversion.value * 3 : base.aversion.value,
+        label: base.aversion.label,
+        source: "alignment.aversion",
+        tripled: isNewMember,
+      });
     }
-  },
 
-  /**
-   *
-   * @param {*} group - group actor
-   * @param {*} newMemberIds
-   */
-  buildGroupModifiers(group, newMemberIds = new Set()) {
-    const modifiers = new Map();
-
-    const { alignment, memberActors, memberConcepts } = group.system;
-
-    for (const actor of memberActors) {
-      if (!alignment) {
-        //todo: this could be moved to early guard
-        modifiers.set(actor.id, []);
-        continue;
-      }
-      const concept = actor.system.concept.id ?? ""; //todo: proper path to concept item dgns.id
+    if (this.isConstellation(base, groupConcepts)) {
+      modifiers.push({
+        key: base.constellation.key,
+        value: base.constellation.value,
+        label: base.constellation.label,
+        source: "alignment.constellation",
+        tripled: false,
+      });
     }
+    return modifiers;
   },
 
   /* ------------- Helpers ------------ */
@@ -208,5 +216,31 @@ export const Scars = {
     const defined = groupConcepts.filter(Boolean); // filtering the array out of false values
     if (defined.length === 0) return false;
     return defined.every((c) => alignment.affinity.concepts.includes(c));
+  },
+
+  /* ---------------------------------- */
+
+  /**
+   * Sum numeric modifiers matching specific key.
+   * @param {*} modifiers
+   * @param {*} key
+   * @returns
+   */
+  sumModifier(modifiers, key) {
+    return modifiers
+      .filter((m) => m.key === key && typeof m.value === "number")
+      .reduce((total, m) => total + m.value, 0);
+  },
+
+  /* ---------------------------------- */
+
+  /**
+   * Checks for a boolean/special flag modifier in modifiers array.
+   * @param {*} modifiers
+   * @param {*} key
+   * @returns
+   */
+  hasModifierFlag(modifiers, key) {
+    return modifiers.some((m) => m.key === key && m.value === true);
   },
 };

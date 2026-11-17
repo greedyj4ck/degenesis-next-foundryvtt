@@ -1,0 +1,7 @@
+<svg viewBox="0 0 256 257" xmlns="http://www.w3.org/2000/svg" style="--dgns-die-surface:white" fill-rule="evenodd"
+    clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2">
+    <path fill="var(--dgns-die-surface)" d="M0 .589h256v256H0z" />
+    <path
+        d="M129 171.789l-1 1-.9-1-42.4-42.3-1-.9 1-1 42.4-42.2.9-1 1 1 42.4 42.2.9 1-.9.9-42.4 42.3zm-24.002-43.238l23.052 22.998 23.052-22.998-23.052-22.944-23.052 22.944z"
+        fill="var(--dgns-die-symbol)" />
+</svg>

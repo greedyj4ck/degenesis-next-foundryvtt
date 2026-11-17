@@ -59,10 +59,6 @@ export default class DGNSActiveEffect extends ActiveEffect {
     // Resolve the key relative to item.system
     // AE changes use dot-notation keys like "system.damage.base"
 
-    console.log(`Applying mods to items:`);
-    console.log(item);
-    console.log(change);
-
     // see if that works
     const current = foundry.utils.getProperty(item, change.key) ?? null;
     let value = change.value;
@@ -118,10 +114,6 @@ export default class DGNSActiveEffect extends ActiveEffect {
 
   static applyToTargets(actor, effectKeys) {
     if (!actor) return null;
-
-    console.log(`calling applyToTargets for ${actor.name}`);
-
-    console.log(actor.appliedEffects);
 
     for (const effect of actor.appliedEffects) {
       if (effect.disabled) continue;

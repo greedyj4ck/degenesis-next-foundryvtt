@@ -1,4 +1,4 @@
-<div class="entry item collapsible" data-drag data-item-id="{{weapon.id}}" data-expand-id="{{weapon.id}}"
+<div class="entry filled  item collapsible" data-drag data-item-id="{{weapon.id}}" data-expand-id="{{weapon.id}}"
     data-action="openItemContextMenu">
 
     <div class="entry-row">
@@ -6,7 +6,7 @@
             <img src="{{weapon.img}}">
         </div>
         <div class="field name">
-            <a class="caption" data-action="editItem">{{weapon.name}}</a>
+            <a class="caption" data-action="rollWeapon">{{weapon.name}}</a>
             <div class="subcaption">{{localizeConcat "DGNS.WEAPON." weapon.system.group}}</div>
         </div>
 
@@ -28,26 +28,24 @@
 
     </div>
 
-
-
-
-    {{#if weapon.isMelee}}
+    {{!--     {{#if (eq weapon.combatType "melee")}}
         <div class="entry-row actions melee">
-            <div class=""><i class="fa fa-sword"></i> Attack (2D)</div>
-            <div class=""><i class="fa fa-shield"></i> PArry (2D)</div>
-        </div>
-    {{/if}}
+            <button><i class="fa fa-sword"></i>Attack (2D)</button>
+            <button><i class="fa fa-shield"></i>Parry (2D)</button>
 
-    {{#if weapon.isRanged}}
+        </div>
+    {{/if}} --}}
+
+    {{!--     {{#if (eq weapon.combatType "ranged")}}
         <div class="entry-row actions ranged">
-            <div class=""> 20m (4D) </div>
-            <div class=""> 40m (2D) </div>
-            <div class=""> 60m (0D) </div>
-            <div class=""><i class="fa fa-bullet"></i>Reload (2/10) </div>
+            <button><i class="fa fa-sword"></i>Close (2D)</button>
+            <button><i class="fa fa-sword"></i>Far (2D)</button>
+            <button><i class="fa fa-sword"></i>Far as fuck (2D)</button>
+            <button><i class="fa fa-sword"></i>Reload (2/10)</button>
         </div>
     {{/if}}
 
-
+ --}}
     <div class="entry-row entry-dropdown collapsible-content">
         {{> "dgns.item.summary" ctx=weapon.expanded }}
     </div>

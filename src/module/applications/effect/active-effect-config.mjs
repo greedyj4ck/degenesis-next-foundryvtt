@@ -1,11 +1,18 @@
+/**
+ * This is default Foundry VTT file.
+ */
+
 import {
   ACTIVE_EFFECT_DURATION_UNITS as DURATION_UNITS,
-  ACTIVE_EFFECT_TIME_DURATION_UNITS as TIME_DURATION_UNITS
+  ACTIVE_EFFECT_TIME_DURATION_UNITS as TIME_DURATION_UNITS,
 } from "@common/constants.mjs";
-import {DocumentSheetV2, HandlebarsApplicationMixin} from "../api/_module.mjs";
+import {
+  DocumentSheetV2,
+  HandlebarsApplicationMixin,
+} from "../api/_module.mjs";
 import FormDataExtended from "../ux/form-data-extended.mjs";
 import ActiveEffect from "@client/documents/active-effect.mjs";
-import {renderTemplate} from "../handlebars.mjs";
+import { renderTemplate } from "../handlebars.mjs";
 
 /**
  * @import {ApplicationClickAction} from "../_types.mjs";
@@ -19,48 +26,52 @@ import {renderTemplate} from "../handlebars.mjs";
  * @extends DocumentSheetV2
  * @mixes HandlebarsApplication
  */
-export default class ActiveEffectConfig extends HandlebarsApplicationMixin(DocumentSheetV2) {
-
+export default class ActiveEffectConfig extends HandlebarsApplicationMixin(
+  DocumentSheetV2,
+) {
   /** @inheritDoc */
   static DEFAULT_OPTIONS = {
     classes: ["active-effect-config"],
     window: {
       contentClasses: ["standard-form"],
-      icon: "fa-solid fa-person-rays"
+      icon: "fa-solid fa-person-rays",
     },
-    position: {width: 560},
-    form: {closeOnSubmit: true},
+    position: { width: 560 },
+    form: { closeOnSubmit: true },
     actions: {
       addChange: ActiveEffectConfig.#onAddChange,
-      deleteChange: ActiveEffectConfig.#onDeleteChange
-    }
+      deleteChange: ActiveEffectConfig.#onDeleteChange,
+    },
   };
 
   /** @override */
   static PARTS = {
-    header: {template: "templates/sheets/active-effect/header.hbs"},
-    tabs: {template: "templates/generic/tab-navigation.hbs"},
-    details: {template: "templates/sheets/active-effect/details.hbs", scrollable: [""]},
-    duration: {template: "templates/sheets/active-effect/duration.hbs"},
+    header: { template: "templates/sheets/active-effect/header.hbs" },
+    tabs: { template: "templates/generic/tab-navigation.hbs" },
+    details: {
+      template: "templates/sheets/active-effect/details.hbs",
+      scrollable: [""],
+    },
+    duration: { template: "templates/sheets/active-effect/duration.hbs" },
     changes: {
       template: "templates/sheets/active-effect/changes.hbs",
       templates: ["templates/sheets/active-effect/change.hbs"],
-      scrollable: ["ol[data-changes]"]
+      scrollable: ["ol[data-changes]"],
     },
-    footer: {template: "templates/generic/form-footer.hbs"}
+    footer: { template: "templates/generic/form-footer.hbs" },
   };
 
   /** @override */
   static TABS = {
     sheet: {
       tabs: [
-        {id: "details", icon: "fa-solid fa-book"},
-        {id: "duration", icon: "fa-solid fa-clock"},
-        {id: "changes", icon: "fa-solid fa-gears"}
+        { id: "details", icon: "fa-solid fa-book" },
+        { id: "duration", icon: "fa-solid fa-clock" },
+        { id: "changes", icon: "fa-solid fa-gears" },
       ],
       initial: "details",
-      labelPrefix: "EFFECT.TABS"
-    }
+      labelPrefix: "EFFECT.TABS",
+    },
   };
 
   /* ----------------------------------------- */
@@ -68,36 +79,44 @@ export default class ActiveEffectConfig extends HandlebarsApplicationMixin(Docum
   /** @inheritDoc */
   async _preparePartContext(partId, context) {
     const partContext = await super._preparePartContext(partId, context);
-    if ( partId in partContext.tabs ) partContext.tab = partContext.tabs[partId];
+    if (partId in partContext.tabs) partContext.tab = partContext.tabs[partId];
     const effect = this.document;
-    switch ( partId ) {
+    switch (partId) {
       case "details":
         partContext.isActorEffect = effect.parent?.documentName === "Actor";
         partContext.isItemEffect = effect.parent?.documentName === "Item";
-        partContext.statuses = Object.values(CONFIG.statusEffects)
-          .map(s => ({value: s.id, label: _loc(s.name)}));
-        partContext.showIconOptions = Object.entries(CONST.ACTIVE_EFFECT_SHOW_ICON).map(([k, value]) => ({
-          value, label: _loc(`EFFECT.SHOW_ICON.${k.toLowerCase()}`)
-        })).reverse();
+        partContext.statuses = Object.values(CONFIG.statusEffects).map((s) => ({
+          value: s.id,
+          label: _loc(s.name),
+        }));
+        partContext.showIconOptions = Object.entries(
+          CONST.ACTIVE_EFFECT_SHOW_ICON,
+        )
+          .map(([k, value]) => ({
+            value,
+            label: _loc(`EFFECT.SHOW_ICON.${k.toLowerCase()}`),
+          }))
+          .reverse();
         break;
       case "duration": {
         partContext.start = await this._prepareStartContext();
-        partContext.hasDuration = typeof context.source.duration.value === "number";
+        partContext.hasDuration =
+          typeof context.source.duration.value === "number";
         const groups = {
           time: _loc("EFFECT.DURATION.UNITS.GROUPS.time"),
-          combat: _loc("EFFECT.DURATION.UNITS.GROUPS.combat")
+          combat: _loc("EFFECT.DURATION.UNITS.GROUPS.combat"),
         };
-        partContext.durationUnits = DURATION_UNITS.map(
-          value => ({
-            value,
-            label: _loc(`EFFECT.DURATION.UNITS.${value}`),
-            group: TIME_DURATION_UNITS.includes(value) ? groups.time : groups.combat
-          })
-        );
+        partContext.durationUnits = DURATION_UNITS.map((value) => ({
+          value,
+          label: _loc(`EFFECT.DURATION.UNITS.${value}`),
+          group: TIME_DURATION_UNITS.includes(value)
+            ? groups.time
+            : groups.combat,
+        }));
         partContext.expiryEvents = Object.entries(ActiveEffect.EXPIRY_EVENTS)
-          .map(([value, label]) => ({value, label: _loc(label)}))
+          .map(([value, label]) => ({ value, label: _loc(label) }))
           .sort((a, b) => a.label.localeCompare(b.label, game.i18n.lang))
-          .reduce((events, {value, label}) => {
+          .reduce((events, { value, label }) => {
             events[value] = label;
             return events;
           }, {});
@@ -106,20 +125,37 @@ export default class ActiveEffectConfig extends HandlebarsApplicationMixin(Docum
       case "changes": {
         const fields = effect.system.schema.fields.changes.element.fields;
         const changeTypes = Object.entries(ActiveEffect.CHANGE_TYPES)
-          .map(([type, {label}]) => ({type, label: _loc(label)}))
+          .map(([type, { label }]) => ({ type, label: _loc(label) }))
           .sort((a, b) => a.label.localeCompare(b.label, game.i18n.lang))
-          .reduce((types, {type, label}) => {
+          .reduce((types, { type, label }) => {
             types[type] = label;
             return types;
           }, {});
-        partContext.changes = await Promise.all(foundry.utils.deepClone(context.source.changes).map((change, index) => {
-          const defaultPriority = ActiveEffect.CHANGE_TYPES[change.type]?.defaultPriority;
-          return this._renderChange({change, index, fields, defaultPriority, changeTypes});
-        }));
+        partContext.changes = await Promise.all(
+          foundry.utils
+            .deepClone(context.source.changes)
+            .map((change, index) => {
+              const defaultPriority =
+                ActiveEffect.CHANGE_TYPES[change.type]?.defaultPriority;
+              return this._renderChange({
+                change,
+                index,
+                fields,
+                defaultPriority,
+                changeTypes,
+              });
+            }),
+        );
         break;
       }
       case "footer":
-        partContext.buttons = [{type: "submit", icon: "fa-solid fa-floppy-disk", label: "EFFECT.Submit"}];
+        partContext.buttons = [
+          {
+            type: "submit",
+            icon: "fa-solid fa-floppy-disk",
+            label: "EFFECT.Submit",
+          },
+        ];
         break;
       case "tabs":
         partContext.tabClasses = "top-tabs";
@@ -142,16 +178,20 @@ export default class ActiveEffectConfig extends HandlebarsApplicationMixin(Docum
    * @protected
    */
   async _renderChange(context) {
-    const {change, index} = context;
-    if ( typeof change.value !== "string" ) change.value = JSON.stringify(change.value);
+    const { change, index } = context;
+    if (typeof change.value !== "string")
+      change.value = JSON.stringify(change.value);
     Object.assign(
       change,
       ["key", "type", "value", "priority"].reduce((paths, fieldName) => {
         paths[`${fieldName}Path`] = `system.changes.${index}.${fieldName}`;
         return paths;
-      }, {}));
-    return ActiveEffect.CHANGE_TYPES[change.type].render?.(context)
-      ?? renderTemplate("templates/sheets/active-effect/change.hbs", context);
+      }, {}),
+    );
+    return (
+      ActiveEffect.CHANGE_TYPES[change.type].render?.(context) ??
+      renderTemplate("templates/sheets/active-effect/change.hbs", context)
+    );
   }
 
   /* ----------------------------------------- */
@@ -164,17 +204,28 @@ export default class ActiveEffectConfig extends HandlebarsApplicationMixin(Docum
   async _prepareStartContext() {
     const effect = this.document;
     const start = effect._source.start;
-    if ( !start ) return null;
-    const time = game.time.calendar.format(game.time.worldTime - start.time, "ago");
+    if (!start) return null;
+    const time = game.time.calendar.format(
+      game.time.worldTime - start.time,
+      "ago",
+    );
     const combat = effect.start.combat ?? null;
     const combatant = combat?.combatants.get(start.combatant) ?? null;
     const combatantName = combatant?.visible ? combatant.name : "???";
-    const combatantInitiative = combatant?.visible === false
-      ? "???"
-      : typeof combatant?.initiative === "number"
-        ? combatant.initiative
-        : _loc("EFFECT.START.NoInitiative");
-    return {...start, time, combat, combatant, combatantName, combatantInitiative};
+    const combatantInitiative =
+      combatant?.visible === false
+        ? "???"
+        : typeof combatant?.initiative === "number"
+          ? combatant.initiative
+          : _loc("EFFECT.START.NoInitiative");
+    return {
+      ...start,
+      time,
+      combat,
+      combatant,
+      combatantName,
+      combatantInitiative,
+    };
   }
 
   /* -------------------------------------------- */
@@ -182,8 +233,11 @@ export default class ActiveEffectConfig extends HandlebarsApplicationMixin(Docum
   /** @inheritDoc */
   _processFormData(event, form, formData) {
     const submitData = super._processFormData(event, form, formData);
-    if (!foundry.utils.isPlainObject(submitData.system?.changes) ) return submitData;
-    for ( const [index, change] of Object.values(submitData.system.changes).entries() ) {
+    if (!foundry.utils.isPlainObject(submitData.system?.changes))
+      return submitData;
+    for (const [index, change] of Object.values(
+      submitData.system.changes,
+    ).entries()) {
       this._processChangeSubmission(change, index);
     }
     return submitData;
@@ -199,9 +253,9 @@ export default class ActiveEffectConfig extends HandlebarsApplicationMixin(Docum
    */
   _processChangeSubmission(change, index) {
     try {
-      if ( typeof change.value === "string" ) change.value &&= JSON.parse(change.value);
-    }
-    catch{}
+      if (typeof change.value === "string")
+        change.value &&= JSON.parse(change.value);
+    } catch {}
   }
 
   /* -------------------------------------------- */
@@ -213,11 +267,15 @@ export default class ActiveEffectConfig extends HandlebarsApplicationMixin(Docum
     super._onChangeForm(formConfig, event);
 
     // Update the priority placeholder to match the mode selection
-    if ( foundry.utils.isElementInstanceOf(event.target, "select") && event.target.name.endsWith(".type") ) {
+    if (
+      foundry.utils.isElementInstanceOf(event.target, "select") &&
+      event.target.name.endsWith(".type")
+    ) {
       const typeSelect = event.target;
       const selector = `input[name="${typeSelect.name.replace(/\.type$/, ".priority")}"]`;
       const priorityInput = typeSelect.closest("li").querySelector(selector);
-      priorityInput.placeholder = ActiveEffect.CHANGE_TYPES[typeSelect.value]?.defaultPriority ?? "";
+      priorityInput.placeholder =
+        ActiveEffect.CHANGE_TYPES[typeSelect.value]?.defaultPriority ?? "";
     }
   }
 
@@ -227,10 +285,16 @@ export default class ActiveEffectConfig extends HandlebarsApplicationMixin(Docum
    * @type {ApplicationClickAction}
    */
   static async #onAddChange() {
-    const submitData = this._processFormData(null, this.form, new FormDataExtended(this.form));
+    const submitData = this._processFormData(
+      null,
+      this.form,
+      new FormDataExtended(this.form),
+    );
     const changes = Object.values(submitData.system?.changes ?? {});
-    changes.push(this.document.system.schema.fields.changes.element.getInitialValue());
-    return this.submit({updateData: {system: {changes}}});
+    changes.push(
+      this.document.system.schema.fields.changes.element.getInitialValue(),
+    );
+    return this.submit({ updateData: { system: { changes } } });
   }
 
   /* ----------------------------------------- */
@@ -241,11 +305,15 @@ export default class ActiveEffectConfig extends HandlebarsApplicationMixin(Docum
    * @type {ApplicationClickAction}
    */
   static async #onDeleteChange(event) {
-    const submitData = this._processFormData(null, this.form, new FormDataExtended(this.form));
+    const submitData = this._processFormData(
+      null,
+      this.form,
+      new FormDataExtended(this.form),
+    );
     const changes = Object.values(submitData.system.changes);
     const row = event.target.closest("li");
     const index = Number(row.dataset.index) || 0;
     changes.splice(index, 1);
-    return this.submit({updateData: {system: {changes}}});
+    return this.submit({ updateData: { system: { changes } } });
   }
 }

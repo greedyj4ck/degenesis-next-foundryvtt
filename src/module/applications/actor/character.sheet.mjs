@@ -60,7 +60,11 @@ export default class DGNSCharacterSheet extends ActorSheetMixin(
       template: "systems/degenesisnext/templates/actor/character/stats.hbs",
       scrollable: [""],
     },
-    /*  effects: {
+
+    /* 
+    Switched to universal effects page for now. 
+    
+    effects: {
       template: "systems/degenesisnext/templates/actor/character/effects.hbs",
       scrollable: [".container-scrollable"],
     }, */
@@ -168,7 +172,9 @@ export default class DGNSCharacterSheet extends ActorSheetMixin(
       legacies: this.actor._prepareLegacies(),
       inventory: this.actor._prepareInventory(),
       effects: await this.actor._prepareEffects(),
-
+      /* ---------------------------------- */
+      combatActions: this.actor.combatActions,
+      /* ---------------------------------- */
       tabGroups: this.tabGroups,
       mainTabs: this._prepareTabs("main"), // main navigation groups
       headerTabs: this._prepareTabs("header"), // header display groups
@@ -236,7 +242,6 @@ export default class DGNSCharacterSheet extends ActorSheetMixin(
     // You may want to add other special handling here
     // Foundry comes with a large number of utility classes, e.g. SearchFilter
     // That you may want to implement yourself.
-    console.log(this);
   }
 
   async _renderFrame(options) {
@@ -249,10 +254,6 @@ export default class DGNSCharacterSheet extends ActorSheetMixin(
   }
 
   async _onDropActor(event, data) {
-    console.log(`character sheet mixin`);
-
-    console.log(event, data);
-
     const actor = await Actor.implementation.fromDropData(data);
 
     if (actor.type === "group") {

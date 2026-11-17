@@ -9,6 +9,7 @@ import DGNSActiveEffect from "./active.effect.mjs";
 /** Dialogs  */
 import DGNSActionRollDialog from "../applications/roll/action.dialog.mjs";
 import DGNSCombinationRollDialog from "../applications/roll/combination.dialog.mjs";
+import DGNSWeaponRollDialog from "../applications/roll/weapon.dialog.mjs";
 
 /** Roll logic and helper functions  */
 import DGNSRoll from "../dice/base.roll.mjs";
@@ -16,8 +17,16 @@ import DGNSCombinationRoll from "../dice/combination.roll.mjs";
 
 import { ItemHelper } from "../utils/item.helper.mjs";
 import { EffectHelper } from "../utils/effect.helper.mjs";
-import { Condition } from "../logic/condition.mjs";
-import { Penalty } from "../logic/penalties.mjs";
+import { Condition } from "../logic/condition.logic.mjs";
+import { Penalty } from "../logic/penalties.logic.mjs";
+import { Scars } from "../logic/scars.logic.mjs";
+
+/** Routine handlers  */
+import { GroupActorHandlers } from "../handlers/group.actor.handlers.mjs";
+
+const HANDLERS = {
+  group: GroupActorHandlers,
+};
 
 /**
  *
@@ -40,8 +49,6 @@ export default class DGNSActor extends Actor {
   /*          Data preparation          */
   /* ---------------------------------- */
 
-  // #region Data Preparation
-
   /**
    * Basic data preparation for actor document.
    * @inheritdoc
@@ -50,15 +57,16 @@ export default class DGNSActor extends Actor {
     super.prepareData();
   }
 
+  /* ---------------------------------- */
+
   /**
    * Dervied data preparation - all the values that are need to be calcualted
    * and are not stored since they base on other values.
    */
+
   prepareDerivedData() {
     // Common logic
-
     // Actor type specific logic
-
     try {
       const type = this.type.charAt(0).toUpperCase() + this.type.slice(1);
       this[`_prepare${type}DerivedData`]?.(); //fire only if method is found...
@@ -67,20 +75,34 @@ export default class DGNSActor extends Actor {
     }
   }
 
+  /* ---------------------------------- */
+
   /**
    * Data preparation for Character type.
    */
+
   _prepareCharacterDerivedData() {
-    console.log(`Character derived data preparations...`);
     this._prepareConditionMaxima();
     this._prepareEncumbrance();
     this._prepareMovement();
 
+    this._prepareGroupModifiers();
     // experimental
     this._applyPenalties();
 
+    this._prepareActionNumbers();
+    this._prepareCombatActions();
     //
     this._prepareWeapons();
+  }
+
+  /* ---------------------------------- */
+
+  /**
+   * Data preparation for Group type.
+   */
+  _prepareGroupDerivedData() {
+    // preparing alignment modifiers
   }
 
   /* ---------------------------------- */
@@ -88,57 +110,118 @@ export default class DGNSActor extends Actor {
   prepareEmbeddedDocuments() {
     super.prepareEmbeddedDocuments();
   }
-  // #endregion
 
   /* ---------------------------------- */
   /*             Data Events            */
   /* ---------------------------------- */
 
-  // #region Data Events
+  /**
+   * For now just the handlers i needed for the development,
+   * but all methods will be exposed here in a future.
+   */
+
+  /**
+   * @inheritdoc
+   * @param {*} data
+   * @param {*} options
+   * @param {*} user
+   * @returns
+   */
+
   async _preCreate(data, options, user) {
     if ((await super._preCreate(data, options, user)) === false) {
       return false;
     }
+    // run the proper subtype handlers if defined
+    await HANDLERS[this.type]?._preCreate?.(this, data, options, user);
   }
 
   /* ---------------------------------- */
 
-  async _preUpdate(changed, options, user) {
-    if ((await super._preUpdate(changed, options, user)) === false)
+  /**
+   * @inheritdoc
+   * @param {*} changed
+   * @param {*} options
+   * @param {*} user
+   * @returns
+   */
+
+  async _preUpdate(changed, options, userId) {
+    if ((await super._preUpdate(changed, options, userId)) === false) {
       return false;
+    }
+    await HANDLERS[this.type]?._preUpdate?.(this, data, options, userId);
   }
 
   /* ---------------------------------- */
+
+  /**
+   * @inheritdoc
+   * @param {*} data
+   * @param {*} options
+   * @param {*} userId
+   */
 
   _onCreate(data, options, userId) {
     super._onCreate(data, options, userId);
+    HANDLERS[this.type]?._onCreate?.(this, data, options, userId);
   }
 
   /* ---------------------------------- */
 
-  _onUpdate(data, options, userId) {
-    super._onUpdate(data, options, userId);
-    if (this.type === "group") this._propagateGroup();
+  /**
+   * @inheritdoc
+   * @param {*} changed
+   * @param {*} options
+   * @param {*} userId
+   */
+  _onUpdate(changed, options, userId) {
+    super._onUpdate(changed, options, userId);
+    HANDLERS[this.type]?._onUpdate?.(this, changed, options, userId);
   }
 
   /* ---------------------------------- */
+
+  /**
+   * @inheritdoc
+   * @param {*} data
+   * @param {*} options
+   * @returns
+   */
+
   async update(data, options = {}) {
-    console.log(`Actor update.`);
-    console.log("Data:", data);
-    console.log("Options:", options);
-
+    //todo: add helper method to remove clutter
     // Checking for fields to sync
     const fieldsToSync = this._getCachedReferenceFields();
     if (fieldsToSync.length > 0) {
-      // console.log(`Syncing caches for ${this.type} actor:`, fieldsToSync);
+      //
       const cacheUpdates = await this._prepareCacheUpdates(data, fieldsToSync);
       if (cacheUpdates) {
         foundry.utils.mergeObject(data, cacheUpdates);
       }
     }
+
     const result = await super.update(data, options);
+    await HANDLERS[this.type]?.update?.(this, data, options);
+
+    //todo: move to character handler later
     this._syncGroup();
     return result;
+  }
+  /* ---------------------------------- */
+
+  /**
+   * @inheritdoc
+   * @param {*} documents
+   * @param {*} operation
+   * @param {*} user
+   */
+
+  static async _onUpdateOperation(documents, operation, user) {
+    await super._onUpdateOperation(documents, operation, user);
+    for (const actor of documents) {
+      await HANDLERS[actor.type]?._onUpdateOpereation?.(actor, operation, user);
+    }
   }
 
   /* ---------------------------------- */
@@ -153,6 +236,7 @@ export default class DGNSActor extends Actor {
   }
 
   /* ---- Data preparation helpers ---- */
+
   /**
    * Calculate basic condition maximas for standard properties.
    * todo: add override mode.
@@ -230,6 +314,92 @@ export default class DGNSActor extends Actor {
     DGNSActiveEffect.applyToTargets(this, DGNSActiveEffect.MOVEMENT_KEYS);
   }
 
+  /* ---------------------------------- */
+
+  /**
+   * Get and apply group modifiers to actor entity.
+   */
+
+  _prepareGroupModifiers() {
+    const { group, condition, special } = this.system;
+    const modifiers = group ? group.system.getModifiersForActor(this.id) : [];
+
+    condition.ego.max += Scars.sumModifier(modifiers, "ego.max");
+    condition.fleshwounds.max += Scars.sumModifier(
+      modifiers,
+      "fleshwounds.max",
+    );
+
+    //todo: add handling of all of the methods and modifiers form Scars.
+
+    // special modifiers flags, used in rolls and additional funcionality
+    special.modifiers = {
+      egoSuccessConvert: Scars.hasModifierFlag(
+        modifiers,
+        "special.egoSuccessConvert",
+      ),
+      groupSkillHalfXP: Scars.hasModifierFlag(
+        modifiers,
+        "special.groupSkillHalfXP",
+      ),
+      rerollFailedMentalDefence: Scars.hasModifierFlag(
+        modifiers,
+        "special.rerollFailedMentalDefence",
+      ),
+      rerollRevengeAttempts: Scars.hasModifierFlag(
+        modifiers,
+        "special.rerollRevengeAttempts",
+      ),
+    };
+
+    //reference / display only
+    this.groupModifiers = modifiers;
+  }
+
+  /* ---------------------------------- */
+
+  /**
+   * Prepare action numbers for actor entity. Should be called as a last step since
+   * it heavily relies on modifiers and active effects calculations prior to final result.
+   * @returns
+   */
+  _prepareActionNumbers() {
+    let actionNumbers = {};
+    const { attributes, modes } = this.system;
+
+    for (let attribute in attributes) {
+      for (let skill in attributes[attribute].skills) {
+        actionNumbers[skill] =
+          attributes[attribute].value +
+          attributes[attribute].skills[skill].value;
+      }
+    }
+
+    // Mental Defense skill number
+    actionNumbers.activeDefense = actionNumbers["mobility"];
+    actionNumbers.mentalDefense = actionNumbers[modes.faithWillpower];
+
+    this.system.actionNumbers = actionNumbers;
+  }
+
+  /* ---------------------------------- */
+
+  _prepareCombatActions() {
+    const actions = {};
+    const { actionNumbers } = this.system;
+
+    for (const [key, { group, skill, mod = 0 }] of Object.entries(
+      CONFIG.DEGENESIS.combat.actions,
+    )) {
+      (actions[group] ??= []).push({
+        key,
+        label: `DGNS.COMBAT.action.${key}`,
+        pool: Math.max(0, (actionNumbers[skill] ?? 0) + mod),
+      });
+    }
+    this.combatActions = actions;
+  }
+
   /* ------------ Penalties ----------- */
 
   _applyPenalties() {
@@ -241,21 +411,21 @@ export default class DGNSActor extends Actor {
       general.encumbrance.current,
       general.encumbrance.max,
     );
-
-    console.log(`Calculated total penalty`);
-    console.log(totalPenalty);
   }
 
   /* -- Items / weapons preparations -- */
 
+  /**
+   * Prepare data for all the weapon items.
+   */
   _prepareWeapons() {
     //todo: full loop, change to already filtered weapon group
     //for (const weapon of this.items.filter((i) => i.type === "weapon")) {
     //   weapon.prepareAttackPool(this.system.actionNumbers);
     // }
-
-    console.log(`Holding a spot in modifiers queue`);
   }
+
+  /* ---------------------------------- */
 
   // #endregion
 
@@ -300,6 +470,21 @@ export default class DGNSActor extends Actor {
       schema.actor.render(false);
     }
   }
+
+  /**
+   * Helper function for grabiing skill definition
+   * todo: fix the mental shit and stuff
+   * @param {*} skill
+   */
+
+  getSkillDefinition(skill) {
+    const { attributes, actionNumbers } = this.system;
+    const attribute = Object.keys(attributes).find(
+      (a) => skill in attributes[a].skills,
+    );
+    return { attribute, skill, actionNumber: actionNumbers[skill] };
+  }
+
   // #endregion
 
   /* ---------------------------------- */
@@ -549,7 +734,7 @@ export default class DGNSActor extends Actor {
     await roll.evaluate();
     await this._postRollEffects(type, roll);
 
-    await roll.toMessage();
+    await roll.toMessage(this);
     return roll;
   }
 
@@ -574,6 +759,8 @@ export default class DGNSActor extends Actor {
     if (!definition) return; // Roll was cancelled
     return this._executeRoll({ type: "action", definition });
   }
+
+  /* ---------------------------------- */
 
   /**
    *todo: method description
@@ -607,40 +794,64 @@ export default class DGNSActor extends Actor {
    * @param {*} action weapon action string
    * @returns
    */
-  async combatRoll(weapon, action) {
-    if (!action) return null;
-    // check if there
-    const { primary, secondary } = weapon.system.skills;
 
-    const DGNSDialog = secondary
-      ? DGNSCombinationRollDialog
-      : DGNSActionRollDialog;
+  async weaponRoll(weapon) {
+    const actions = this._prepareWeaponActions(weapon);
+    if (!actions.length) return null;
 
-    const definition = await DGNSDialog.create({
+    const combined = Boolean(weapon.system.skills.secondary);
+    const Dialog = combined ? DGNSCombinationRollDialog : DGNSWeaponRollDialog;
+
+    const definition = await Dialog.create({
       actor: this,
-      definition: {
-        primary: {
-          attribute,
-          skill,
-          actionNumber: this.system.actionNumbers[primary],
-        },
-
-        ...(secondary && {
-          secondary: {
-            attribute,
-            skill,
-            actionNumber: this.system.actionNumbers[secondary],
-          },
-        }),
-      },
+      weapon,
+      actions,
+      definition: foundry.utils.deepClone(actions[0].definition),
     });
 
     if (!definition) return; // Roll was cancelled
+
     return this._executeRoll({
-      type: secondary ? "combination" : "action",
-      definition: definition,
+      type: combined ? "combination" : "action",
+      definition,
     });
   }
+
+  _prepareWeaponActions(weapon) {
+    const { primary, secondary } = weapon.system.skills;
+    if (!primary) return [];
+    const zero = () => ({ d: 0, s: 0, t: 0 });
+
+    return weapon.combatActions.map(({ key, label, rollType, modifiers }) => {
+      const main = {
+        ...this.getSkillDefinition(primary),
+        rollType,
+        modifiers: { ...zero(), ...modifiers },
+        itemUuid: weapon.uuid,
+      };
+      return {
+        key,
+        label,
+        definition: secondary
+          ? {
+              primary: main,
+              secondary: {
+                ...this.getSkillDefinition(secondary),
+                modifiers: zero(),
+              },
+            }
+          : main,
+      };
+    });
+  }
+
+  /**
+   * Handling common combat  action rolls.
+   * @param {*} action
+   */
+  async combatActionRoll(action) {}
+
+  _prepareCombatActions() {}
 
   /**
    * Post roll pipeline. Handling all side effects for actor entity.
@@ -676,20 +887,28 @@ export default class DGNSActor extends Actor {
 
   // todo: check if returning empty string is correct, or null is better
   get concept() {
-    return this.system.concept || "";
+    return this.system.concept ?? null;
   }
+
+  /* ---------------------------------- */
 
   get culture() {
-    return this.system.culture || "";
+    return this.system.culture ?? null;
   }
+
+  /* ---------------------------------- */
 
   get cult() {
-    return this.system.cult || "";
+    return this.system.cult ?? null;
   }
 
+  /* ---------------------------------- */
+
   get group() {
-    return this.system?.group || null;
+    return this.system?.group ?? null;
   }
+
+  /* ---------------------------------- */
 
   /**
    * Returning true if there is a linked
@@ -710,6 +929,7 @@ export default class DGNSActor extends Actor {
    * @param {*} targetMap
    * @param {*} property
    * @returns
+   * @deprecated
    */
   _applyEffectsToTargets(targetMap, property) {
     if (!property || !targetMap) return null;

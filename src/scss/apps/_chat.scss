@@ -1,11 +1,139 @@
 @use "../colors";
 
 @layer dgns.chat {
-  .message {
+  .chat-message {
     background-image: none;
-    background-color: var(--dgns-ui-background);
-    color: var(--dgns-ui-primary);
+    background-color: var(--dgns-surface-base);
+    color: var(--dgns-text-color-primary);
+    border: var(--dgns-border-color-primary) solid var(--dgns-line-width);
+    border-radius: var(--dgns-border-radius-large);
 
-    border: 1px solid;
+    .chat-card {
+      position: relative;
+      border: var(--dgns-border-color-secondary) solid var(--dgns-line-width);
+      border-radius: var(--dgns-border-radius-small);
+      overflow: hidden;
+      padding: 4px;
+    }
+
+    .chat-card-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      object-fit: cover;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+
+      mask: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.3) 0%,
+        rgba(0, 0, 0, 0) 100%
+      );
+    }
+
+    .message-header {
+      position: relative;
+      z-index: 1;
+      min-height: 40px;
+      align-items: center;
+
+      .title-row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+
+        padding: 5px;
+
+        .avatar {
+          width: 40px;
+          height: 40px;
+
+          img {
+            border: var(--dgns-border-color-primary) solid
+              var(--dgns-line-width);
+            border-radius: 40px;
+          }
+        }
+
+        .alias {
+          color: var(--dgns-text-color-primary);
+          font-family: var(--font-sans);
+          font-size: var(--font-size-14);
+          //font-weight: var(--dgns-weight-header-sans);
+          font-weight: 900;
+          text-transform: uppercase;
+        }
+
+        .message-metadata {
+          color: var(--dgns-text-color-primary);
+          i {
+            color: var(--dgns-text-color-primary);
+          }
+        }
+      }
+
+      i.speaker-color {
+        font-size: 8px;
+        color: var(--dgns-speaker);
+      }
+    }
+
+    .message-content {
+      position: relative;
+      z-index: 1;
+      padding: 5px;
+    }
+  }
+
+  .action-roll-card {
+    h2.action-title {
+      margin: 0;
+      text-align: center;
+      font-family: var(--font-serif);
+      font-size: var(--font-size-24);
+      text-transform: uppercase;
+      font-weight: var(----dgns-weight-header-serif);
+    }
+
+    h3.action-skill {
+      margin: 8px 0px;
+      text-align: center;
+      font-family: var(--font-sans);
+      font-size: var(--font-size-16);
+      text-transform: uppercase;
+      font-weight: 900;
+    }
+
+    h2.roll-result {
+      margin: 0px;
+      text-align: center;
+      font-family: var(--font-sans);
+      font-size: var(--font-size-16);
+      text-transform: uppercase;
+      font-weight: 900;
+    }
+
+    .roll-results {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-serif);
+      font-size: 36px;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    .dice {
+      padding-top: 10px;
+      display: grid;
+      gap: 3px;
+
+      grid-auto-flow: column;
+      grid-template-rows: 1fr 1fr;
+      align-items: center;
+      justify-content: center;
+    }
   }
 }

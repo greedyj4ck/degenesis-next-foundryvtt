@@ -1,12 +1,42 @@
 @layer dgns.theme {
   .theme-dark {
     // Text / elements colors
-    --dgns-ui-primary: var(--c-gold-4);
-    --dgns-ui-secondary: var(--c-gold-7);
 
-    --dgns-ui-primary-text: var(--c-gold-4);
-    --dgns-ui-secondary-text: var(--c-gold-4);
+    --dgns-color-primary: var(--color-gold-next);
+    --dgns-color-secondary: var(--color-purple-next);
 
+    // to fix
+    --dgns-color-tertiary: var(--c-gold-8);
+    --dgns-color-highlight: var(--c-gold-3);
+
+    --dgns-text-color-primary: color-mix(
+      in oklch,
+      var(--dgns-color-primary),
+      white 15%
+    );
+
+    --dgns-text-color-secondary: color-mix(
+      in oklch,
+      var(--dgns-color-secondary),
+      white 15%
+    );
+
+    // to fix
+    --dgns-text-color-tertiary: var(--c-gold-4);
+
+    --dgns-border-color-primary: color-mix(
+      in oklch,
+      var(--dgns-color-primary),
+      black 20%
+    );
+
+    --dgns-border-color-secondary: color-mix(
+      in oklch,
+      var(--dgns-color-primary),
+      white 5%
+    );
+
+    // to clean up
     --dgns-ui-accent: var(--c-pred-5);
     --dgns-ui-contrast: var(--c-pred);
 
@@ -15,35 +45,84 @@
     --dgns-ui-tabs-secondary: var(--c-resin-7);
 
     // Backgrounds
-    --dgns-ui-background: hsla(from var(--dgns-ui-secondary) h 0 6/0.98);
+    //--dgns-surface-base: hsla(from var(--dgns-color-primary) h 5 7 / 1);
 
-    // UI elements
-    --dgns-ui-control-content: var(--c-gold-4);
-    --dgns-ui-hover-control-content: var(--c-gold-2);
-    --dgns-ui-active-control-content: var(--c-resin-3);
+    --dgns-surface-base: color-mix(
+      in oklch,
+      var(--dgns-color-primary),
+      rgb(0 0 0 / 1) 70%
+    );
 
-    --dgns-ui-control-border: var(--c-gold-7);
-    --dgns-ui-hover-control-border: var(--c-gold-3);
-    --dgns-ui-active-control-border: var(--c-resin-4);
+    --dgns-surface-base-alpha: color-mix(
+      in oklch,
+      var(--dgns-color-primary),
+      rgb(0 0 0 / 0.5) 70%
+    );
 
-    --dgns-ui-control-bg: var(--c-gold-9);
-    --dgns-ui-hover-control-bg: var(--c-gold-8);
-    --dgns-ui-active-control-bg: var(--c-resin-8);
+    --dgns-surface-secondary: color-mix(
+      in oklch,
+      var(--dgns-color-secondary),
+      rgb(0 0 0 / 1) 45%
+    );
 
-    --color-text-primary: var(--dgns-ui-primary);
-    --menu-background: var(--dgns-ui-background);
-    --input-background-color: var(--dgns-ui-background);
+    --dgns-surface-secondary-alpha: color-mix(
+      in oklch,
+      var(--dgns-color-secondary),
+      rgb(0 0 0 / 0.9) 75%
+    );
+
+    /*   --dgns-surface-base-alpha: hsla(
+      from var(--dgns-color-secondary) h 0 6 / 0.98
+    ); */
+
+    // Fonts / Text
+
+    --dgns-weight-header-sans: 800;
+    --dgns-weight-subheader-sans: 700;
+
+    --dgns-weight-header-serif: 500;
+    --dgns-weight-subheader-serif: 500;
+
+    // UI Control Elements styling
+    --dgns-control-content-default: var(--dgns-color-primary);
+    --dgns-control-content-hover: hsla(
+      from var(--dgns-color-secondary) h 80 55 / 1
+    );
+    --dgns-control-content-active: hsla(
+      from var(--dgns-color-primary) h s 55 / 1
+    );
+
+    --dgns-control-border-default: hsla(
+      from var(--dgns-color-primary) h s 45 / 1
+    );
+    --dgns-control-border-hover: hsla(
+      from var(--dgns-color-secondary) h s 45 / 1
+    );
+
+    --dgns-control-border-active: hsla(
+      from var(--dgns-color-primary) h s 55 / 1
+    );
+
+    --dgns-control-bg-default: var(--dgns-surface-base-alpha);
+    --dgns-control-bg-hover: var(--c-gold-8);
+    --dgns-control-bg-active: var(--c-resin-8);
+
+    // Foundry UI
+
+    --color-text-primary: var(--dgns-text-color-primary);
+    --menu-background: var(--dgns-surface-base);
+    --input-background-color: var(--dgns-surface-base);
 
     input {
-      --input-background-color: var(--dgns-ui-background);
-      --input-text-color: var(--dgns-ui-primary);
+      --input-background-color: var(--dgns-surface-base);
+      --input-text-color: var(--dgns-color-primary);
     }
 
     // Utilities
     --hr-gradient: linear-gradient(
       90deg,
       transparent 0%,
-      var(--dgns-ui-secondary) 50%,
+      var(--dgns-color-secondary) 50%,
       transparent 100%
     );
   }

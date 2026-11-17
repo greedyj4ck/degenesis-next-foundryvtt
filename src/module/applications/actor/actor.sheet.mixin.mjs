@@ -51,6 +51,8 @@ export default function ActorSheetMixin(Base) {
         // Standard rolls
         rollAction: DGNSActorSheet.prototype._onActionRoll,
         rollCombination: DGNSActorSheet.prototype._onCombinationRoll,
+        rollWeapon: DGNSActorSheet.prototype._onWeaponRoll,
+
         // Active effects
         manageEffect: DGNSActorSheet.prototype._onManageEffect,
       },
@@ -304,16 +306,27 @@ export default function ActorSheetMixin(Base) {
       const collapsible = target.closest(".collapsible");
       if (!collapsible) return;
 
+      const expandId = target.closest("[data-expand-id]")?.dataset.expandId;
+
       // magic is happening here...
 
       collapsible.classList.remove("expanded--restored"); // stopping animation on re-render
       collapsible.classList.toggle("expanded");
 
+      const isExpanded = collapsible.classList.contains("expanded");
+
       // if the item is expanded, add it to #expandedSections
-      this.#expandedSections.set(
-        target.closest("[data-expand-id]")?.dataset.expandId,
-        collapsible.classList.contains("expanded"),
-      );
+      this.#expandedSections.set(expandId, isExpanded);
+
+      if (expandId) {
+        this.actor.update(
+          {
+            [`flags.${CONFIG.DEGENESIS.id}.expandedSections.${expandId}`]:
+              isExpanded,
+          },
+          { render: false },
+        );
+      }
     }
 
     /* ---------------------------------- */
@@ -463,7 +476,7 @@ export default function ActorSheetMixin(Base) {
      */
     _canDragStart(selector) {
       // game.user fetches the current user
-      //console.log(`canDragStart`);
+
       return this.isEditable;
     }
 
@@ -477,7 +490,7 @@ export default function ActorSheetMixin(Base) {
      */
     _canDragDrop(selector) {
       // game.user fetches the current user
-      //console.log(`canDragDrop`);
+
       return this.isEditable;
     }
 
@@ -525,9 +538,6 @@ export default function ActorSheetMixin(Base) {
       event.preventDefault();
 
       const data = TextEditor.getDragEventData(event);
-
-      console.log(`onDropData`);
-      console.log(data);
 
       if (!data.type) return super._onDrop(event);
 
@@ -579,7 +589,6 @@ export default function ActorSheetMixin(Base) {
             this.actor.getFlag(CONFIG.DEGENESIS.id, "inventorySortModes") || {};
           const sortMode = sortModes[targetItem.type] || "manual";
 
-          console.log(sortMode);
           if (sortMode === "manual") {
             return this._handleInventorySort(item, targetItem);
           } else {
@@ -631,11 +640,9 @@ export default function ActorSheetMixin(Base) {
       return async function (event, target) {
         const itemId = target.closest("[data-item-id]").dataset.itemId;
         const item = this.document.items.get(itemId);
-        console.log(`Toggle item prop`);
-        console.log(item);
-        console.log(propPath);
+
         const currentValue = foundry.utils.getProperty(item, propPath);
-        console.log(currentValue);
+
         await item.update({ [propPath]: !currentValue });
       };
     }
@@ -698,6 +705,36 @@ export default function ActorSheetMixin(Base) {
       const skill = target.dataset.skill;
       const attribute = target.dataset.attribute;
       await this.actor.actionRoll(attribute, skill);
+    }
+
+    /* ---------------------------------- */
+
+    async _onWeaponRoll(event, target) {
+      if (event) event.preventDefault();
+      const weapon = this.document.items.get(
+        target.closest("[data-item-id]").dataset.itemId,
+      );
+      await this.document.weaponRoll(weapon);
+    }
+
+    /* ---------------------------------- */
+
+    static #groupRoll(event, target) {
+      return this.document.rollCombat({});
+    }
+
+    /* ---------------------------------- */
+
+    static #weaponRoll(event, target) {
+      const item = this.document.items.get(
+        target.closest("[data-item-id]").dataset.itemId,
+      );
+
+      return this.document.rollCombat({
+        options: item.system.rollOptions,
+        skill: item.system.skill,
+        definition: { itemUuid: item.uuid },
+      });
     }
 
     /* ---------------------------------- */

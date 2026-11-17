@@ -1,5 +1,10 @@
-<div class="culture" data-action="showCulture">
+<div class="culture" data-action="showLinkedItem" data-item-type="culture">
 
+    {{#if culture.system.backgroundImage}}
+        <div class="card background">
+            <img src="{{culture.system.backgroundImage}}" />
+        </div>
+    {{/if}}
     <div class="controls">
         <label class="header">{{localize "DGNS.GENERAL.culture"}}</label>
         {{#if (sheetEditMode mode) }}
@@ -12,7 +17,7 @@
 
     <div class="icon">
         {{#if culture}}
-            <img src="{{culture.img}}" data-action="showLinkedItem" data-item-type="culture" />
+            <img src="{{culture.img}}" />
         {{else}}
             <div class="drop-placeholder">
                 <i class="fa-solid fa-file-half-dashed"></i>

@@ -137,9 +137,6 @@ export default class DegenesisCultureSheet extends BackgroundSheetMixin(
       }), */
     };
 
-    console.log(`Sheet context:`);
-    console.log(context);
-
     return context;
   }
 
@@ -225,13 +222,13 @@ export default class DegenesisCultureSheet extends BackgroundSheetMixin(
         /*   {
           name: "Action roll",
           callback: (target) => {
-            console.log(`Context action`);
+            
           },
         },
         {
           name: "Combination roll",
           callback: (target) => {
-            console.log(this);
+            
           },
         }, */
       ];
@@ -260,7 +257,7 @@ export default class DegenesisCultureSheet extends BackgroundSheetMixin(
     // You may want to add other special handling here
     // Foundry comes with a large number of utility classes, e.g. SearchFilter
     // That you may want to implement yourself.
-    // console.log(this);
+    //
 
     super._onRender(context, options);
   }
@@ -278,32 +275,6 @@ export default class DegenesisCultureSheet extends BackgroundSheetMixin(
   static async #changeSheetBackground() {
     await super.changeSheetBackground();
   }
-
-  /*   static async #changeSheetBackground() {
-    const filePicker = new FilePicker({
-      type: "image",
-      wildcard: true,
-      callback: async (path) => {
-        if (path) {
-          try {
-            await this.document.update({
-              ["system.backgroundImage"]: path,
-            });
-            ui.notifications.info(
-              `Updated ${this.document.name} backgroundImage to: ${path}`
-            );
-          } catch (error) {
-            console.error("Error updating document:", error);
-            ui.notifications.error("Failed to update document");
-          }
-        } else {
-          console.log("No path received in callback");
-        }
-      },
-    });
-
-    await filePicker.browse();
-  } */
 
   // Data Actions
 

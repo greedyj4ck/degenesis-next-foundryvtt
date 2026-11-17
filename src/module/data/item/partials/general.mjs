@@ -1,4 +1,4 @@
-import { WEAPON_GROUPS } from "../../../logic/config/items.mjs";
+import { Items } from "../../../logic/item.logic.mjs";
 
 const {
   SchemaField,
@@ -75,9 +75,9 @@ export default class GeneralFields {
     return {
       group: new StringField({
         label: "DGNS.Group",
-        choices: WEAPON_GROUPS,
-        required: false,
-        blank: true,
+        choices: Items.weapons,
+        required: true,
+        initial: Object.keys(Items.weapons)[0],
       }),
     };
   }

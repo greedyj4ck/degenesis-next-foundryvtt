@@ -1,14 +1,21 @@
-import * as SETTINGS from "./settings.config.mjs";
+import * as Settings from "./settings.config.mjs";
+
+/* ---------------------------------- */
 
 /**
  * Logic sections imports.
  */
-import { Damage } from "../logic/damage.mjs";
-import { Qualities } from "../logic/quality.mjs";
-import { Condition } from "../logic/condition.mjs";
-import { Modification } from "../logic/modification.mjs";
+import { Damage } from "../logic/damage.logic.mjs";
+import { Qualities } from "../logic/quality.logic.mjs";
+import { Condition } from "../logic/condition.logic.mjs";
+import { Items } from "../logic/item.logic.mjs";
+import { Modification } from "../logic/modification.logic.mjs";
+/* ---------------------------------- */
+import { Combat } from "../logic/combat.logic.mjs";
 
-import { WEAPON_GROUPS, WEAPON_GROUPS_SKILLS } from "../logic/config/items.mjs";
+import { Alignments } from "../logic/scars.logic.mjs";
+import { Skills } from "../logic/skills.logic.mjs";
+
 /**
  * Global identification string
  */
@@ -18,9 +25,10 @@ export const SYSTEM_ID = "degenesisnext";
 /**
  * Main object available trough entire system
  */
+
 export const SYSTEM = {
   id: SYSTEM_ID, // global ID for system
-  settings: SETTINGS, // core system settings
+  settings: Settings, // core system settings
 
   // imported logic functions
   logic: {
@@ -28,6 +36,14 @@ export const SYSTEM = {
     condition: Condition,
     qualities: Qualities,
     modification: Modification,
+  },
+  /* ---------------------------------- */
+  skills: Skills,
+  alignments: Alignments,
+  items: Items,
+  /* ---------------------------------- */
+  combat: {
+    actions: Combat.Actions,
   },
 };
 
@@ -196,8 +212,6 @@ DEGENESIS.modifyActions = {
 
 DEGENESIS.noType = ["movement", "armor", "damage", "p_defense"];
 
-DEGENESIS.weaponGroups = WEAPON_GROUPS;
-
 DEGENESIS.attackGroups = {
   closeQuarter: "DGNS.CloseQuarter",
   ranged: "DGNS.Ranged",
@@ -237,8 +251,6 @@ DEGENESIS.equipmentGroups = {
   other: "DGNS.Other",
   transportation: "DGNS.Transportation",
 };
-
-DEGENESIS.weaponGroupSkill = WEAPON_GROUPS_SKILLS;
 
 ((DEGENESIS.weaponQualities = {
   areaDamage: "DGNS.AreaDamage",
@@ -645,6 +657,7 @@ DEGENESIS.rollResults = {
 
 /**
  * Calibers are used for validating weapons compatibilities with specific ammo item.
+ * @deprecated use item configuration property calibers
  */
 DEGENESIS.calibers = {
   "50gl": "TYPES.Ammo.50gl",

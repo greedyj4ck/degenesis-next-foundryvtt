@@ -1,4 +1,8 @@
 <div class="app-container">
+    {{!-- Render options instead of typical skill header if present --}}
+    {{#if actions}}
+        {{> "systems/degenesisnext/templates/rolls/partials/roll.actions.hbs" actions=actions }}
+    {{/if}}
     {{> "systems/degenesisnext/templates/rolls/partials/roll.action.hbs" roll }}
     {{> "systems/degenesisnext/templates/rolls/partials/roll.configuration.hbs" roll }}
     {{> "systems/degenesisnext/templates/rolls/partials/roll.effects.hbs" roll}}

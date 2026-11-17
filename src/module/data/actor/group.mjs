@@ -12,7 +12,7 @@ const {
 
 const { BaseItem, BaseActor } = foundry.documents;
 
-import { Scars } from "../../logic/scars.mjs";
+import { Scars } from "../../logic/scars.logic.mjs";
 
 export default class GroupData extends foundry.abstract.TypeDataModel {
   /** @inheritdoc */
@@ -31,6 +31,7 @@ export default class GroupData extends foundry.abstract.TypeDataModel {
             },
             { label: "DGNS.GENERAL.members" },
           ),
+          isNew: new BooleanField({ initial: true }),
         }),
       ),
 
@@ -93,15 +94,58 @@ export default class GroupData extends foundry.abstract.TypeDataModel {
     };
   }
 
+  /* ---------------------------------- */
+  /*          Data Preparation          */
+  /* ---------------------------------- */
+
+  prepareDerivedData() {
+    this.modifiersByActor = {};
+
+    if (!this.alignment) {
+      for (const actor of this.memberActors) {
+        this.modifiersByActor[actor.id] = [];
+      }
+      return;
+    }
+
+    const concepts = this.memberConcepts; // grab all concepts from group members
+
+    for (const entry of this.members) {
+      const actor = entry.actor;
+      if (!actor) continue;
+
+      const concept = actor.system.concept?.id ?? "";
+      const isNew = entry.isNew;
+
+      this.modifiersByActor[actor.id] = Scars.prepareAligmentModifiers(
+        concept,
+        this.alignment,
+        concepts,
+        isNew,
+      );
+    }
+  }
+
+  /* ---------------------------------- */
+  /*          Getters & Helpers         */
+  /* ---------------------------------- */
+
+  get hasAlignment() {
+    return !!this.alignment;
+  }
+  /* ---------------------------------- */
+
   get memberActors() {
     return this.members.map((entry) => entry.actor).filter(Boolean);
   }
-
-  // not quite sure this is needed but, who knows
-  // the foreign document fields should resolve themselves
+  /* ---------------------------------- */
   get memberConcepts() {
     return this.memberActors
       .map((actor) => actor.system.concept ?? "")
       .filter(Boolean);
+  }
+
+  getModifiersForActor(actorId) {
+    return this.modifiersByActor?.[actorId] ?? [];
   }
 }

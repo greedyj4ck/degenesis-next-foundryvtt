@@ -1,6 +1,9 @@
 /** @import Roll from '@client/dice/roll.mjs*/
 
+import { DicePool } from "../logic/dicepool.logic.mjs";
+
 const { Roll } = foundry.dice;
+
 const { renderTemplate } = foundry.applications.handlebars;
 
 /**
@@ -15,11 +18,14 @@ export default class DGNSRoll extends Roll {
 
   /** Parsing options  */
   constructor(rollDefinition, data, options = {}) {
-    const { actionNumber = 0, difficulty = 0, modifiers = {} } = rollDefinition;
-    const diceMod = modifiers.d || 0;
-    const totalActionNumber = Math.max(0, actionNumber + diceMod);
-    const rolledDice = Math.min(totalActionNumber, 12);
-    const autoSuccesses = Math.max(0, totalActionNumber - 12);
+    /*     const { actionNumber = 0, difficulty = 0, modifiers = {} } = rollDefinition;
+    const diceMod = modifiers.d || 0; */
+    // const totalActionNumber = Math.max(0, actionNumber + diceMod);
+    const { totalActionNumber, rolledDice, autoSuccesses } = DicePool.resolve(
+      rollDefinition.actionNumber,
+      rollDefinition.modifiers ?? {},
+    );
+
     const formula = `${rolledDice}d6`;
 
     super(formula, data, options);
@@ -28,7 +34,7 @@ export default class DGNSRoll extends Roll {
     this.actionNumber = totalActionNumber;
     this.rolledDice = rolledDice;
     this.autoSuccesses = autoSuccesses;
-    this.difficulty = Number(difficulty);
+    this.difficulty = Number(rollDefinition.difficulty ?? 0);
     this.modifiers = rollDefinition.modifiers;
     this._outcome = null;
   }
@@ -73,8 +79,8 @@ export default class DGNSRoll extends Roll {
 
   /** @inheritDoc */
   async evaluate(options = {}) {
-    //console.log(this);
-    //console.log(options);
+    //
+    //
     await super.evaluate(options);
     this._evaluateSuccess();
     return this;
@@ -113,13 +119,13 @@ export default class DGNSRoll extends Roll {
     // Determine result state
   }
 
-  /** Display result to chat  */
-  async toMessage(messageData = {}, { rollMode = null, create = true } = {}) {
-    rollMode = rollMode || game.settings.get("core", "rollMode");
-    console.log(rollMode);
-    const speaker = ChatMessage.getSpeaker();
-    const chatData = {
-      title: game.i18n.localize(`DGNS.ROLL.actionRoll`),
+  /**
+   * Method for preparing chat data.
+   * @returns
+   */
+  _prepareChatData() {
+    return {
+      title: game.i18n.localize(`DGNS.ROLL.action`),
       attribute: game.i18n.localize(
         `DGNS.ATTRIBUTE.${this.definition.attribute}`,
       ),
@@ -132,9 +138,20 @@ export default class DGNSRoll extends Roll {
       result: this.result,
       resultLabel: game.i18n.localize(`DGNS.ROLL.${this.result}`),
     };
+  }
 
-    const template = this.constructor.CHAT_TEMPLATE;
-    const content = await renderTemplate(template, chatData);
+  /** Display result to chat  */
+  async toMessage(
+    actor,
+    messageData = {},
+    { messageMode = null, create = true } = {},
+  ) {
+    messageMode = messageMode || game.settings.get("core", "messageMode");
+
+    const content = await renderTemplate(
+      this.constructor.CHAT_TEMPLATE,
+      this._prepareChatData(),
+    );
 
     const messageOptions = foundry.utils.mergeObject(
       {
@@ -144,15 +161,15 @@ export default class DGNSRoll extends Roll {
           : undefined,
         content: content,
         rolls: [this],
-        speaker: speaker,
+        speaker: ChatMessage.getSpeaker({ actor }),
         flags: {
-          "core.rollMode": rollMode,
+          "core.messageMode": messageMode,
         },
       },
       messageData,
     );
 
-    ChatMessage.applyRollMode(messageOptions, rollMode);
+    ChatMessage.applyMode(messageOptions, messageMode);
     return create ? ChatMessage.create(messageOptions) : messageOptions;
   }
 

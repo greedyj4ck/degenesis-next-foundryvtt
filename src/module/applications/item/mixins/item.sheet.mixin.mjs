@@ -1,4 +1,4 @@
-import { Qualities } from "../../../logic/quality.mjs";
+import { Qualities } from "../../../logic/quality.logic.mjs";
 
 const { api, sheets } = foundry.applications;
 
@@ -33,18 +33,15 @@ export default function ItemSheetMixin(Base) {
 
     /** @inheritdoc */
     async _render(force, { mode, ...options } = {}) {
-      console.log(`ItemSheetMixin _render`);
       return super._render(force, ({ mode, ...options } = {}));
     }
 
     /** @inheritdoc */
     async _renderHTML(context, options) {
-      console.log(`ItemSheetMixin _renderHTML`);
       return super._renderHTML(context, options);
     }
 
     async _renderFrame(options) {
-      console.log(`ItemSheetMixin _renderFrame`);
       const html = await super._renderFrame(options);
 
       const header = html.children[0];
@@ -133,8 +130,6 @@ export default function ItemSheetMixin(Base) {
       this._mode = toggle.checked ? MODES.EDIT : MODES.PLAY;
       await this.submit();
 
-      console.log(`Current mode`, this._mode);
-
       this.render();
     }
 
@@ -142,8 +137,6 @@ export default function ItemSheetMixin(Base) {
       super._onChangeTab(event, tabs, active);
       // I think this event do not exist in Foundry API. Shit.
       // Need to figure this out.
-
-      console.log(`Tab Change fired`);
 
       this.form.className = this.form.className.replace(/tab-\w+/g, "");
       this.form.classList.add(`tab-${active}`);
@@ -163,11 +156,7 @@ export default function ItemSheetMixin(Base) {
       try {
         let target = event.currentTarget;
         let dropdown = target.dataset.dropdown;
-
-        console.log(target.attributes);
-      } catch (err) {
-        console.log(err);
-      }
+      } catch (err) {}
     }
 
     /* ---------------------------------- */
@@ -175,8 +164,6 @@ export default function ItemSheetMixin(Base) {
     /* ---------------------------------- */
 
     static async #onManageQuality(event, target) {
-      console.log(`onManageQuality mixin fired`);
-      console.log(this);
       if (event) event.preventDefault();
       let { field = null, value = null } = {};
 

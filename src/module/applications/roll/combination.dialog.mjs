@@ -106,7 +106,6 @@ export default class DGNSCombinationRollDialog extends HandlebarsApplicationMixi
 
     context.roll = this._rollDefinition;
 
-    console.log(context);
     return context;
   }
 
@@ -191,15 +190,11 @@ export default class DGNSCombinationRollDialog extends HandlebarsApplicationMixi
   }
 
   static #onManageDifficulty(event, target) {
-    console.log(target);
     const prefix = target.dataset.prefix;
     const method = target.dataset.method;
-    console.log(prefix);
 
     const targetData =
       prefix === "roll" ? this._rollDefinition : this._rollDefinition[prefix];
-
-    console.log(targetData);
 
     if (method === "increaseDifficulty" && targetData.difficulty < 12) {
       targetData.difficulty++;

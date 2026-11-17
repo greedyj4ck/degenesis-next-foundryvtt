@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg width="100%"
+    height="100%" viewBox="0 0 256 257" version="1.1" xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/"
+    style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2; --dgns-die-surface: white">
+    <rect id="d6" x="0" y="0.589" width="256" height="256" style="fill:none;" />
+    <clipPath id="_clip1">
+        <rect x="0" y="0.589" width="256" height="256" />
+    </clipPath>
+    <g clip-path="url(#_clip1)">
+        <rect x="0" y="0.589" width="256" height="256" style="fill:var(--dgns-die-surface);" />
+        <path d="M128,229.289L11.7,27.889L244.3,27.889L128,229.289ZM27.2,36.889L128,211.489L228.8,36.889L27.2,36.889Z"
+            style="fill:var(--dgns-die-symbol);fill-rule:nonzero;" />
+        <path
+            d="M173.5,44.489L177.5,51.589L182,59.189L179.5,63.489L161.2,63.489L165.9,71.589L170.4,79.389L167.7,83.989L149.4,83.989L154.1,92.089L158.6,99.789L155.8,104.589L137.8,104.589L142.5,112.689L146.8,120.089L128.2,152.589L109.4,120.089L113.8,112.689L118.4,104.589L100.4,104.589L97.6,99.789L102.1,92.089L106.8,83.989L88.5,83.989L85.9,79.389L90.4,71.589L95,63.489L76.7,63.489L74.2,59.189L78.7,51.589L82.8,44.489L40.3,44.489L128.2,196.789L216,44.489L173.5,44.489Z"
+            style="fill:var(--dgns-die-symbol);fill-rule:nonzero;" />
+    </g>
+</svg>
